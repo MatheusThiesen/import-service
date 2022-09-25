@@ -4,18 +4,16 @@ import Queue from "./lib/Queue";
 class App {
   async execute() {
     try {
-      Queue.add("test");
-
-      // console.log(
-      //   await entities.brand.getAll({
-      //     fields: {
-      //       code: true,
-      //       abbreviation: true,
-      //     },
-      //   })
-      // );
-    } catch (error) {
-      console.log("error");
+      Queue.add(
+        "executeService",
+        {
+          service: "OrderImportPortal",
+        }
+        // { repeat: { cron: "* * * * *" } }
+      );
+    } catch (err) {
+      console.log("error!");
+      console.log(err);
     }
   }
 }

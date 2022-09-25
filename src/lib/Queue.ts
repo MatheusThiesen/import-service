@@ -1,4 +1,5 @@
 import * as Queue from "bull";
+import { ExecuteFunctionProps } from "src/jobs/executeService";
 import { redisConfig } from "../config/redis";
 import * as jobs from "../jobs";
 
@@ -18,7 +19,11 @@ const queues = Object.values(jobs)
 
 export default {
   queues,
-  add(name: "test", data?: object, opts?: Queue.JobOptions) {
+  add(
+    name: "executeService",
+    data: ExecuteFunctionProps,
+    opts?: Queue.JobOptions
+  ) {
     const queue: JobDTO = this.queues.find(
       (queue: JobDTO) => queue.name === name
     );
@@ -30,10 +35,10 @@ export default {
       queue.bull.process(queue.handle);
 
       queue.bull.on("active", (job, err) => {
-        console.log("INICIO", job.queue.name);
+        // console.log("INICIO", job.queue.name);
       });
       queue.bull.on("completed", (job, err) => {
-        console.log("FIM", job.queue.name);
+        // console.log("FIM", job.queue.name);
       });
 
       queue.bull.on("failed", (job, err) => {

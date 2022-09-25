@@ -1,5 +1,5 @@
 export class Grid {
-  code: string;
+  code: number;
   description: string;
   abbreviation: string;
   active: number;

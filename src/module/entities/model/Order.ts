@@ -264,7 +264,7 @@ export class OrderFields {
     lastChangeDate?: boolean;
     lastChangeTime?: boolean;
   };
-  items?: OrderItemFields[];
+  items?: OrderItemFields;
   orderInstallments?: {
     sequential?: boolean;
     dueDate?: boolean;

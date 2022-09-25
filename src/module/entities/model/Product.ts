@@ -1,3 +1,5 @@
+import { Grid, GridFields } from "./Grid";
+
 export class Product {
   code: number;
   alternateCode: string;
@@ -49,9 +51,7 @@ export class Product {
   materialGroup: {
     code: number;
   };
-  grid: {
-    code: number;
-  };
+  grid: Grid;
   secondUnit: {
     unit: string;
   };
@@ -175,9 +175,7 @@ export class ProductFields {
   materialGroup?: {
     code?: boolean;
   };
-  grid?: {
-    code?: boolean;
-  };
+  grid?: GridFields;
   secondUnit?: {
     unit?: boolean;
   };

@@ -11,9 +11,34 @@ datasource db {
 }
 
 model Job {
-  id       String   @id @default(uuid())
-  key      String   @unique
-  createAt DateTime @default(now())
+  id        String   @id @default(uuid())
+  key       String   @unique
+  isRun     Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  jobRun JobRun[]
 
   @@map("jobs")
+}
+
+model JobRun {
+  id        String   @id @default(uuid())
+  request   String?
+  response  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  statusCodigo Int
+  status       JobStatus @relation(fields: [statusCodigo], references: [codigo])
+  jobId        String
+  Job          Job       @relation(fields: [jobId], references: [id])
+
+  @@map("jobRuns")
+}
+
+model JobStatus {
+  codigo Int      @id
+  name   String
+  JobRun JobRun[]
 }

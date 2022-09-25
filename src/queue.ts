@@ -1,5 +1,6 @@
-// import cluster from "cluster";
+import "dotenv/config";
 import Queue from "./lib/Queue";
+// import cluster from "cluster";
 // import os from "os";
 // const numCPUs = os.cpus().length;
 
