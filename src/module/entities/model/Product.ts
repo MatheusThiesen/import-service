@@ -31,7 +31,7 @@ export class Product {
   maximumDiscountPercentage: number;
   maximumIncreasePercentage: number;
   saleLimitDate: string;
-  promotionalPrice: string;
+  promotionalPrice: number;
   promotionalPriceStartDate: string;
   promotionalPriceFinalDate: string;
   commodityOrigin: number;

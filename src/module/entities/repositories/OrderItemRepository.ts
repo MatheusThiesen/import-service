@@ -13,8 +13,6 @@ export class OrderItemRepository implements IOrderItemRepository {
     extraFields,
     search,
   }: QueryOrderItemDTO): Promise<OrderItem[]> {
-    console.log(filterFieldsNormalized(fields));
-
     const items = await apiSiger.get<SigerDTO<OrderItem>>("/api/v1/get-list", {
       params: {
         entity: "items",

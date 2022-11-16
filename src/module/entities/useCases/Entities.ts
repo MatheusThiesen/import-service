@@ -10,8 +10,10 @@ import { IProductLineRepository } from "../repositories/types/IProductLineReposi
 import { IProductRepository } from "../repositories/types/IProductRepository";
 import { IProductSubgroupRepository } from "../repositories/types/IProductSubgroupRepository";
 import { IRepresentativeRepository } from "../repositories/types/IRepresentativeRepository";
+import { IAccumulatedStockRepository } from "./../repositories/types/IAccumulatedStockRepository";
 import { IOrderRepository } from "./../repositories/types/IOrderRepository";
 import { IProductGroupRepository } from "./../repositories/types/IProductGroupRepository";
+import { IPurchaseOrderItemsRepository } from "./../repositories/types/IPurchaseOrderItemsRepository";
 
 export class Entities {
   constructor(
@@ -28,7 +30,9 @@ export class Entities {
     private productGroupRepository: IProductGroupRepository,
     private productSubgroupRepository: IProductSubgroupRepository,
     private orderRepository: IOrderRepository,
-    private orderItemRepository: IOrderItemRepository
+    private orderItemRepository: IOrderItemRepository,
+    private purchaseOrderItemsRepository: IPurchaseOrderItemsRepository,
+    private accumulatedStockRepository: IAccumulatedStockRepository
   ) {}
 
   execute() {
@@ -47,6 +51,8 @@ export class Entities {
       productSubgroup: this.productSubgroupRepository,
       order: this.orderRepository,
       orderItem: this.orderItemRepository,
+      purchaseOrderItems: this.purchaseOrderItemsRepository,
+      accumulatedStock: this.accumulatedStockRepository,
     };
   }
 }

@@ -1,5 +1,5 @@
 import { entities } from "../../entities/useCases/index";
-import { SendData } from "./SendData";
+import { SendData } from "../repositories/SendData";
 
 interface GridPortalSendProps {
   codigo: number;

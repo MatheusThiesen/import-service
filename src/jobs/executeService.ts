@@ -1,5 +1,6 @@
 import { Job } from "bull";
 import {
+  gridImportPortal,
   orderImportPortal,
   productImportPortal,
 } from "../module/portal/useCases";
@@ -19,6 +20,10 @@ export default {
 
         case "OrderImportPortal":
           orderImportPortal.execute();
+          break;
+
+        case "GridImportPortal":
+          gridImportPortal.execute();
           break;
 
         default:

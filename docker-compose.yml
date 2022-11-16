@@ -3,10 +3,10 @@ services:
   dbredis:
     build: redis/.
     ports:
-      - 6379:6379
+      - 6379:9492
     container_name: redis
   dbpostgres:
     build: database/.
     ports:
-      - "5432:5432"
+      - "5433:6987"
     container_name: postgres
