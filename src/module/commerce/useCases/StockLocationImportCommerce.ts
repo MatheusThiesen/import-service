@@ -56,30 +56,30 @@ export class StockLocationImportCommerce {
     }
   }
 
-  // private async getPromptDelivery(
-  //   query: string
-  // ): Promise<StockLocationNormalized[]> {
-  //   const currentDate = await this.getCurrentDate();
+  private async getPromptDelivery(
+    query: string
+  ): Promise<StockLocationNormalized[]> {
+    const currentDate = await this.getCurrentDate({ type: "period" });
 
-  //   const accumulatedStocks = await this.accumulatedStockRepository.getAll({
-  //     fields: {
-  //       period: true,
-  //       physicalQuantity: true,
-  //       reservedQuantity: true,
-  //       product: {
-  //         code: true,
-  //       },
-  //     },
-  //     search: `${query} AND period EQ ${currentDate} AND stockLocation.code EQ 20`,
-  //   });
+    const accumulatedStocks = await this.accumulatedStockRepository.getAll({
+      fields: {
+        period: true,
+        physicalQuantity: true,
+        reservedQuantity: true,
+        product: {
+          code: true,
+        },
+      },
+      search: `${query} AND period EQ ${currentDate} AND stockLocation.code IN (20,50) `,
+    });
 
-  //   return accumulatedStocks.map((item) => ({
-  //     period: "pronta-entrega",
-  //     name: "Pronta Entrega",
-  //     productCod: item.product.code,
-  //     qtd: item.physicalQuantity - item.reservedQuantity,
-  //   }));
-  // }
+    return accumulatedStocks.map((item) => ({
+      period: "pronta-entrega",
+      name: "Pronta Entrega",
+      productCod: item.product.code,
+      qtd: item.physicalQuantity - item.reservedQuantity,
+    }));
+  }
   // private async getLocaleFuture(
   //   query: string
   // ): Promise<StockLocationNormalized[]> {
@@ -184,18 +184,24 @@ export class StockLocationImportCommerce {
     // 2 NIKE - 233 COLEÇÃO NIKE
     // 10 ADIDAS - 66 COLEÇÃO ADIDAS
     // 23 LACOSTE - 48 COLEÇÃO LACOSTE
+    // 400 US POLO
 
-    const query = `product.brand.code IN (2,10,23) AND product.collection.collectionCode IN (233,66,48) AND product.situation IN (2)`;
+    // AND
+    // product.collection.collectionCode IN (233,66,48) AND
+    const query = `
+      product.brand.code IN (400) 
+      `;
+    // const query = `product.brand.code IN (400) AND product.situation IN (2)`;
 
-    // const promptDelivery = await this.getPromptDelivery(query);
+    const promptDelivery = await this.getPromptDelivery(query);
     // const localeFuture = await this.getLocaleFuture(query);
-    const localeFutureAvailableTarget =
-      await this.getLocaleFutureAvailableTarget(query);
+    // const localeFutureAvailableTarget =
+    //   await this.getLocaleFutureAvailableTarget(query);
 
     const stockLocations: StockLocationNormalized[] = [
-      // ...promptDelivery,
+      ...promptDelivery,
       // ...localeFuture,
-      ...localeFutureAvailableTarget,
+      // ...localeFutureAvailableTarget,
     ];
 
     await this.sendData.post("/stock-locations/import", stockLocations);

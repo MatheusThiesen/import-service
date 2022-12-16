@@ -21,5 +21,5 @@ export function filterFieldsNormalized(obj: Object): string {
     return data.join();
   }
 
-  return "";
+  return undefined;
 }

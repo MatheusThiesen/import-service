@@ -14,6 +14,11 @@ export class SendDataRepository {
 
   constructor(private authorizationRepository: AuthorizationRepository) {}
 
+  async refreshToken() {
+    const responseAuthorization = await this.authorizationRepository.singIn();
+    this.token = responseAuthorization.token;
+  }
+
   async post(pathUrl: string, data: any[]) {
     try {
       if (!this.token) {
@@ -39,6 +44,16 @@ export class SendDataRepository {
         const file = new FormData();
         file.append("file", serviceFile.readStream(filename) as any);
 
+        apiCommerce({
+          method: "get",
+          url: "/auth/me",
+          headers: {
+            ["Authorization"]: `Bearer ${this.token}`,
+          },
+        })
+          .then(() => null)
+          .catch(async () => await this.refreshToken());
+
         await apiCommerce({
           method: "post",
           url: pathUrl,
@@ -59,8 +74,7 @@ export class SendDataRepository {
         this.isRefreshing = false;
 
         if (err?.response?.status === 401) {
-          this.token = (await this.authorizationRepository.singIn()).token;
-          this.post(pathUrl, data);
+          await this.post(pathUrl, data);
         }
       }
     }
