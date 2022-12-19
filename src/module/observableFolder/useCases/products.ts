@@ -76,8 +76,9 @@ export class Products {
             path.resolve(this.observableFolder, entity, "processing", file)
           );
 
-        const productsNormalized: ProductNormalized[] = products.map(
-          (product) => ({
+        const productsNormalized: ProductNormalized[] = products
+          .filter((p) => p.codigoAlternativo)
+          .map((product) => ({
             cod: product?.codigo,
             status: product?.linhaProducao === 0 ? product?.situacao : 0,
             alternativeCode: product?.codigoAlternativo,
@@ -95,8 +96,7 @@ export class Products {
             grupoCodigo: product?.grupoCodigo,
             subgrupoCodigo: product?.subgrupoCodigo,
             generoCodigo: product?.generoCodigo,
-          })
-        );
+          }));
 
         const stockLocationNormalized: StockLocationNormalized[] = products.map(
           (product) => ({
