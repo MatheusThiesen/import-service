@@ -1,5 +1,4 @@
 import { AxiosError } from "axios";
-import * as crypto from "crypto";
 import * as FormData from "form-data";
 import * as path from "path";
 import { csv } from "../../../helpers/csv";
@@ -37,7 +36,7 @@ export class SendDataRepository {
           "..",
           "..",
           "temp",
-          crypto.randomUUID() + ".csv"
+          new Date().toISOString() + ".csv"
         );
         await csv.createFile(filename, content);
 
