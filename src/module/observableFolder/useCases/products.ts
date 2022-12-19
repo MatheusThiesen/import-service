@@ -1,4 +1,4 @@
-import { readdir } from "fs/promises";
+import { promises as fsPromises } from "fs";
 import * as path from "path";
 import * as XLSX from "xlsx";
 import { file as serviceFile } from "../../../helpers/file";
@@ -45,7 +45,7 @@ export class Products {
   }
 
   async execute(entity: string) {
-    const listFiles = await readdir(
+    const listFiles = await fsPromises.readdir(
       path.resolve(this.observableFolder, entity)
     );
 
