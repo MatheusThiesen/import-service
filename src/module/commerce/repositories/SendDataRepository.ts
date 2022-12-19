@@ -13,6 +13,14 @@ export class SendDataRepository {
 
   constructor(private authorizationRepository: AuthorizationRepository) {}
 
+  generateRandomString(num: number) {
+    const characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let result1 = Math.random().toString(36).substring(0, num);
+
+    return result1;
+  }
+
   async refreshToken() {
     const responseAuthorization = await this.authorizationRepository.singIn();
     this.token = responseAuthorization.token;
@@ -36,7 +44,7 @@ export class SendDataRepository {
           "..",
           "..",
           "temp",
-          new Date().toISOString() + ".csv"
+          this.generateRandomString(8) + ".csv"
         );
         await csv.createFile(filename, content);
 
