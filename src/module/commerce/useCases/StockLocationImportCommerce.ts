@@ -5,7 +5,7 @@ import { IProductRepository } from "../../../module/entities/repositories/types/
 import { IPurchaseOrderItemsRepository } from "../../../module/entities/repositories/types/IPurchaseOrderItemsRepository";
 import { SendDataRepository } from "../repositories/SendDataRepository";
 
-interface StockLocationNormalized {
+export interface StockLocationNormalized {
   period: string;
   name: string;
   productCod: number;
@@ -189,7 +189,7 @@ export class StockLocationImportCommerce {
     // AND
     // product.collection.collectionCode IN (233,66,48) AND
     const query = `
-      product.brand.code IN (400) 
+      product.brand.code IN (2) AND   product.situation IN (2)
       `;
     // const query = `product.brand.code IN (400) AND product.situation IN (2)`;
 

@@ -16,7 +16,7 @@ export class Csv {
     });
   }
   async objToCsv(data: any[]): Promise<string> {
-    return jsonToCsv.parseAsync(data, { header: false });
+    return jsonToCsv.parseAsync(data, { header: false, delimiter: "|" });
   }
 }
 

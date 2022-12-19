@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import { rename } from "fs/promises";
 
 export class File {
   delete(filename: string): Promise<void> {
@@ -11,6 +12,10 @@ export class File {
         resolve();
       });
     });
+  }
+
+  move(oldFilename: string, newFilename): Promise<void> {
+    return rename(oldFilename, newFilename);
   }
 
   readStream(filename: string) {

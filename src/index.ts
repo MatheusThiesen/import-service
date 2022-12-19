@@ -1,23 +1,6 @@
 import "dotenv/config";
-// import axios from "axios";
-
-// stockLocationImportCommerce ,
-// brandImportCommerce,
-//   collectionImportCommerce,
-//   groupImportCommerce,
-//   lineImportCommerce,
-//   productImportCommerce,
-//   subgroupImportCommerce,
-
-import {
-  productImportCommerce,
-  stockLocationImportCommerce,
-} from "./module/commerce/useCases/";
-
-// const httpsAgent = new https.Agent({
-//   rejectUnauthorized: false,
-// });
-// axios.defaults.httpAgent = httpsAgent;
+import { observableFolder } from "./module/observableFolder";
+// import { productImportCommerce } from "./module/commerce/useCases/";
 
 class App {
   async execute() {
@@ -40,20 +23,13 @@ class App {
       // await collectionImportCommerce.execute();
       // console.log("collectionImportCommerce");
 
-      await productImportCommerce.execute();
-      console.log("productImportCommerce");
+      // await productImportCommerce.execute();
+      // console.log("productImportCommerce");
 
-      await stockLocationImportCommerce.execute();
-      console.log("stockLocationImportCommerce");
+      // await stockLocationImportCommerce.execute();
+      // console.log("stockLocationImportCommerce");
 
-      console.log(
-        "terminou" +
-          new Date().toLocaleDateString("pt-br", {
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-          })
-      );
+      await observableFolder();
     } catch (err) {
       console.log("error!");
       console.log(err);
