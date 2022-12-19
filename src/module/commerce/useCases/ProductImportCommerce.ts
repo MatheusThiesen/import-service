@@ -17,6 +17,7 @@ export interface ProductNormalized {
   linhaCodigo?: number;
   grupoCodigo?: number;
   subgrupoCodigo?: number;
+  precoVendaEmpresa?: number;
 }
 
 export class ProductImportCommerce {

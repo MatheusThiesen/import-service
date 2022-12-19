@@ -26,6 +26,7 @@ interface ProductsRecibe {
   generoCodigo: number;
   estoqueLivre: number;
   linhaProducao: number;
+  precoVenda: number;
 }
 
 export class Products {
@@ -96,6 +97,7 @@ export class Products {
             grupoCodigo: product?.grupoCodigo,
             subgrupoCodigo: product?.subgrupoCodigo,
             generoCodigo: product?.generoCodigo,
+            precoVendaEmpresa: product?.precoVenda,
           }));
 
         const stockLocationNormalized: StockLocationNormalized[] = products.map(
