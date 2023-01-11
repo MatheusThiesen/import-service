@@ -58,8 +58,6 @@ export class Products {
           precoVendaEmpresa: product?.precoVenda,
         }));
 
-      console.log("normalizedData", normalizedData.length);
-
       await this.sendData.execute({
         file: products.file,
         entity: this.entity,

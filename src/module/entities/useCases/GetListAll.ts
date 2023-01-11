@@ -38,8 +38,12 @@ export class GetListAll {
 
     const totalPages = Number(response.data.totalPages);
 
+    console.log(query);
+
     for (let index = 0; index < totalPages; index++) {
       const page = index + 1;
+
+      console.log(`${page} de ${totalPages}`);
 
       const response = await apiSiger.get<SigerDTO<T>>("/api/v1/get-list", {
         params: { ...query, organization: "018", size: limit, page },

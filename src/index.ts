@@ -10,7 +10,6 @@ import {
   stockPromptDeliveryCommerce,
   subgroupImportCommerce,
 } from "./module/commerce/useCases";
-import { observableFolder } from "./module/observableFolder";
 
 class App {
   now() {
@@ -112,11 +111,11 @@ class App {
 
   async execute() {
     try {
-      await this.fiveMinuteCron();
-      await this.oneHourCron();
-      await observableFolder();
+      // await this.fiveMinuteCron();
+      // await this.oneHourCron();
+      // await observableFolder();
 
-      await this.oneHourExecute();
+      // await this.oneHourExecute();
 
       await orderItemImportCommerce.execute({});
       await purchaseOrderCommerce.execute({
