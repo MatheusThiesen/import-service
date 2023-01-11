@@ -81,7 +81,7 @@ class App {
   async fiveMinuteCron() {
     cron.schedule("0 */5 * * * *", async () => {
       try {
-        console.log(`[SINC-CommerceApi] 5min Data ${this.now()}`);
+        // console.log(`[SINC-CommerceApi] 5min Data ${this.now()}`);
 
         await this.fiveMinuteExecute();
       } catch (error) {
@@ -101,7 +101,7 @@ class App {
   async oneHourCron() {
     cron.schedule("0 0 */1 * * *", async () => {
       try {
-        console.log(`[SINC-CommerceApi] 1Hour Data ${this.now()}`);
+        // console.log(`[SINC-CommerceApi] 1Hour Data ${this.now()}`);
 
         await this.oneHourExecute();
       } catch (error) {
