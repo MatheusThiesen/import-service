@@ -112,11 +112,11 @@ class App {
 
   async execute() {
     try {
-      await this.oneHourExecute();
-
       await this.fiveMinuteCron();
       await this.oneHourCron();
       await observableFolder();
+
+      await this.oneHourExecute();
 
       await orderItemImportCommerce.execute({});
       await purchaseOrderCommerce.execute({
