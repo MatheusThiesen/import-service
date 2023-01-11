@@ -1,5 +1,6 @@
 import { ProductCollectionRepository } from "../../entities/repositories/ProductCollectionRepository";
 import { SendDataRepository } from "../repositories/SendDataRepository";
+import { ExecuteServiceProps } from "../types/ExecuteService";
 
 interface CollectionNormalized {
   cod: number;
@@ -13,13 +14,14 @@ export class CollectionImportCommerce {
     private productCollectionRepository: ProductCollectionRepository
   ) {}
 
-  async execute() {
+  async execute({ search }: ExecuteServiceProps) {
     const collections = await this.productCollectionRepository.getAll({
       fields: {
         collectionCode: true,
         collectionDescription: true,
         situation: true,
       },
+      search,
     });
 
     const collectionsNormalized: CollectionNormalized[] = collections.map(

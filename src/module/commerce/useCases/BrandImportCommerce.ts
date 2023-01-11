@@ -1,5 +1,6 @@
 import { BrandRepository } from "../../entities/repositories/BrandRepository";
 import { SendDataRepository } from "../repositories/SendDataRepository";
+import { ExecuteServiceProps } from "../types/ExecuteService";
 
 interface BrandNormalized {
   cod: number;
@@ -13,13 +14,14 @@ export class BrandImportCommerce {
     private brandRepository: BrandRepository
   ) {}
 
-  async execute() {
+  async execute({ search }: ExecuteServiceProps) {
     const brands = await this.brandRepository.getAll({
       fields: {
         code: true,
         description: true,
         situation: true,
       },
+      search,
     });
 
     const brandsNormalized: BrandNormalized[] = brands.map((brand) => ({

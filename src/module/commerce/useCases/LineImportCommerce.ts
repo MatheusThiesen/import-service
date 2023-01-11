@@ -1,5 +1,6 @@
 import { ProductLineRepository } from "../../entities/repositories/ProductLineRepository";
 import { SendDataRepository } from "../repositories/SendDataRepository";
+import { ExecuteServiceProps } from "../types/ExecuteService";
 
 interface ProductLinesNormalized {
   cod: number;
@@ -13,13 +14,14 @@ export class LineImportCommerce {
     private productLineRepository: ProductLineRepository
   ) {}
 
-  async execute() {
+  async execute({ search }: ExecuteServiceProps) {
     const productLines = await this.productLineRepository.getAll({
       fields: {
         lineCode: true,
         lineDescription: true,
         lineSituation: true,
       },
+      search,
     });
 
     const productLinesNormalized: ProductLinesNormalized[] = productLines.map(

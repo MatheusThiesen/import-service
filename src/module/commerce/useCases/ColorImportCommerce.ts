@@ -1,5 +1,6 @@
 import { ColorRepository } from "../../../module/entities/repositories/ColorRepository";
 import { SendDataRepository } from "../repositories/SendDataRepository";
+import { ExecuteServiceProps } from "../types/ExecuteService";
 
 interface ColorNormalized {
   cod: number;
@@ -13,13 +14,14 @@ export class ColorImportCommerce {
     private colorRepository: ColorRepository
   ) {}
 
-  async execute() {
+  async execute({ search }: ExecuteServiceProps) {
     const colors = await this.colorRepository.getAll({
       fields: {
         colorCode: true,
         descriptionColor: true,
         rgbColor: true,
       },
+      search: search,
     });
 
     const colorsNormalized: ColorNormalized[] = colors.map((color) => ({

@@ -28,54 +28,62 @@ export class SendDataRepository {
 
   async post(pathUrl: string, data: any[]) {
     try {
-      if (!this.token) {
-        const getToken = await this.authorizationRepository.singIn();
-        this.token = getToken.token;
-      }
-      var offset = 0;
-      for (const content of splitArrObj(data, 1000)) {
-        offset += content.length;
+      if (data.length > 0) {
+        var offset = 0;
 
-        const filename = path.resolve(
-          __filename,
-          "..",
-          "..",
-          "..",
-          "..",
-          "..",
-          "temp",
-          this.generateRandomString(8) + ".csv"
-        );
-        await csv.createFile(filename, content);
+        if (!this.token) {
+          const getToken = await this.authorizationRepository.singIn();
+          this.token = getToken.token;
+        }
 
-        const file = new FormData();
-        file.append("file", serviceFile.readStream(filename) as any);
+        for (const content of splitArrObj(data, 500)) {
+          offset += content.length;
 
-        apiCommerce({
-          method: "get",
-          url: "/auth/me",
-          headers: {
-            ["Authorization"]: `Bearer ${this.token}`,
-          },
-        })
-          .then(() => null)
-          .catch(async () => await this.refreshToken());
+          const filename = path.resolve(
+            __filename,
+            "..",
+            "..",
+            "..",
+            "..",
+            "..",
+            "temp",
+            this.generateRandomString(8) + ".csv"
+          );
+          await csv.createFile(filename, content);
 
-        await apiCommerce({
-          method: "post",
-          url: pathUrl,
-          headers: {
-            ["Authorization"]: `Bearer ${this.token}`,
-          },
-          data: file,
-        });
+          const file = new FormData();
+          file.append("file", serviceFile.readStream(filename) as any);
 
-        await serviceFile.delete(filename);
+          apiCommerce({
+            method: "get",
+            url: "/auth/me",
+            headers: {
+              ["Authorization"]: `Bearer ${this.token}`,
+            },
+          })
+            .then(() => null)
+            .catch(async () => await this.refreshToken());
+
+          await apiCommerce({
+            method: "post",
+            url: pathUrl,
+            headers: {
+              ["Authorization"]: `Bearer ${this.token}`,
+            },
+            data: file,
+          });
+
+          await serviceFile.delete(filename);
+        }
+
+        console.log(`[ENVIADO] ${data.length} para "${pathUrl}"`);
       }
     } catch (error) {
-      console.log(error);
-
       const err: AxiosError = error;
+
+      if (err?.response?.status > 401) {
+        throw Error(error);
+      }
 
       if (this.isRefreshing) {
         this.isRefreshing = false;

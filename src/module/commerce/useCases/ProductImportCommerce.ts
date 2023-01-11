@@ -63,6 +63,7 @@ export class ProductImportCommerce {
           code: true,
         },
       },
+
       // search: `lastChangeDate IN ( "24/10/2022") AND brand.code NEQ 0 AND situation IN (1)`,
       // search: `brand.code IN (2,10,23) AND collection.collectionCode IN (233,66,48) OR ( brand.code IN (400) AND situation IN (2) )`,
       search: `

@@ -80,61 +80,61 @@ export class StockLocationImportCommerce {
       qtd: item.physicalQuantity - item.reservedQuantity,
     }));
   }
-  // private async getLocaleFuture(
-  //   query: string
-  // ): Promise<StockLocationNormalized[]> {
-  //   var localesFuture: StockLocationNormalized[] = [];
+  private async getLocaleFuture(
+    query: string
+  ): Promise<StockLocationNormalized[]> {
+    var localesFuture: StockLocationNormalized[] = [];
 
-  //   const purchaseOrderItems = await this.purchaseOrderItemsRepository.getAll({
-  //     fields: {
-  //       deliveryDeadlineDate: true,
-  //       requestedQuantity: true,
-  //       product: {
-  //         code: true,
-  //       },
-  //     },
-  //     search: `${query} AND itemStatus EQ 2 stockLocation.code EQ 20`,
-  //   });
+    const purchaseOrderItems = await this.purchaseOrderItemsRepository.getAll({
+      fields: {
+        deliveryDeadlineDate: true,
+        requestedQuantity: true,
+        product: {
+          code: true,
+        },
+      },
+      search: `${query} AND itemStatus EQ 2 stockLocation.code EQ 20`,
+    });
 
-  //   for (const groupProduct of groupByObject(
-  //     purchaseOrderItems,
-  //     (i) => i.product.code
-  //   )) {
-  //     const productCod = groupProduct.value as number;
+    for (const groupProduct of groupByObject(
+      purchaseOrderItems,
+      (i) => i.product.code
+    )) {
+      const productCod = groupProduct.value as number;
 
-  //     for (const groupDeliveryDate of groupByObject(
-  //       groupProduct.data,
-  //       (i) => i.deliveryDeadlineDate
-  //     )) {
-  //       const period = groupDeliveryDate.value as string;
-  //       const requestedQuantity = groupDeliveryDate.data.reduce(
-  //         (acc, data) => acc + data.requestedQuantity,
-  //         0
-  //       );
+      for (const groupDeliveryDate of groupByObject(
+        groupProduct.data,
+        (i) => i.deliveryDeadlineDate
+      )) {
+        const period = groupDeliveryDate.value as string;
+        const requestedQuantity = groupDeliveryDate.data.reduce(
+          (acc, data) => acc + data.requestedQuantity,
+          0
+        );
 
-  //       const orderItems = await this.orderItemRepository.getAll({
-  //         fields: {
-  //           quantity: true,
-  //         },
-  //         search: `product.code EQ ${productCod} AND positionItem IN (1,3) AND deliveryDate EQ "${period}"`,
-  //       });
+        const orderItems = await this.orderItemRepository.getAll({
+          fields: {
+            quantity: true,
+          },
+          search: `product.code EQ ${productCod} AND positionItem IN (1,3) AND deliveryDate EQ "${period}"`,
+        });
 
-  //       const reservedItems = orderItems.reduce(
-  //         (acc, data) => acc + data.quantity,
-  //         0
-  //       );
+        const reservedItems = orderItems.reduce(
+          (acc, data) => acc + data.quantity,
+          0
+        );
 
-  //       localesFuture.push({
-  //         period: this.normalizedMonth(period, "period"),
-  //         name: this.normalizedMonth(period, "name"),
-  //         productCod: productCod,
-  //         qtd: requestedQuantity - reservedItems,
-  //       });
-  //     }
-  //   }
+        localesFuture.push({
+          period: this.normalizedMonth(period, "period"),
+          name: this.normalizedMonth(period, "name"),
+          productCod: productCod,
+          qtd: requestedQuantity - reservedItems,
+        });
+      }
+    }
 
-  //   return localesFuture;
-  // }
+    return localesFuture;
+  }
   private async getLocaleFutureAvailableTarget(
     query: string
   ): Promise<StockLocationNormalized[]> {
@@ -186,10 +186,8 @@ export class StockLocationImportCommerce {
     // 23 LACOSTE - 48 COLEÇÃO LACOSTE
     // 400 US POLO
 
-    // AND
-    // product.collection.collectionCode IN (233,66,48) AND
     const query = `
-      product.brand.code IN (2) AND   product.situation IN (2)
+      product.situation IN (2)
       `;
     // const query = `product.brand.code IN (400) AND product.situation IN (2)`;
 

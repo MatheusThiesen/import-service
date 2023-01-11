@@ -1,7 +1,6 @@
 import { filterFieldsNormalized } from "../../../helpers/filterFieldsNormalized";
-import { apiSiger } from "../../../service/apiSiger";
-import { SigerDTO } from "../../../service/siger";
 import { ProductCollection } from "../model/ProductCollection";
+import { GetListAll } from "../useCases/GetListAll";
 
 import {
   IProductCollectionRepository,
@@ -11,23 +10,22 @@ import {
 export class ProductCollectionRepository
   implements IProductCollectionRepository
 {
+  constructor(private getListAll: GetListAll) {}
+
   async getAll({
     fields,
     extraFields,
     search,
   }: QueryProductCollectionDTO): Promise<ProductCollection[]> {
-    const productCollections = await apiSiger.get<SigerDTO<ProductCollection>>(
-      "/api/v1/get-list",
+    const productCollections = await this.getListAll.execute<ProductCollection>(
       {
-        params: {
-          entity: "productCollection",
-          search: search,
-          fields: filterFieldsNormalized(fields),
-          extraFields: filterFieldsNormalized(extraFields),
-        },
+        entity: "productCollection",
+        search: search,
+        fields: filterFieldsNormalized(fields),
+        extraFields: filterFieldsNormalized(extraFields),
       }
     );
 
-    return productCollections.data.content;
+    return productCollections;
   }
 }

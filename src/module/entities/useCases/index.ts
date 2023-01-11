@@ -14,26 +14,29 @@ import { ColorRepository } from "./../repositories/ColorRepository";
 import { OrderItemRepository } from "./../repositories/OrderItemRepository";
 import { ProductCollectionRepository } from "./../repositories/ProductCollectionRepository";
 import { PurchaseOrderItemsRepository } from "./../repositories/PurchaseOrderItemsRepository";
-import { Entities } from "./Entities";
 
-export const customer = new CustomerRepository();
-export const representative = new RepresentativeRepository();
-export const payment = new PaymentRepository();
-export const financialDocument = new FinancialDocumentRepository();
-export const product = new ProductRepository();
-export const grid = new GridRepository();
-export const productLine = new ProductLineRepository();
-export const productCollection = new ProductCollectionRepository();
-export const color = new ColorRepository();
-export const brand = new BrandRepository();
-export const productGroup = new ProductGroupRepository();
-export const productSubgroup = new ProductSubgroupRepository();
-export const order = new OrderRepository();
-export const orderItem = new OrderItemRepository();
-export const purchaseOrderItems = new PurchaseOrderItemsRepository();
-export const accumulatedStock = new AccumulatedStockRepository();
+import { GetListAll } from "../useCases/GetListAll";
 
-export const entities = new Entities(
+const getListAll = new GetListAll();
+
+export const customer = new CustomerRepository(getListAll);
+export const representative = new RepresentativeRepository(getListAll);
+export const payment = new PaymentRepository(getListAll);
+export const financialDocument = new FinancialDocumentRepository(getListAll);
+export const product = new ProductRepository(getListAll);
+export const grid = new GridRepository(getListAll);
+export const productLine = new ProductLineRepository(getListAll);
+export const productCollection = new ProductCollectionRepository(getListAll);
+export const color = new ColorRepository(getListAll);
+export const brand = new BrandRepository(getListAll);
+export const productGroup = new ProductGroupRepository(getListAll);
+export const productSubgroup = new ProductSubgroupRepository(getListAll);
+export const order = new OrderRepository(getListAll);
+export const orderItem = new OrderItemRepository(getListAll);
+export const purchaseOrderItems = new PurchaseOrderItemsRepository(getListAll);
+export const accumulatedStock = new AccumulatedStockRepository(getListAll);
+
+export const entities = {
   customer,
   financialDocument,
   grid,
@@ -49,5 +52,5 @@ export const entities = new Entities(
   order,
   orderItem,
   purchaseOrderItems,
-  accumulatedStock
-).execute();
+  accumulatedStock,
+};

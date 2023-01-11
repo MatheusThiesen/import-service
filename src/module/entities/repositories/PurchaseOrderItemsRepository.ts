@@ -1,7 +1,6 @@
 import { filterFieldsNormalized } from "../../../helpers/filterFieldsNormalized";
-import { apiSiger } from "../../../service/apiSiger";
-import { SigerDTO } from "../../../service/siger";
 import { PurchaseOrderItems } from "../model/PurchaseOrderItems";
+import { GetListAll } from "../useCases/GetListAll";
 import {
   IPurchaseOrderItemsRepository,
   QueryPurchaseOrderItemsRepositoryDTO,
@@ -10,23 +9,22 @@ import {
 export class PurchaseOrderItemsRepository
   implements IPurchaseOrderItemsRepository
 {
+  constructor(private getListAll: GetListAll) {}
+
   async getAll({
     fields,
     extraFields,
     search,
   }: QueryPurchaseOrderItemsRepositoryDTO): Promise<PurchaseOrderItems[]> {
-    const purchaseOrderItems = await apiSiger.get<SigerDTO<PurchaseOrderItems>>(
-      "/api/v1/get-list",
-      {
-        params: {
-          entity: "purchaseOrderItems",
-          search: search,
-          fields: filterFieldsNormalized(fields),
-          extraFields: filterFieldsNormalized(extraFields),
-        },
-      }
-    );
+    const purchaseOrderItems =
+      await this.getListAll.execute<PurchaseOrderItems>({
+        entity: "purchaseOrderItems",
+        search: search,
+        fields: filterFieldsNormalized(fields),
+        extraFields: filterFieldsNormalized(extraFields),
+        limit: 1000,
+      });
 
-    return purchaseOrderItems.data.content;
+    return purchaseOrderItems;
   }
 }

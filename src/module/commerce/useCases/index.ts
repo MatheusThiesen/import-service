@@ -6,11 +6,15 @@ import { CollectionImportCommerce } from "./CollectionImportCommerce";
 import { ColorImportCommerce } from "./ColorImportCommerce";
 import { GroupImportCommerce } from "./GroupImportCommerce";
 import { LineImportCommerce } from "./LineImportCommerce";
+import { OrderItemImportCommerce } from "./OrderItemsImportCommerce";
 import { ProductImportCommerce } from "./ProductImportCommerce";
+import { PurchaseOrderCommerce } from "./PurchaseOrderCommerce";
 import { StockLocationImportCommerce } from "./StockLocationImportCommerce";
+import { StockPromptDeliveryCommerce } from "./StockPromptDeliveryCommerce";
 import { SubGroupImportCommerce } from "./SubGroupImportCommerce";
 
 const authorization = new AuthorizationRepository();
+
 export const sendData = new SendDataRepository(authorization);
 export const colorImportCommerce = new ColorImportCommerce(
   sendData,
@@ -46,4 +50,16 @@ export const stockLocationImportCommerce = new StockLocationImportCommerce(
   entities.accumulatedStock,
   entities.orderItem,
   entities.product
+);
+export const stockPromptDeliveryCommerce = new StockPromptDeliveryCommerce(
+  sendData,
+  entities.accumulatedStock
+);
+export const purchaseOrderCommerce = new PurchaseOrderCommerce(
+  sendData,
+  entities.purchaseOrderItems
+);
+export const orderItemImportCommerce = new OrderItemImportCommerce(
+  sendData,
+  entities.orderItem
 );

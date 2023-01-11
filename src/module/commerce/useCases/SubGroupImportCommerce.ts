@@ -1,5 +1,6 @@
 import { ProductSubgroupRepository } from "../../entities/repositories/ProductSubgroupRepository";
 import { SendDataRepository } from "../repositories/SendDataRepository";
+import { ExecuteServiceProps } from "../types/ExecuteService";
 
 interface ProductSubGroupsNormalized {
   cod: number;
@@ -14,7 +15,7 @@ export class SubGroupImportCommerce {
     private productSubgroupRepository: ProductSubgroupRepository
   ) {}
 
-  async execute() {
+  async execute({ search }: ExecuteServiceProps) {
     const productGroups = await this.productSubgroupRepository.getAll({
       fields: {
         code: true,
@@ -24,6 +25,7 @@ export class SubGroupImportCommerce {
           code: true,
         },
       },
+      search: search,
     });
 
     const productSubgroupsNormalized: ProductSubGroupsNormalized[] =
