@@ -43,7 +43,7 @@ export class PurchaseOrderCommerce {
         itemStatus: true,
         purchaseItemID: true,
         deliveryDeadlineDate: true,
-        requestedQuantity: true,
+        openQuantity: true,
         product: {
           code: true,
         },
@@ -60,7 +60,7 @@ export class PurchaseOrderCommerce {
         ),
         name: this.normalizedMonth(purchaseOrder.deliveryDeadlineDate, "name"),
         productCod: purchaseOrder.product.code,
-        qtd: purchaseOrder.requestedQuantity,
+        qtd: purchaseOrder.openQuantity,
         status: purchaseOrder.itemStatus,
       }));
 

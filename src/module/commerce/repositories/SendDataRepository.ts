@@ -93,6 +93,8 @@ export class SendDataRepository {
       const err: AxiosError = error;
 
       if (err?.response?.status > 401) {
+        console.log(error);
+
         throw Error(error);
       }
 

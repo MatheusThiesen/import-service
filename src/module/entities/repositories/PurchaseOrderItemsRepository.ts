@@ -22,7 +22,7 @@ export class PurchaseOrderItemsRepository
         search: search,
         fields: filterFieldsNormalized(fields),
         extraFields: filterFieldsNormalized(extraFields),
-        limit: 1000,
+        limit: 500,
       });
 
     return purchaseOrderItems;

@@ -10,6 +10,7 @@ import {
   stockPromptDeliveryCommerce,
   subgroupImportCommerce,
 } from "./module/commerce/useCases";
+import { observableFolder } from "./module/observableFolder";
 
 class App {
   now() {
@@ -80,11 +81,9 @@ class App {
   async fiveMinuteCron() {
     cron.schedule("0 */5 * * * *", async () => {
       try {
-        // console.log(`[SINC-CommerceApi] 5min Data ${this.now()}`);
-
         await this.fiveMinuteExecute();
       } catch (error) {
-        console.log("[INDEX] error");
+        console.log(error);
       }
     });
   }
@@ -104,23 +103,24 @@ class App {
 
         await this.oneHourExecute();
       } catch (error) {
-        console.log("[INDEX] error");
+        console.log(error);
       }
     });
   }
 
   async execute() {
     try {
-      // await this.fiveMinuteCron();
-      // await this.oneHourCron();
-      // await observableFolder();
+      await this.fiveMinuteCron();
+      await this.oneHourCron();
+      await observableFolder();
 
-      // await this.oneHourExecute();
+      await orderItemImportCommerce.execute({
+        search: `entryDate GTE "01/10/2021" AND order.positionOrder IN (2,3)`,
+      });
 
-      await orderItemImportCommerce.execute({});
       await purchaseOrderCommerce.execute({
         search:
-          'product.situation IN (2) AND deliveryDeadlineDate GT "01/01/2023" ',
+          'product.situation IN (2) AND deliveryDeadlineDate GT "01/01/2023" AND itemStatus IN (2)',
       });
     } catch (err) {
       console.log("error!");

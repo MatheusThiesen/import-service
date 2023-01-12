@@ -18,7 +18,7 @@ export class GetListAll {
     entity,
     limit = 200,
   }: QueryEntitySigerProps) {
-    let query: object = {
+    let query: any = {
       entity: entity,
       search: search,
       fields: fields,
@@ -38,12 +38,14 @@ export class GetListAll {
 
     const totalPages = Number(response.data.totalPages);
 
-    console.log(query);
+    if (data.length > 0) {
+      console.log(query);
+    }
 
     for (let index = 0; index < totalPages; index++) {
       const page = index + 1;
 
-      console.log(`${page} de ${totalPages}`);
+      console.log(`${query?.entity}  ${page} de ${totalPages}`);
 
       const response = await apiSiger.get<SigerDTO<T>>("/api/v1/get-list", {
         params: { ...query, organization: "018", size: limit, page },
