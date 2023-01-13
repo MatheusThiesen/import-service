@@ -36,15 +36,20 @@ class App {
     const dateNow = new Date();
     dateNow.setMinutes(dateNow.getMinutes() - minute);
 
-    const date = dateNow
-      .toLocaleString("pt-br", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      })
-      .replace("-", "/")
-      .replace("-", "/")
-      .replace("-", "/");
+    const day = dateNow.toLocaleString("pt-br", {
+      day: "2-digit",
+    });
+
+    const month = dateNow.toLocaleString("pt-br", {
+      month: "2-digit",
+    });
+
+    const year = dateNow.toLocaleString("pt-br", {
+      year: "numeric",
+    });
+
+    const date = `${day}/${month}/${year}`;
+
     const time = dateNow
       .toLocaleString("pt-br", {
         hour: "2-digit",
@@ -54,6 +59,7 @@ class App {
       .replace(":", "")
       .replace(":", "")
       .replace(":", "");
+
     return `${dateLabel} EQ "${date}" AND ${timeLabel} GTE ${time}`;
   }
 
@@ -116,6 +122,8 @@ class App {
       await this.fiveMinuteCron();
       await this.oneHourCron();
       await observableFolder();
+
+      await this.fiveMinuteExecute();
 
       // const queryOrderItem = `entryDate GTE "01/10/2021" AND order.positionOrder IN (2,3)`;
       // const queryPurchaseOrder = `product.situation IN (2) AND deliveryDeadlineDate GT "01/01/2023" AND itemStatus IN (2)`;
