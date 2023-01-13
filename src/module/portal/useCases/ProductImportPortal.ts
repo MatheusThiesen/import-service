@@ -52,22 +52,24 @@ export class ProductImportPortal {
       search: "code IN (1)",
     });
 
-    const productNormalized: ProductSendProps[] = products.map((product) => ({
-      codigo: product?.code,
-      codAlternativo: product?.alternateCode,
-      referencia: product?.reference,
-      descricao: product?.description,
-      corPrimaria: product?.predominantColor?.colorCode,
-      corSecundaria: product?.secondColor?.colorCode,
-      unidadeMedida: product?.unitMeasure?.unit,
-      ncm: product?.taxClassification,
-      // ean: product?.EANCode,
-      gradeCod: product?.grid?.code,
-      grade: product?.grid?.description,
-      eGrad: "S",
-      pdv: product?.salePrice,
-      codMarca: product?.brand?.code,
-    }));
+    const productNormalized: ProductSendProps[] = products.content.map(
+      (product) => ({
+        codigo: product?.code,
+        codAlternativo: product?.alternateCode,
+        referencia: product?.reference,
+        descricao: product?.description,
+        corPrimaria: product?.predominantColor?.colorCode,
+        corSecundaria: product?.secondColor?.colorCode,
+        unidadeMedida: product?.unitMeasure?.unit,
+        ncm: product?.taxClassification,
+        // ean: product?.EANCode,
+        gradeCod: product?.grid?.code,
+        grade: product?.grid?.description,
+        eGrad: "S",
+        pdv: product?.salePrice,
+        codMarca: product?.brand?.code,
+      })
+    );
 
     await this.sendData.post("/product/import", productNormalized);
   }

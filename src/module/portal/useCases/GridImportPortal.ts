@@ -26,14 +26,16 @@ export class GridImportPortal {
       search: "code IN (1)",
     });
 
-    const gridsNormalized: GridPortalSendProps[] = grids.map((grid) => ({
-      codigo: grid.code,
-      descricao: grid.description,
-      ativo: grid.active ? "S" : "N",
-      quantidade: "",
-      sequencia: "",
-      tamanho: "",
-    }));
+    const gridsNormalized: GridPortalSendProps[] = grids.content.map(
+      (grid) => ({
+        codigo: grid.code,
+        descricao: grid.description,
+        ativo: grid.active ? "S" : "N",
+        quantidade: "",
+        sequencia: "",
+        tamanho: "",
+      })
+    );
 
     await this.sendData.post("/product/import", gridsNormalized);
   }
