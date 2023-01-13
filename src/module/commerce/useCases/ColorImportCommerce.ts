@@ -24,7 +24,7 @@ export class ColorImportCommerce {
       search: search,
     });
 
-    const colorsNormalized: ColorNormalized[] = colors.map((color) => ({
+    const colorsNormalized: ColorNormalized[] = colors.content.map((color) => ({
       cod: color.colorCode,
       name: color.descriptionColor,
       hex: color.rgbColor,

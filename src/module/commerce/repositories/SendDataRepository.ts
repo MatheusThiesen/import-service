@@ -47,7 +47,7 @@ export class SendDataRepository {
             "..",
             "..",
             "temp",
-            this.generateRandomString(8) + ".csv"
+            this.generateRandomString(18) + ".csv"
           );
           await csv.createFile(filename, content);
 
@@ -64,14 +64,27 @@ export class SendDataRepository {
             .then(() => null)
             .catch(async () => await this.refreshToken());
 
-          await apiCommerce({
-            method: "post",
-            url: pathUrl,
-            headers: {
-              ["Authorization"]: `Bearer ${this.token}`,
-            },
-            data: file,
-          });
+          try {
+            await apiCommerce({
+              method: "post",
+              url: pathUrl,
+              headers: {
+                ["Authorization"]: `Bearer ${this.token}`,
+              },
+              data: file,
+            });
+          } catch (error) {
+            await apiCommerce({
+              method: "post",
+              url: pathUrl,
+              headers: {
+                ["Authorization"]: `Bearer ${this.token}`,
+              },
+              data: file,
+            });
+
+            throw new Error(error);
+          }
 
           await serviceFile.delete(filename);
         }
@@ -91,6 +104,7 @@ export class SendDataRepository {
       }
     } catch (error) {
       const err: AxiosError = error;
+      console.log(error);
 
       if (err?.response?.status > 401) {
         console.log(error);

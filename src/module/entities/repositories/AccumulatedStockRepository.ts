@@ -13,13 +13,19 @@ export class AccumulatedStockRepository implements IAccumulatedStockRepository {
     fields,
     extraFields,
     search,
-  }: QueryAccumulatedStockRepositoryDTO): Promise<AccumulatedStock[]> {
+    page,
+    size,
+    isPagination,
+  }: QueryAccumulatedStockRepositoryDTO) {
     const AccumulatedStock = await this.getListAll.execute<AccumulatedStock>({
       entity: "accumulatedStock",
       search: search,
       fields: filterFieldsNormalized(fields),
       extraFields: filterFieldsNormalized(extraFields),
       limit: 1000,
+      page,
+      size,
+      isPagination,
     });
 
     return AccumulatedStock;

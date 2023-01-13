@@ -4,6 +4,7 @@ import {
   PaymentFields,
   PaymentFieldsExtraFields,
 } from "../../model/Payment";
+import { GetListAllResponse } from "../../useCases/GetListAll";
 
 export type QueryPaymentDTO = QueryEntitySiger<
   PaymentFields,
@@ -11,5 +12,5 @@ export type QueryPaymentDTO = QueryEntitySiger<
 >;
 
 export interface IPaymentRepository {
-  getAll(query: QueryPaymentDTO): Promise<Payment[]>;
+  getAll(query: QueryPaymentDTO): Promise<GetListAllResponse<Payment>>;
 }

@@ -10,12 +10,18 @@ export class ColorRepository implements IColorRepository {
     fields,
     extraFields,
     search,
-  }: QueryColorDTO): Promise<Color[]> {
+    page,
+    size,
+    isPagination,
+  }: QueryColorDTO) {
     const colors = await this.getListAll.execute<Color>({
       entity: "colors",
       search: search,
       fields: filterFieldsNormalized(fields),
       extraFields: filterFieldsNormalized(extraFields),
+      page,
+      size,
+      isPagination,
     });
 
     return colors;

@@ -4,6 +4,7 @@ import {
   ProductCollectionExtraFields,
   ProductCollectionFields,
 } from "../../model/ProductCollection";
+import { GetListAllResponse } from "../../useCases/GetListAll";
 
 export type QueryProductCollectionDTO = QueryEntitySiger<
   ProductCollectionFields,
@@ -11,5 +12,7 @@ export type QueryProductCollectionDTO = QueryEntitySiger<
 >;
 
 export interface IProductCollectionRepository {
-  getAll(query: QueryProductCollectionDTO): Promise<ProductCollection[]>;
+  getAll(
+    query: QueryProductCollectionDTO
+  ): Promise<GetListAllResponse<ProductCollection>>;
 }

@@ -1,4 +1,5 @@
-import { IPurchaseOrderItemsRepository } from "src/module/entities/repositories/types/IPurchaseOrderItemsRepository";
+import { PurchaseOrderItems } from "../../../module/entities/model/PurchaseOrderItems";
+import { IPurchaseOrderItemsRepository } from "../../../module/entities/repositories/types/IPurchaseOrderItemsRepository";
 import { SendDataRepository } from "../repositories/SendDataRepository";
 import { ExecuteServiceProps } from "../types/ExecuteService";
 
@@ -11,6 +12,8 @@ interface PurchaseOrderNormalized {
 }
 
 export class PurchaseOrderCommerce {
+  readonly size = 10;
+
   constructor(
     private sendData: SendDataRepository,
     private readonly purchaseOrderItemsRepository: IPurchaseOrderItemsRepository
@@ -35,6 +38,20 @@ export class PurchaseOrderCommerce {
     }
   }
 
+  private onPurchasesOrderNormalized(purchasesOrder: PurchaseOrderItems[]) {
+    return purchasesOrder.map((purchaseOrder) => ({
+      cod: purchaseOrder.purchaseItemID,
+      period: this.normalizedMonth(
+        purchaseOrder.deliveryDeadlineDate,
+        "period"
+      ),
+      name: this.normalizedMonth(purchaseOrder.deliveryDeadlineDate, "name"),
+      productCod: purchaseOrder.product.code,
+      qtd: purchaseOrder.openQuantity,
+      status: purchaseOrder.itemStatus,
+    }));
+  }
+
   async execute({ search }: ExecuteServiceProps) {
     const query = `stockLocation.code EQ 20 ${search ? `AND ${search}` : ""}  `;
 
@@ -49,24 +66,44 @@ export class PurchaseOrderCommerce {
         },
       },
       search: query,
+      isPagination: true,
+      page: 0,
+      size: this.size,
     });
-
-    const purchasesOrderNormalized: PurchaseOrderNormalized[] =
-      purchasesOrder.map((purchaseOrder) => ({
-        cod: purchaseOrder.purchaseItemID,
-        period: this.normalizedMonth(
-          purchaseOrder.deliveryDeadlineDate,
-          "period"
-        ),
-        name: this.normalizedMonth(purchaseOrder.deliveryDeadlineDate, "name"),
-        productCod: purchaseOrder.product.code,
-        qtd: purchaseOrder.openQuantity,
-        status: purchaseOrder.itemStatus,
-      }));
 
     await this.sendData.post(
       "/purchases-order/import",
-      purchasesOrderNormalized
+      this.onPurchasesOrderNormalized(purchasesOrder.content)
     );
+
+    const totalPages = Number(purchasesOrder.totalPages);
+
+    for (let index = 0; index < totalPages; index++) {
+      const page = index + 1;
+
+      console.log(`purchases-order  ${page} de ${totalPages}`);
+
+      const purchasesOrderResponse =
+        await this.purchaseOrderItemsRepository.getAll({
+          fields: {
+            itemStatus: true,
+            purchaseItemID: true,
+            deliveryDeadlineDate: true,
+            openQuantity: true,
+            product: {
+              code: true,
+            },
+          },
+          search: query,
+          isPagination: true,
+          page: page,
+          size: this.size,
+        });
+
+      await this.sendData.post(
+        "/purchases-order/import",
+        this.onPurchasesOrderNormalized(purchasesOrderResponse.content)
+      );
+    }
   }
 }

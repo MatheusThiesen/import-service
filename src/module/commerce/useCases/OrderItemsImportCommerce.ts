@@ -1,3 +1,4 @@
+import { OrderItem } from "src/module/entities/model/OrderItem";
 import { IOrderItemRepository } from "src/module/entities/repositories/types/IOrderItemRepository";
 import { SendDataRepository } from "../repositories/SendDataRepository";
 import { ExecuteServiceProps } from "../types/ExecuteService";
@@ -13,10 +14,32 @@ interface OrderItemNormalized {
 }
 
 export class OrderItemImportCommerce {
+  readonly size = 10;
+
   constructor(
     private sendData: SendDataRepository,
     private readonly orderItemRepository: IOrderItemRepository
   ) {}
+
+  onOrderItemNormalized(ordersItems: OrderItem[]): OrderItemNormalized[] {
+    const normalizedDate = (date: string) => {
+      const [day, month, year] = date.split("/");
+      const newDate = new Date(`${year}-${month}-${day}T00:00`);
+
+      return newDate;
+    };
+
+    return ordersItems.map((item) => ({
+      pedidoCodigo: item.order.code,
+      produtoCodigo: item.product.code,
+      dataFaturmaneto: normalizedDate(item.order.deliveryDate),
+      cod: item.identifier,
+      status: item.positionItem,
+      qtd: item.quantity,
+      value: item.price,
+      valueTotal: item.grossAmount,
+    }));
+  }
 
   async execute({ search }: ExecuteServiceProps) {
     const orderItems = await this.orderItemRepository.getAll({
@@ -26,6 +49,7 @@ export class OrderItemImportCommerce {
         },
         order: {
           code: true,
+          deliveryDate: true,
         },
         quantity: true,
         price: true,
@@ -34,20 +58,48 @@ export class OrderItemImportCommerce {
         identifier: true,
       },
       search,
+      isPagination: true,
+      page: 0,
+      size: this.size,
     });
 
-    const orderItemsNormalized: OrderItemNormalized[] = orderItems.map(
-      (item) => ({
-        pedidoCodigo: item.order.code,
-        produtoCodigo: item.product.code,
-        cod: item.identifier,
-        status: item.positionItem,
-        qtd: item.quantity,
-        value: item.price,
-        valueTotal: item.grossAmount,
-      })
+    await this.sendData.post(
+      "/order-items/import",
+      this.onOrderItemNormalized(orderItems.content)
     );
 
-    await this.sendData.post("/order-items/import", orderItemsNormalized);
+    const totalPages = Number(orderItems.totalPages);
+
+    for (let index = 0; index < totalPages; index++) {
+      const page = index + 1;
+
+      console.log(`orderItems  ${page} de ${totalPages}`);
+
+      const orderItemsResponse = await await this.orderItemRepository.getAll({
+        fields: {
+          product: {
+            code: true,
+          },
+          order: {
+            code: true,
+            deliveryDate: true,
+          },
+          quantity: true,
+          price: true,
+          grossAmount: true,
+          positionItem: true,
+          identifier: true,
+        },
+        search,
+        isPagination: true,
+        page: page,
+        size: this.size,
+      });
+
+      await this.sendData.post(
+        "/order-items/import",
+        this.onOrderItemNormalized(orderItemsResponse.content)
+      );
+    }
   }
 }

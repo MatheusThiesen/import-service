@@ -10,12 +10,18 @@ export class BrandRepository implements IBrandRepository {
     fields,
     extraFields,
     search,
-  }: QueryBrandDTO): Promise<Brand[]> {
+    page,
+    size,
+    isPagination,
+  }: QueryBrandDTO) {
     const brands = await this.getListAll.execute<Brand>({
       entity: "brand",
       search: search,
       fields: filterFieldsNormalized(fields),
       extraFields: filterFieldsNormalized(extraFields),
+      page,
+      size,
+      isPagination,
     });
 
     return brands;

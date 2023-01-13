@@ -13,12 +13,18 @@ export class RepresentativeRepository implements IRepresentativeRepository {
     fields,
     extraFields,
     search,
-  }: QueryRepresentativeDTO): Promise<Representative[]> {
+    page,
+    size,
+    isPagination,
+  }: QueryRepresentativeDTO) {
     const representatives = await this.getListAll.execute<Representative>({
       entity: "representative",
       search: search,
       fields: filterFieldsNormalized(fields),
       extraFields: filterFieldsNormalized(extraFields),
+      page,
+      size,
+      isPagination,
     });
 
     return representatives;

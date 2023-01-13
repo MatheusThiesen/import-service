@@ -4,6 +4,7 @@ import {
   RepresentativeExtraFields,
   RepresentativeFields,
 } from "../../model/Representative";
+import { GetListAllResponse } from "../../useCases/GetListAll";
 
 export type QueryRepresentativeDTO = QueryEntitySiger<
   RepresentativeFields,
@@ -11,5 +12,7 @@ export type QueryRepresentativeDTO = QueryEntitySiger<
 >;
 
 export interface IRepresentativeRepository {
-  getAll(query: QueryRepresentativeDTO): Promise<Representative[]>;
+  getAll(
+    query: QueryRepresentativeDTO
+  ): Promise<GetListAllResponse<Representative>>;
 }

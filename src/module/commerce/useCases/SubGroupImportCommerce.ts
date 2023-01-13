@@ -29,7 +29,7 @@ export class SubGroupImportCommerce {
     });
 
     const productSubgroupsNormalized: ProductSubGroupsNormalized[] =
-      productGroups.map((group) => ({
+      productGroups.content.map((group) => ({
         cod: group.code,
         name: group.description,
         status: 1,

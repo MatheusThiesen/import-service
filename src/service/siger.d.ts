@@ -24,4 +24,8 @@ export interface QueryEntitySiger<T, E> {
   fields: T;
   extraFields?: E;
   search?: string;
+
+  isPagination?: boolean;
+  size?: number;
+  page?: number;
 }

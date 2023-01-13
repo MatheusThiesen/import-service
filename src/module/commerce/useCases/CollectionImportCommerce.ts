@@ -24,13 +24,12 @@ export class CollectionImportCommerce {
       search,
     });
 
-    const collectionsNormalized: CollectionNormalized[] = collections.map(
-      (collection) => ({
+    const collectionsNormalized: CollectionNormalized[] =
+      collections.content.map((collection) => ({
         cod: collection.collectionCode,
         name: collection.collectionDescription,
         status: collection.situation,
-      })
-    );
+      }));
 
     await this.sendData.post("/collections/import", collectionsNormalized);
   }

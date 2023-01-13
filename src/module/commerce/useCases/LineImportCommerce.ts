@@ -24,13 +24,12 @@ export class LineImportCommerce {
       search,
     });
 
-    const productLinesNormalized: ProductLinesNormalized[] = productLines.map(
-      (line) => ({
+    const productLinesNormalized: ProductLinesNormalized[] =
+      productLines.content.map((line) => ({
         cod: line.lineCode,
         name: line.lineDescription,
         status: line.lineSituation,
-      })
-    );
+      }));
 
     await this.sendData.post("/lines/import", productLinesNormalized);
   }

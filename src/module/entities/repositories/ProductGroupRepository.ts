@@ -13,12 +13,18 @@ export class ProductGroupRepository implements IProductGroupRepository {
     fields,
     extraFields,
     search,
-  }: QueryProductGroupDTO): Promise<ProductGroup[]> {
+    page,
+    size,
+    isPagination,
+  }: QueryProductGroupDTO) {
     const productGroups = await this.getListAll.execute<ProductGroup>({
       entity: "productGroup",
       search: search,
       fields: filterFieldsNormalized(fields),
       extraFields: filterFieldsNormalized(extraFields),
+      page,
+      size,
+      isPagination,
     });
 
     return productGroups;

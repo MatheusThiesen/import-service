@@ -36,11 +36,15 @@ class App {
     const dateNow = new Date();
     dateNow.setMinutes(dateNow.getMinutes() - minute);
 
-    const date = dateNow.toLocaleString("pt-br", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
+    const date = dateNow
+      .toLocaleString("pt-br", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      })
+      .replace("-", "/")
+      .replace("-", "/")
+      .replace("-", "/");
     const time = dateNow
       .toLocaleString("pt-br", {
         hour: "2-digit",
@@ -50,7 +54,6 @@ class App {
       .replace(":", "")
       .replace(":", "")
       .replace(":", "");
-
     return `${dateLabel} EQ "${date}" AND ${timeLabel} GTE ${time}`;
   }
 
@@ -114,14 +117,15 @@ class App {
       await this.oneHourCron();
       await observableFolder();
 
-      await orderItemImportCommerce.execute({
-        search: `entryDate GTE "01/10/2021" AND order.positionOrder IN (2,3)`,
-      });
+      // const queryOrderItem = `entryDate GTE "01/10/2021" AND order.positionOrder IN (2,3)`;
+      // const queryPurchaseOrder = `product.situation IN (2) AND deliveryDeadlineDate GT "01/01/2023" AND itemStatus IN (2)`;
 
-      await purchaseOrderCommerce.execute({
-        search:
-          'product.situation IN (2) AND deliveryDeadlineDate GT "01/01/2023" AND itemStatus IN (2)',
-      });
+      // await purchaseOrderCommerce.execute({
+      //   search: queryPurchaseOrder,
+      // });
+      // await orderItemImportCommerce.execute({
+      //   search: queryOrderItem,
+      // });
     } catch (err) {
       console.log("error!");
       console.log(err);

@@ -72,24 +72,26 @@ export class ProductImportCommerce {
     });
     // collection.collectionCode IN (233,66,48)
 
-    const productNormalized: ProductNormalized[] = products.map((product) => ({
-      cod: product.code,
-      status: product.situation,
-      alternativeCode: product.alternateCode,
-      reference: product.reference,
-      description: product.description,
-      completeDescription: product.completeDescription,
-      additionalDescription: product.additionalDescription,
-      salePrice: product.promotionalPrice,
-      unitMeasure: product?.unitMeasure?.unit,
-      marcaCodigo: product?.brand?.code,
-      corPrimariaCodigo: product?.predominantColor?.colorCode,
-      corSecundariaCodigo: product?.secondColor?.colorCode,
-      colecaoCodigo: product?.collection?.collectionCode,
-      linhaCodigo: product?.productLine?.lineCode,
-      grupoCodigo: product?.group?.code,
-      subgrupoCodigo: product?.subgroup?.code,
-    }));
+    const productNormalized: ProductNormalized[] = products.content.map(
+      (product) => ({
+        cod: product.code,
+        status: product.situation,
+        alternativeCode: product.alternateCode,
+        reference: product.reference,
+        description: product.description,
+        completeDescription: product.completeDescription,
+        additionalDescription: product.additionalDescription,
+        salePrice: product.promotionalPrice,
+        unitMeasure: product?.unitMeasure?.unit,
+        marcaCodigo: product?.brand?.code,
+        corPrimariaCodigo: product?.predominantColor?.colorCode,
+        corSecundariaCodigo: product?.secondColor?.colorCode,
+        colecaoCodigo: product?.collection?.collectionCode,
+        linhaCodigo: product?.productLine?.lineCode,
+        grupoCodigo: product?.group?.code,
+        subgrupoCodigo: product?.subgroup?.code,
+      })
+    );
 
     await this.sendData.post("/products/import", productNormalized);
   }

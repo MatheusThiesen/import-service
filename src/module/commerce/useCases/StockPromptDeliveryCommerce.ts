@@ -1,3 +1,4 @@
+import { AccumulatedStock } from "src/module/entities/model/AccumulatedStock";
 import { IAccumulatedStockRepository } from "../../entities/repositories/types/IAccumulatedStockRepository";
 import { SendDataRepository } from "../repositories/SendDataRepository";
 import { ExecuteServiceProps } from "../types/ExecuteService";
@@ -10,6 +11,8 @@ export interface StockLocationNormalized {
 }
 
 export class StockPromptDeliveryCommerce {
+  readonly size = 1000;
+
   constructor(
     private sendData: SendDataRepository,
     private readonly accumulatedStockRepository: IAccumulatedStockRepository
@@ -31,9 +34,18 @@ export class StockPromptDeliveryCommerce {
       return `01/${+nowMonth + 1}/${nowYear}`;
     }
   }
-  private async getPromptDelivery(
-    query: string
-  ): Promise<StockLocationNormalized[]> {
+
+  private onNormalizedStock(accumulatedStocks: AccumulatedStock[]) {
+    return accumulatedStocks.map((item) => ({
+      period: "pronta-entrega",
+      name: "Pronta Entrega",
+      productCod: item.product.code,
+      qtd: Math.trunc(item.physicalQuantity - item.reservedQuantity),
+    }));
+  }
+
+  async execute({ search }: ExecuteServiceProps) {
+    const query = `product.situation IN (2) ${search ? `AND ${search}` : ""}`;
     const currentDate = await this.getCurrentDate({ type: "period" });
 
     const accumulatedStocks = await this.accumulatedStockRepository.getAll({
@@ -46,21 +58,43 @@ export class StockPromptDeliveryCommerce {
         },
       },
       search: `${query} AND period EQ ${currentDate} AND stockLocation.code IN (20,50) `,
+      isPagination: true,
+      page: 0,
+      size: this.size,
     });
 
-    return accumulatedStocks.map((item) => ({
-      period: "pronta-entrega",
-      name: "Pronta Entrega",
-      productCod: item.product.code,
-      qtd: item.physicalQuantity - item.reservedQuantity,
-    }));
-  }
+    await this.sendData.post(
+      "/stock-locations/import",
+      this.onNormalizedStock(accumulatedStocks.content)
+    );
 
-  async execute({ search }: ExecuteServiceProps) {
-    const query = `product.situation IN (2) ${search ? `AND ${search}` : ""}`;
+    const totalPages = Number(accumulatedStocks.totalPages);
 
-    const promptDelivery = await this.getPromptDelivery(query);
+    for (let index = 0; index < totalPages; index++) {
+      const page = index + 1;
 
-    await this.sendData.post("/stock-locations/import", promptDelivery);
+      console.log(`accumulated-stocks  ${page} de ${totalPages}`);
+
+      const accumulatedStocksResponse =
+        await this.accumulatedStockRepository.getAll({
+          fields: {
+            period: true,
+            physicalQuantity: true,
+            reservedQuantity: true,
+            product: {
+              code: true,
+            },
+          },
+          search: `${query} AND period EQ ${currentDate} AND stockLocation.code IN (20,50) `,
+          isPagination: true,
+          page: page,
+          size: this.size,
+        });
+
+      await this.sendData.post(
+        "/stock-locations/import",
+        this.onNormalizedStock(accumulatedStocksResponse.content)
+      );
+    }
   }
 }

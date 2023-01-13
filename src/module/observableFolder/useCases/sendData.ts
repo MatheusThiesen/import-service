@@ -23,7 +23,6 @@ export class SendData {
     try {
       await this.sendData.post(route, data);
 
-      console.log(`[IMPORTADO] ${data.length} ${entity}`);
       await serviceFile.move(
         path.resolve(this.observableFolder, entity, "processing", file),
         path.resolve(this.observableFolder, entity, "imported", file)

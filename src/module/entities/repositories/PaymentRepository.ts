@@ -13,12 +13,18 @@ export class PaymentRepository implements IPaymentRepository {
     fields,
     extraFields,
     search,
-  }: QueryPaymentDTO): Promise<Payment[]> {
+    page,
+    size,
+    isPagination,
+  }: QueryPaymentDTO) {
     const payments = await this.getListAll.execute<Payment>({
       entity: "payment",
       search: search,
       fields: filterFieldsNormalized(fields),
       extraFields: filterFieldsNormalized(extraFields),
+      page,
+      size,
+      isPagination,
     });
 
     return payments;

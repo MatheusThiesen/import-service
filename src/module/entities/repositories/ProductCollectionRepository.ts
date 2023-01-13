@@ -16,13 +16,19 @@ export class ProductCollectionRepository
     fields,
     extraFields,
     search,
-  }: QueryProductCollectionDTO): Promise<ProductCollection[]> {
+    page,
+    size,
+    isPagination,
+  }: QueryProductCollectionDTO) {
     const productCollections = await this.getListAll.execute<ProductCollection>(
       {
         entity: "productCollection",
         search: search,
         fields: filterFieldsNormalized(fields),
         extraFields: filterFieldsNormalized(extraFields),
+        page,
+        size,
+        isPagination,
       }
     );
 

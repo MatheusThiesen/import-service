@@ -4,6 +4,7 @@ import {
   OrderItemExtraFields,
   OrderItemFields,
 } from "../../model/OrderItem";
+import { GetListAllResponse } from "../../useCases/GetListAll";
 
 export type QueryOrderItemDTO = QueryEntitySiger<
   OrderItemFields,
@@ -11,5 +12,5 @@ export type QueryOrderItemDTO = QueryEntitySiger<
 >;
 
 export interface IOrderItemRepository {
-  getAll(query: QueryOrderItemDTO): Promise<OrderItem[]>;
+  getAll(query: QueryOrderItemDTO): Promise<GetListAllResponse<OrderItem>>;
 }

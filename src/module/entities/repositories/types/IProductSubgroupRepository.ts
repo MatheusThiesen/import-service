@@ -4,6 +4,7 @@ import {
   ProductSubgroupExtraFields,
   ProductSubgroupFields,
 } from "../../model/ProductSubgroup";
+import { GetListAllResponse } from "../../useCases/GetListAll";
 
 export type QueryProductSubgroupDTO = QueryEntitySiger<
   ProductSubgroupFields,
@@ -11,5 +12,7 @@ export type QueryProductSubgroupDTO = QueryEntitySiger<
 >;
 
 export interface IProductSubgroupRepository {
-  getAll(query: QueryProductSubgroupDTO): Promise<ProductSubgroup[]>;
+  getAll(
+    query: QueryProductSubgroupDTO
+  ): Promise<GetListAllResponse<ProductSubgroup>>;
 }

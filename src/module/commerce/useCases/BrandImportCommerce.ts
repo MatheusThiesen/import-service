@@ -24,7 +24,7 @@ export class BrandImportCommerce {
       search,
     });
 
-    const brandsNormalized: BrandNormalized[] = brands.map((brand) => ({
+    const brandsNormalized: BrandNormalized[] = brands.content.map((brand) => ({
       cod: brand.code,
       name: brand.description,
       status: brand.situation,

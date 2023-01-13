@@ -4,6 +4,7 @@ import {
   AccumulatedStockExtraFields,
   AccumulatedStockFields,
 } from "../../model/AccumulatedStock";
+import { GetListAllResponse } from "../../useCases/GetListAll";
 
 export type QueryAccumulatedStockRepositoryDTO = QueryEntitySiger<
   AccumulatedStockFields,
@@ -13,5 +14,5 @@ export type QueryAccumulatedStockRepositoryDTO = QueryEntitySiger<
 export interface IAccumulatedStockRepository {
   getAll(
     query: QueryAccumulatedStockRepositoryDTO
-  ): Promise<AccumulatedStock[]>;
+  ): Promise<GetListAllResponse<AccumulatedStock>>;
 }

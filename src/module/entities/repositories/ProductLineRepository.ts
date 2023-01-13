@@ -14,12 +14,18 @@ export class ProductLineRepository implements IProductLineRepository {
     fields,
     extraFields,
     search,
-  }: QueryProductLineDTO): Promise<ProductLine[]> {
+    page,
+    size,
+    isPagination,
+  }: QueryProductLineDTO) {
     const productLines = await this.getListAll.execute<ProductLine>({
       entity: "productLine",
       search: search,
       fields: filterFieldsNormalized(fields),
       extraFields: filterFieldsNormalized(extraFields),
+      page,
+      size,
+      isPagination,
     });
 
     return productLines;

@@ -15,13 +15,19 @@ export class FinancialDocumentRepository
     fields,
     extraFields,
     search,
-  }: QueryFinancialDocumentDTO): Promise<FinancialDocument[]> {
+    page,
+    size,
+    isPagination,
+  }: QueryFinancialDocumentDTO) {
     const financialDocuments = await this.getListAll.execute<FinancialDocument>(
       {
         entity: "financialDocument",
         search: search,
         fields: filterFieldsNormalized(fields),
         extraFields: filterFieldsNormalized(extraFields),
+        page,
+        size,
+        isPagination,
       }
     );
 

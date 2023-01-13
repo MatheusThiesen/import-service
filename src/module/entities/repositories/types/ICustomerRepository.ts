@@ -4,6 +4,7 @@ import {
   CustomerExtraFields,
   CustomerFields,
 } from "../../model/Customer";
+import { GetListAllResponse } from "../../useCases/GetListAll";
 
 export type QueryCustomerDTO = QueryEntitySiger<
   CustomerFields,
@@ -11,5 +12,5 @@ export type QueryCustomerDTO = QueryEntitySiger<
 >;
 
 export interface ICustomerRepository {
-  getAll(query: QueryCustomerDTO): Promise<Customer[]>;
+  getAll(query: QueryCustomerDTO): Promise<GetListAllResponse<Customer>>;
 }

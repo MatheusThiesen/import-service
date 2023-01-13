@@ -10,12 +10,18 @@ export class OrderRepository implements IOrderRepository {
     fields,
     extraFields,
     search,
-  }: QueryOrderDTO): Promise<Order[]> {
+    page,
+    size,
+    isPagination,
+  }: QueryOrderDTO) {
     const orders = await this.getListAll.execute<Order>({
       entity: "order",
       search: search,
       fields: filterFieldsNormalized(fields),
       extraFields: filterFieldsNormalized(extraFields),
+      page,
+      size,
+      isPagination,
     });
 
     return orders;

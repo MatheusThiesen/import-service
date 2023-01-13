@@ -73,7 +73,7 @@ export class StockLocationImportCommerce {
       search: `${query} AND period EQ ${currentDate} AND stockLocation.code IN (20,50) `,
     });
 
-    return accumulatedStocks.map((item) => ({
+    return accumulatedStocks.content.map((item) => ({
       period: "pronta-entrega",
       name: "Pronta Entrega",
       productCod: item.product.code,
@@ -85,16 +85,18 @@ export class StockLocationImportCommerce {
   ): Promise<StockLocationNormalized[]> {
     var localesFuture: StockLocationNormalized[] = [];
 
-    const purchaseOrderItems = await this.purchaseOrderItemsRepository.getAll({
-      fields: {
-        deliveryDeadlineDate: true,
-        requestedQuantity: true,
-        product: {
-          code: true,
+    const purchaseOrderItems = (
+      await this.purchaseOrderItemsRepository.getAll({
+        fields: {
+          deliveryDeadlineDate: true,
+          requestedQuantity: true,
+          product: {
+            code: true,
+          },
         },
-      },
-      search: `${query} AND itemStatus EQ 2 stockLocation.code EQ 20`,
-    });
+        search: `${query} AND itemStatus EQ 2 stockLocation.code EQ 20`,
+      })
+    ).content;
 
     for (const groupProduct of groupByObject(
       purchaseOrderItems,
@@ -112,12 +114,14 @@ export class StockLocationImportCommerce {
           0
         );
 
-        const orderItems = await this.orderItemRepository.getAll({
-          fields: {
-            quantity: true,
-          },
-          search: `product.code EQ ${productCod} AND positionItem IN (1,3) AND deliveryDate EQ "${period}"`,
-        });
+        const orderItems = (
+          await this.orderItemRepository.getAll({
+            fields: {
+              quantity: true,
+            },
+            search: `product.code EQ ${productCod} AND positionItem IN (1,3) AND deliveryDate EQ "${period}"`,
+          })
+        ).content;
 
         const reservedItems = orderItems.reduce(
           (acc, data) => acc + data.quantity,
@@ -140,17 +144,19 @@ export class StockLocationImportCommerce {
   ): Promise<StockLocationNormalized[]> {
     var localesFuture: StockLocationNormalized[] = [];
 
-    const purchaseOrderItems = await this.purchaseOrderItemsRepository.getAll({
-      fields: {
-        deliveryDeadlineDate: true,
-        requestedQuantity: true,
-        product: {
-          code: true,
+    const purchaseOrderItems = (
+      await this.purchaseOrderItemsRepository.getAll({
+        fields: {
+          deliveryDeadlineDate: true,
+          requestedQuantity: true,
+          product: {
+            code: true,
+          },
         },
-      },
-      search: `${query} AND itemStatus EQ 2 AND stockLocation.code EQ 20`,
-      //  AND deliveryDeadlineDate GT "${currentDate}"
-    });
+        search: `${query} AND itemStatus EQ 2 AND stockLocation.code EQ 20`,
+        //  AND deliveryDeadlineDate GT "${currentDate}"
+      })
+    ).content;
 
     for (const groupProduct of groupByObject(
       purchaseOrderItems,

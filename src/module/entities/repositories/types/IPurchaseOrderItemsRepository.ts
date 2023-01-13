@@ -4,6 +4,7 @@ import {
   PurchaseOrderItemsExtraFields,
   PurchaseOrderItemsFields,
 } from "../../model/PurchaseOrderItems";
+import { GetListAllResponse } from "../../useCases/GetListAll";
 
 export type QueryPurchaseOrderItemsRepositoryDTO = QueryEntitySiger<
   PurchaseOrderItemsFields,
@@ -13,5 +14,5 @@ export type QueryPurchaseOrderItemsRepositoryDTO = QueryEntitySiger<
 export interface IPurchaseOrderItemsRepository {
   getAll(
     query: QueryPurchaseOrderItemsRepositoryDTO
-  ): Promise<PurchaseOrderItems[]>;
+  ): Promise<GetListAllResponse<PurchaseOrderItems>>;
 }

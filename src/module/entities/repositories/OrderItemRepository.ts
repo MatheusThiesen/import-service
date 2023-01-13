@@ -13,13 +13,19 @@ export class OrderItemRepository implements IOrderItemRepository {
     fields,
     extraFields,
     search,
-  }: QueryOrderItemDTO): Promise<OrderItem[]> {
+    page,
+    size,
+    isPagination,
+  }: QueryOrderItemDTO) {
     const items = await this.getListAll.execute<OrderItem>({
       entity: "items",
       search: search,
       fields: filterFieldsNormalized(fields),
       extraFields: filterFieldsNormalized(extraFields),
       limit: 500,
+      page,
+      size,
+      isPagination,
     });
 
     return items;

@@ -13,12 +13,18 @@ export class CustomerRepository implements ICustomerRepository {
     fields,
     extraFields,
     search,
-  }: QueryCustomerDTO): Promise<Customer[]> {
+    page,
+    size,
+    isPagination,
+  }: QueryCustomerDTO) {
     const customers = await this.getListAll.execute<Customer>({
       entity: "customer",
       search: search,
       fields: filterFieldsNormalized(fields),
       extraFields: filterFieldsNormalized(extraFields),
+      page,
+      size,
+      isPagination,
     });
 
     return customers;

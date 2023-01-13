@@ -15,7 +15,10 @@ export class PurchaseOrderItemsRepository
     fields,
     extraFields,
     search,
-  }: QueryPurchaseOrderItemsRepositoryDTO): Promise<PurchaseOrderItems[]> {
+    page,
+    size,
+    isPagination,
+  }: QueryPurchaseOrderItemsRepositoryDTO) {
     const purchaseOrderItems =
       await this.getListAll.execute<PurchaseOrderItems>({
         entity: "purchaseOrderItems",
@@ -23,6 +26,9 @@ export class PurchaseOrderItemsRepository
         fields: filterFieldsNormalized(fields),
         extraFields: filterFieldsNormalized(extraFields),
         limit: 500,
+        page,
+        size,
+        isPagination,
       });
 
     return purchaseOrderItems;

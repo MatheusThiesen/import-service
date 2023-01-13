@@ -8,6 +8,32 @@ interface QueryEntitySigerProps {
   extraFields?: string;
 
   limit?: number;
+
+  page?: number;
+  size?: number;
+  isPagination?: boolean;
+}
+
+export interface GetListAllResponse<T> {
+  content: T[];
+
+  status?: {
+    message: string;
+    code: number;
+  };
+
+  pageable?: {
+    page: number;
+    size: number;
+    pageSize: number;
+    pageNumber: number;
+    offset: number;
+    unpaged: boolean;
+    paged: boolean;
+  };
+  totalElements?: number;
+  numberOfElements?: number;
+  totalPages?: number;
 }
 
 export class GetListAll {
@@ -17,7 +43,10 @@ export class GetListAll {
     extraFields,
     entity,
     limit = 200,
-  }: QueryEntitySigerProps) {
+    page,
+    size,
+    isPagination = false,
+  }: QueryEntitySigerProps): Promise<GetListAllResponse<T>> {
     let query: any = {
       entity: entity,
       search: search,
@@ -28,24 +57,34 @@ export class GetListAll {
       query = { ...query, extraFields: extraFields };
     }
 
+    if (isPagination) {
+      query = { ...query, page, size };
+    } else {
+      query = { ...query, size: limit, page: 0 };
+    }
+
     let data: T[] = [];
 
     const response = await apiSiger.get<SigerDTO<T>>("/api/v1/get-list", {
-      params: { ...query, size: limit, page: 0 },
+      params: { ...query },
     });
+
+    if (isPagination) {
+      return response.data;
+    }
 
     data = response.data.content;
 
     const totalPages = Number(response.data.totalPages);
 
-    if (data.length > 0) {
-      console.log(query);
-    }
+    // if (data.length > 0) {
+    //   console.log(query);
+    // }
 
     for (let index = 0; index < totalPages; index++) {
       const page = index + 1;
 
-      console.log(`${query?.entity}  ${page} de ${totalPages}`);
+      // console.log(`${query?.entity}  ${page} de ${totalPages}`);
 
       const response = await apiSiger.get<SigerDTO<T>>("/api/v1/get-list", {
         params: { ...query, organization: "018", size: limit, page },
@@ -53,6 +92,8 @@ export class GetListAll {
       data = [...data, ...response.data.content];
     }
 
-    return data;
+    return {
+      content: data,
+    };
   }
 }

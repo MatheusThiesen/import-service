@@ -4,6 +4,7 @@ import {
   FinancialDocumentFields,
   FinancialDocumentFieldsExtraFields,
 } from "../../model/FinancialDocument";
+import { GetListAllResponse } from "../../useCases/GetListAll";
 
 export type QueryFinancialDocumentDTO = QueryEntitySiger<
   FinancialDocumentFields,
@@ -11,5 +12,7 @@ export type QueryFinancialDocumentDTO = QueryEntitySiger<
 >;
 
 export interface IFinancialDocumentRepository {
-  getAll(query: QueryFinancialDocumentDTO): Promise<FinancialDocument[]>;
+  getAll(
+    query: QueryFinancialDocumentDTO
+  ): Promise<GetListAllResponse<FinancialDocument>>;
 }
