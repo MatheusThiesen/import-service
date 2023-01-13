@@ -14,7 +14,7 @@ interface OrderItemNormalized {
 }
 
 export class OrderItemImportCommerce {
-  readonly size = 10;
+  readonly size = 1000;
 
   constructor(
     private sendData: SendDataRepository,

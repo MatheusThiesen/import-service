@@ -12,7 +12,7 @@ interface PurchaseOrderNormalized {
 }
 
 export class PurchaseOrderCommerce {
-  readonly size = 10;
+  readonly size = 1000;
 
   constructor(
     private sendData: SendDataRepository,
