@@ -35,5 +35,14 @@
 - [x] Produto
 
 stocksPromptDelivery 2514
+Estoque mensal - 3012
+Estoque mensal alterado hoje - 3013
 purchasesOrder 2512
+Alterados hoje - 3011
 ordersItems 2513
+
+F:\RECH\RTS\SIGER.EXE
+
+START SIGER.EXE VS-SIGEMP:018 VS-USUARI:RECH VS-SENUSU:CAVA2002 VS-OPCMEN:592R VS-FLGFUN:GRE VS-RELCOD:2512 VS-SELCOD:3011
+
+F:\RECH\USR
