@@ -119,9 +119,11 @@ class App {
 
   async execute() {
     try {
-      await this.fiveMinuteCron();
-      await this.oneHourCron();
+      // await this.fiveMinuteCron();
+      // await this.oneHourCron();
       await observableFolder();
+
+      // await stockPromptDeliveryCommerce.execute({});
 
       // const queryOrderItem = `entryDate GTE "01/10/2021" AND order.positionOrder IN (2,3)`;
       // const queryPurchaseOrder = `product.situation IN (2) AND deliveryDeadlineDate GT "01/01/2023" AND itemStatus IN (2)`;

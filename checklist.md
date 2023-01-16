@@ -33,3 +33,7 @@
 - [x] Marca
 - [x] Cor
 - [x] Produto
+
+stocksPromptDelivery 2514
+purchasesOrder 2512
+ordersItems 2513

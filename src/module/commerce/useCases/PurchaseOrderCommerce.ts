@@ -19,7 +19,7 @@ export class PurchaseOrderCommerce {
     private readonly purchaseOrderItemsRepository: IPurchaseOrderItemsRepository
   ) {}
 
-  private normalizedMonth(datePeriod: string, type: "period" | "name") {
+  normalizedMonth(datePeriod: string, type: "period" | "name") {
     const [day, month, year] = datePeriod.split("/");
 
     const dateMonthLong = new Date(`${month}/${day}/${year}`).toLocaleString(

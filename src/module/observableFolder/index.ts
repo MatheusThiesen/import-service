@@ -1,5 +1,11 @@
 import * as cron from "node-cron";
-import { concepts, productConceptRules, products } from "./useCases";
+import {
+  concepts,
+  productConceptRules,
+  products,
+  purchasesOrder,
+  stocksPromptDelivery,
+} from "./useCases";
 
 export async function executeEntities() {
   //Produtos
@@ -8,6 +14,10 @@ export async function executeEntities() {
   await concepts.execute();
   //Regra de Produto Conceito
   await productConceptRules.execute();
+  //Estoque pronta entrega
+  await stocksPromptDelivery.execute();
+  //Ordem de compra
+  await purchasesOrder.execute();
 }
 
 export async function observableFolder() {
