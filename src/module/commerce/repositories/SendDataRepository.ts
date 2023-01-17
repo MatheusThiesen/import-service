@@ -64,27 +64,14 @@ export class SendDataRepository {
             .then(() => null)
             .catch(async () => await this.refreshToken());
 
-          try {
-            await apiCommerce({
-              method: "post",
-              url: pathUrl,
-              headers: {
-                ["Authorization"]: `Bearer ${this.token}`,
-              },
-              data: file,
-            });
-          } catch (error) {
-            await apiCommerce({
-              method: "post",
-              url: pathUrl,
-              headers: {
-                ["Authorization"]: `Bearer ${this.token}`,
-              },
-              data: file,
-            });
-
-            throw new Error(error);
-          }
+          await apiCommerce({
+            method: "post",
+            url: pathUrl,
+            headers: {
+              ["Authorization"]: `Bearer ${this.token}`,
+            },
+            data: file,
+          });
 
           await serviceFile.delete(filename);
         }

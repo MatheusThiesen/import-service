@@ -1,6 +1,7 @@
 import * as cron from "node-cron";
 import {
   concepts,
+  ordersItems,
   productConceptRules,
   products,
   purchasesOrder,
@@ -18,6 +19,8 @@ export async function executeEntities() {
   await stocksPromptDelivery.execute();
   //Ordem de compra
   await purchasesOrder.execute();
+  //Items pedidos
+  await ordersItems.execute();
 }
 
 export async function observableFolder() {

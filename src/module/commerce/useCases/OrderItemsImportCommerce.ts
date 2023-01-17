@@ -38,6 +38,7 @@ export class OrderItemImportCommerce {
       qtd: item.quantity,
       value: item.price,
       valueTotal: item.grossAmount,
+      sequencia: item.itemNumber,
     }));
   }
 
@@ -56,6 +57,7 @@ export class OrderItemImportCommerce {
         grossAmount: true,
         positionItem: true,
         identifier: true,
+        itemNumber: true,
       },
       search,
       isPagination: true,
@@ -75,7 +77,7 @@ export class OrderItemImportCommerce {
 
       console.log(`orderItems  ${page} de ${totalPages}`);
 
-      const orderItemsResponse = await await this.orderItemRepository.getAll({
+      const orderItemsResponse = await this.orderItemRepository.getAll({
         fields: {
           product: {
             code: true,
@@ -89,6 +91,7 @@ export class OrderItemImportCommerce {
           grossAmount: true,
           positionItem: true,
           identifier: true,
+          itemNumber: true,
         },
         search,
         isPagination: true,

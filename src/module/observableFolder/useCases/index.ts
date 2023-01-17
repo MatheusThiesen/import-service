@@ -1,6 +1,7 @@
 import { AuthorizationRepository } from "../../../module/commerce/repositories/AuthorizationRepository";
 import { SendDataRepository } from "../../../module/commerce/repositories/SendDataRepository";
 import { Concepts } from "../entities/concepts";
+import { OrdersItems } from "../entities/ordersItems";
 import { ProductConceptRules } from "../entities/productConceptRules";
 import { Products } from "../entities/products";
 import { PurchasesOrder } from "../entities/purchasesOrder";
@@ -14,6 +15,7 @@ export const sendData = new SendData(sendDataApi);
 export const observable = new Observable();
 
 export const products = new Products(observable, sendData);
+export const ordersItems = new OrdersItems(observable, sendData);
 export const concepts = new Concepts(observable, sendData);
 export const purchasesOrder = new PurchasesOrder(observable, sendData);
 export const stocksPromptDelivery = new StocksPromptDelivery(
