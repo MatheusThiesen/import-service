@@ -4,6 +4,7 @@ import {
   brandImportCommerce,
   collectionImportCommerce,
   colorImportCommerce,
+  groupImportCommerce,
   lineImportCommerce,
   orderItemImportCommerce,
   purchaseOrderCommerce,
@@ -70,6 +71,7 @@ class App {
     await lineImportCommerce.execute({ search: queryFiveMinute });
     await brandImportCommerce.execute({ search: queryFiveMinute });
     await collectionImportCommerce.execute({ search: queryFiveMinute });
+    await groupImportCommerce.execute({ search: queryFiveMinute });
     await stockPromptDeliveryCommerce.execute({
       search: queryFiveMinute,
     });
@@ -97,20 +99,39 @@ class App {
     });
   }
 
-  async oneHourExecute() {
-    await colorImportCommerce.execute({});
-    await subgroupImportCommerce.execute({});
-    await lineImportCommerce.execute({});
-    await brandImportCommerce.execute({});
-    await collectionImportCommerce.execute({});
-    await stockPromptDeliveryCommerce.execute({});
+  async oneDayExecute() {
+    const dayCalc = 60 * 24;
+
+    const queryDay = this.getQueryUpdateAt({ minute: dayCalc });
+    await colorImportCommerce.execute({ search: queryDay });
+    await subgroupImportCommerce.execute({ search: queryDay });
+    await lineImportCommerce.execute({ search: queryDay });
+    await brandImportCommerce.execute({ search: queryDay });
+    await collectionImportCommerce.execute({ search: queryDay });
+    await groupImportCommerce.execute({ search: queryDay });
+    await stockPromptDeliveryCommerce.execute({
+      search: queryDay,
+    });
+    await orderItemImportCommerce.execute({
+      search: queryDay,
+    });
+
+    const queryDayAlterLabel = this.getQueryUpdateAt({
+      minute: dayCalc,
+      dateLabel: "lastRegistryChangeDate",
+      timeLabel: "lastRegistryChangeTime",
+    });
+
+    await purchaseOrderCommerce.execute({
+      search: queryDayAlterLabel,
+    });
   }
-  async oneHourCron() {
-    cron.schedule("0 0 */1 * * *", async () => {
+  async oneDayCron() {
+    cron.schedule("0 59 */23 * * *", async () => {
       try {
         // console.log(`[SINC-CommerceApi] 1Hour Data ${this.now()}`);
 
-        await this.oneHourExecute();
+        await this.oneDayExecute();
       } catch (error) {
         console.log(error);
       }
@@ -121,6 +142,7 @@ class App {
     try {
       await this.fiveMinuteCron();
       await observableFolder();
+      await this.oneDayCron();
 
       // const queryOrderItem = `entryDate GTE "01/10/2021" AND order.positionOrder IN (2,3)`;
       // const queryPurchaseOrder = `product.situation IN (2) AND deliveryDeadlineDate GT "01/01/2023" AND itemStatus IN (2)`;
