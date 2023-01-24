@@ -1,5 +1,6 @@
 import { ProductRepository } from "../../entities/repositories/ProductRepository";
 import { SendDataRepository } from "../repositories/SendDataRepository";
+import { ExecuteServiceProps } from "../types/ExecuteService";
 
 export interface ProductNormalized {
   cod: number;
@@ -26,7 +27,12 @@ export class ProductImportCommerce {
     private productRepository: ProductRepository
   ) {}
 
-  async execute() {
+  async execute({ search }: ExecuteServiceProps) {
+    const query = `brand.code IN (10,20,1,24,23,2,26,400) ${
+      search ? `AND ${search}` : ""
+    }`;
+    // brand.code IN (2) and  situation IN (2) and code in (211752)
+
     const products = await this.productRepository.getAll({
       fields: {
         code: true,
@@ -64,13 +70,8 @@ export class ProductImportCommerce {
         },
       },
 
-      // search: `lastChangeDate IN ( "24/10/2022") AND brand.code NEQ 0 AND situation IN (1)`,
-      // search: `brand.code IN (2,10,23) AND collection.collectionCode IN (233,66,48) OR ( brand.code IN (400) AND situation IN (2) )`,
-      search: `
-        brand.code IN (2) and  situation IN (2) and code in (211752)
-        `,
+      search: query,
     });
-    // collection.collectionCode IN (233,66,48)
 
     const productNormalized: ProductNormalized[] = products.content.map(
       (product) => ({
