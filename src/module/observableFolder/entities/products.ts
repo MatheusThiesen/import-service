@@ -22,6 +22,7 @@ interface ProductsRecibe {
   estoqueLivre: number;
   linhaProducao: number;
   precoVenda: number;
+  bloqVenda: string;
 }
 
 export class Products {
@@ -39,7 +40,11 @@ export class Products {
         .filter((p) => p.codigoAlternativo)
         .map((product) => ({
           cod: product?.codigo,
-          status: product?.linhaProducao === 0 ? product?.situacao : 0,
+          status:
+            product?.linhaProducao === 0 &&
+            product?.bloqVenda?.toLocaleUpperCase() !== "SIM"
+              ? product?.situacao
+              : 0,
           alternativeCode: product?.codigoAlternativo,
           reference: product?.referencia,
           description: product?.descricao,

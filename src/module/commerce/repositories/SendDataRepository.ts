@@ -36,7 +36,7 @@ export class SendDataRepository {
           this.token = getToken.token;
         }
 
-        for (const content of splitArrObj(data, 1000)) {
+        for (const content of splitArrObj(data, 800)) {
           offset += content.length;
 
           const filename = path.resolve(

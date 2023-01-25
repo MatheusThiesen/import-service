@@ -7,7 +7,6 @@ import {
   groupImportCommerce,
   lineImportCommerce,
   orderItemImportCommerce,
-  productImportCommerce,
   purchaseOrderCommerce,
   stockPromptDeliveryCommerce,
   subgroupImportCommerce,
@@ -77,9 +76,6 @@ class App {
       search: queryFiveMinute,
     });
     await orderItemImportCommerce.execute({
-      search: queryFiveMinute,
-    });
-    await productImportCommerce.execute({
       search: queryFiveMinute,
     });
 
