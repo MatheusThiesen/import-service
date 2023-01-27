@@ -32,9 +32,9 @@ export class PurchaseOrderCommerce {
     if (type === "period") {
       return `${month}-${year}`;
     } else {
-      return `${
-        dateMonthLong[0].toUpperCase() + dateMonthLong.substring(1)
-      } ${year}`;
+      return `${dateMonthLong[0].toUpperCase()}${dateMonthLong.substring(
+        1
+      )} ${year}`;
     }
   }
 

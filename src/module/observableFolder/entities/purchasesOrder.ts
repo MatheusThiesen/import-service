@@ -32,17 +32,15 @@ export class PurchasesOrder {
 
     const dateMonthLong = new Date(`${month}/${day}/${year}`).toLocaleString(
       "pt-br",
-      {
-        month: "long",
-      }
+      { month: "long" }
     );
 
     if (type === "period") {
       return `${month}-${year}`;
     } else {
-      return `${
-        dateMonthLong[0].toUpperCase() + dateMonthLong.substring(1)
-      } ${year}`;
+      return `${dateMonthLong[0].toUpperCase()}${dateMonthLong.substring(
+        1
+      )} ${year}`;
     }
   }
 
