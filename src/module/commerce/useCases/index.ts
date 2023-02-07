@@ -6,6 +6,7 @@ import { CollectionImportCommerce } from "./CollectionImportCommerce";
 import { ColorImportCommerce } from "./ColorImportCommerce";
 import { GroupImportCommerce } from "./GroupImportCommerce";
 import { LineImportCommerce } from "./LineImportCommerce";
+import { ListPriceImportCommerce } from "./ListPriceImportCommerce";
 import { OrderItemImportCommerce } from "./OrderItemsImportCommerce";
 import { ProductImportCommerce } from "./ProductImportCommerce";
 import { PurchaseOrderCommerce } from "./PurchaseOrderCommerce";
@@ -62,4 +63,8 @@ export const purchaseOrderCommerce = new PurchaseOrderCommerce(
 export const orderItemImportCommerce = new OrderItemImportCommerce(
   sendData,
   entities.orderItem
+);
+export const listPriceImportCommerce = new ListPriceImportCommerce(
+  sendData,
+  entities.itemPriceListRepository
 );

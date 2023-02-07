@@ -7,6 +7,7 @@ interface QueryEntitySigerProps {
   fields: string;
   extraFields?: string;
 
+  organization?: string;
   limit?: number;
 
   page?: number;
@@ -46,11 +47,13 @@ export class GetListAll {
     page,
     size,
     isPagination = false,
+    organization = "018",
   }: QueryEntitySigerProps): Promise<GetListAllResponse<T>> {
     let query: any = {
       entity: entity,
       search: search,
       fields: fields,
+      organization: organization,
     };
 
     if (extraFields) {
@@ -87,7 +90,7 @@ export class GetListAll {
       // console.log(`${query?.entity}  ${page} de ${totalPages}`);
 
       const response = await apiSiger.get<SigerDTO<T>>("/api/v1/get-list", {
-        params: { ...query, organization: "018", size: limit, page },
+        params: { ...query, size: limit, page },
       });
       data = [...data, ...response.data.content];
     }

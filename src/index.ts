@@ -6,6 +6,7 @@ import {
   colorImportCommerce,
   groupImportCommerce,
   lineImportCommerce,
+  listPriceImportCommerce,
   orderItemImportCommerce,
   purchaseOrderCommerce,
   stockPromptDeliveryCommerce,
@@ -76,6 +77,9 @@ class App {
       search: queryFiveMinute,
     });
     await orderItemImportCommerce.execute({
+      search: queryFiveMinute,
+    });
+    await listPriceImportCommerce.execute({
       search: queryFiveMinute,
     });
 

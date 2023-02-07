@@ -11,6 +11,7 @@ import { ProductSubgroupRepository } from "../repositories/ProductSubgroupReposi
 import { RepresentativeRepository } from "../repositories/RepresentativeRepository";
 import { AccumulatedStockRepository } from "./../repositories/AccumulatedStockRepository";
 import { ColorRepository } from "./../repositories/ColorRepository";
+import { ItemPriceListRepository } from "./../repositories/ItempriceListRepository";
 import { OrderItemRepository } from "./../repositories/OrderItemRepository";
 import { ProductCollectionRepository } from "./../repositories/ProductCollectionRepository";
 import { PurchaseOrderItemsRepository } from "./../repositories/PurchaseOrderItemsRepository";
@@ -35,6 +36,7 @@ export const order = new OrderRepository(getListAll);
 export const orderItem = new OrderItemRepository(getListAll);
 export const purchaseOrderItems = new PurchaseOrderItemsRepository(getListAll);
 export const accumulatedStock = new AccumulatedStockRepository(getListAll);
+export const itemPriceListRepository = new ItemPriceListRepository(getListAll);
 
 export const entities = {
   customer,
@@ -53,4 +55,5 @@ export const entities = {
   orderItem,
   purchaseOrderItems,
   accumulatedStock,
+  itemPriceListRepository,
 };
