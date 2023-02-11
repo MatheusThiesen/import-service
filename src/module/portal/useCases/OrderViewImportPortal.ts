@@ -32,6 +32,51 @@ interface GetOrderItems {
   dtAlteracao: Date;
 }
 
+interface IOrder {
+  refuseCod?: string;
+  refuse?: string;
+  cod: number;
+  initialsOrder?: string;
+  valueST?: number;
+  noteValue: number;
+  merchandiseValue: number;
+  deliveryDate: Date;
+  billingDate?: Date;
+  paymentCondition?: string;
+  position: string;
+  detailPosition: string;
+  species?: number;
+  documentNumber: string;
+  codItems?: string;
+  ncm?: number;
+  products: [
+    {
+      cod: Number;
+      orderCodOri?: Number;
+      description: String;
+      position: String;
+      primaryColor?: String;
+      secondaryColor?: String;
+      primaryCodColor?: String;
+      secondaryCodColor?: String;
+      codGrid?: number;
+      grid?: String;
+      reference: String;
+      quantity?: Number;
+      value?: Number;
+      measuredUnit?: String;
+      cancellationReason: string;
+      cancellationReasonCod?: number;
+    }
+  ];
+
+  clientId: number;
+  sellerId: number;
+  agentCod?: number;
+  brandId: number;
+  shippingId: number;
+}
+
 export class OrderViewImportPortal {
   constructor() {}
 
