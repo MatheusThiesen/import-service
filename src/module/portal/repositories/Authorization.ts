@@ -1,4 +1,4 @@
-import Axios from "axios";
+import { apiPortal } from "./../../../service/apiPortal";
 
 interface IResponseSingIn {
   user: {
@@ -25,18 +25,13 @@ export class AuthorizationRepository {
     this.email = process.env.PORTAL_USER;
     this.password = process.env.PORTAL_PASS;
     this.baseUrl = process.env.PORTAL_URL;
-
-    this.singIn();
   }
 
   async singIn() {
-    const response = await Axios.post<IResponseSingIn>(
-      `${this.baseUrl}/user/login`,
-      {
-        email: this.email,
-        password: this.password,
-      }
-    );
+    const response = await apiPortal.post<IResponseSingIn>(`user/login`, {
+      email: this.email,
+      password: this.password,
+    });
 
     const {
       token: { access_token },

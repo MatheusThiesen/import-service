@@ -14,29 +14,47 @@ export class SendData {
       if (!this.token) {
         this.token = (await this.authorizationRepository.singIn()).token;
       }
+
       var offset = 0;
       for (const content of splitArrObj(data, 20000)) {
-        offset += content.length;
-        await apiPortal({
-          method: "post",
-          url: pathUrl,
-          headers: {
-            ["x-access-token"]: `Bearer ${this.token}`,
-          },
-          data: {
-            total: data.length,
-            offset: offset,
-            contents: content,
-          },
-        });
+        try {
+          await apiPortal({
+            method: "post",
+            url: pathUrl,
+            headers: {
+              ["x-access-token"]: `Bearer ${this.token}`,
+            },
+            data: {
+              total: data.length,
+              offset: offset,
+              contents: content,
+              newSiger: true,
+            },
+          });
+        } catch (error) {
+          console.log(error);
+        }
       }
+
+      console.log(
+        `[ENVIADO] ${data.length} para "${
+          process.env.PORTAL_URL
+        }${pathUrl}" - ${new Date().toLocaleString("pt-br", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        })}`
+      );
     } catch (error) {
       const err: AxiosError = error;
 
       if (this.isRefreshing) {
         this.isRefreshing = false;
 
-        if (err.response.status === 401) {
+        if (err?.response?.status === 401) {
           this.token = (await this.authorizationRepository.singIn()).token;
           this.post(pathUrl, data);
         }
