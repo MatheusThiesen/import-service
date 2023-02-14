@@ -86,7 +86,7 @@ interface SendOrder {
 }
 
 export class OrderViewImportPortal {
-  readonly pageSize = 2000;
+  readonly pageSize = 50000;
 
   constructor(private sendData: SendData) {}
 
@@ -191,7 +191,7 @@ export class OrderViewImportPortal {
           sequence: itemOrder.sequencia,
           description: itemOrder.produtoDescricao,
           position: itemOrder.itemPosition,
-          primaryColor: itemOrder.corUmDescricao,
+          primaryColor: itemOrder.corUmDescricao ?? "-",
           secondaryColor: itemOrder.corDoisDescricao,
           reference: itemOrder.produtoReferencia,
           quantity: Number(itemOrder.itemQtd),
@@ -206,6 +206,12 @@ export class OrderViewImportPortal {
     }
 
     return normalizedOrders;
+  }
+
+  async sendOrder(itemsOrder: GetOrderItems[]) {
+    const normalizedOrders = await this.onNormalizedOrder(itemsOrder);
+
+    await this.sendData.post("/order/importV2", normalizedOrders);
   }
 
   async execute({ search }: { search?: string }) {
@@ -236,8 +242,6 @@ export class OrderViewImportPortal {
       );
       const totalPage = Math.ceil(totalItems / this.pageSize);
 
-      console.log(`-> Total pedidos: ${totalPedidos}`);
-      console.log(`-> Total itens: ${totalItems}`);
       const startDate = new Date();
 
       for (let index = 0; index < totalPage; index++) {
@@ -246,7 +250,7 @@ export class OrderViewImportPortal {
 
         const itemsOrder = await dbSiger.$ExecuteQuery<GetOrderItems>(
           `
-          select distinct
+          select 
             p.sigemp,
             p.codigo as pedidoCod,
             p.posicaoDetalhadaCod,
@@ -293,43 +297,21 @@ export class OrderViewImportPortal {
             left join 01010s005.dev_cor_produto cor2 on prod.corDoisCod = cor2.codigo
             
           ${whereNormalized}
-  
+          order by p.dtEntrada desc
           limit ${limit}
           offset ${offset}
           ;
   `
-
-          // order by p.dtEntrada desc
         );
 
+        await this.sendOrder(itemsOrder);
         console.log(`${index + 1} de ${totalPage}`);
-
-        const normalizedOrders = await this.onNormalizedOrder(itemsOrder);
-
-        await this.sendData.post("/order/importV2", normalizedOrders);
       }
 
       const endDate = new Date();
 
       console.log(`-> Total pedidos: ${totalPedidos}`);
       console.log(`-> Total itens: ${totalItems}`);
-      console.log(
-        `-> INICIO ${startDate.toLocaleString("pt-br", {
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-        })} - FIM ${endDate.toLocaleString("pt-br", {
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-        })}`
-      );
       console.log("-> " + (await this.difDates(startDate, endDate)));
     } catch (error) {
       console.log(error);

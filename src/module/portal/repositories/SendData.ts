@@ -16,7 +16,7 @@ export class SendData {
       }
 
       var offset = 0;
-      for (const content of splitArrObj(data, 20000)) {
+      for (const content of splitArrObj(data, 500)) {
         try {
           await apiPortal({
             method: "post",
