@@ -22,7 +22,7 @@ export class PurchaseOrderCommerce {
   normalizedMonth(datePeriod: string, type: "period" | "name") {
     const [day, month, year] = datePeriod.split("/");
 
-    const dateMonthLong = new Date(`${day}/${month}/${year}`).toLocaleString(
+    const dateMonthLong = new Date(`${year}/${month}/${day}`).toLocaleString(
       "pt-br",
       {
         month: "long",
