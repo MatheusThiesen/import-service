@@ -63,6 +63,8 @@ interface SendOrder {
   position: string;
   detailPosition: string;
   species?: number;
+  cancellationReason?: string;
+  cancellationReasonCod?: number;
   products: {
     id: string;
     cod: Number;
@@ -136,6 +138,16 @@ export class OrderViewImportPortal {
         limit 1
       `);
 
+      const motivoCancelamentoResponse = await dbSiger.$ExecuteQuery<{
+        motivo: number;
+        descricao: string;
+      }>(`
+        select c.motivo,c.descricao
+        from 01010s005.dev_pedido_motivo_cancelamento c 
+        where c.pedidoCod = ${orderGroup.value} 
+        limit 1
+      `);
+
       const sellerCod =
         representanteResponse &&
         representanteResponse[0] &&
@@ -178,6 +190,12 @@ export class OrderViewImportPortal {
         paymentCondition: order.formaPagamento,
         refuse: order.recusaDescicao,
         refuseCod: order.recusaCod,
+        cancellationReasonCod: motivoCancelamentoResponse[0]
+          ? motivoCancelamentoResponse[0].motivo
+          : undefined,
+        cancellationReason: motivoCancelamentoResponse[0]
+          ? motivoCancelamentoResponse[0].descricao
+          : undefined,
         documentNumber,
         detailPosition,
         position: order.posicaoDescricao,

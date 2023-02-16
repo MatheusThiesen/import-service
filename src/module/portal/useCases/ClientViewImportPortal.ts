@@ -1,318 +1,142 @@
-import { groupByObject } from "../../../helpers/groupByObject";
 import { dbSiger } from "../../../service/dbSiger";
 import { SendData } from "../repositories/SendData";
 
-interface GetOrderItems {
-  sigemp: string;
-  itemId: number;
-  pedidoCod: number;
-  posicaoDetalhadaCod: number;
-  posicaoDetalhadaDescicao: string;
-  posicaoCod: number;
-  posicaoDescricao: string;
+interface GetCliente {
   clienteCod: number;
-  vlrTotalMercadoria: string;
-  vlrNota: string;
-  vlrIcmsSt: string;
-  dtFaturamento: Date;
-  dtEntrada: Date;
-  formaPagamento: string;
-  especieCod: number;
-  transportadoraCod: number;
-  produtoCod: number;
-  itemPosition: string;
-  itemQtd: string;
-  vlrLiquido: string;
-  vlrUnitario: string;
-  marcaCod: number;
-  recusaCod: number;
-  recusaDescicao: string;
-  sequencia: number;
-  produtoDescricao: string;
-  produtoDescricaoComplementar: string;
-  produtoReferencia: string;
-  produtoUnidadeEstoque: string;
-  gradeCod: number;
-  gradeDescricao: string;
-  corUmDescricao: string;
-  corDoisDescricao: string;
-  // numeroNota: number;
-  // serieNota: string;
-  // representanteCod: number;
-  // prepostoCod: number;
+  cnpj: string;
+  razaoSocial: string;
+  nomeFantasia: string;
+  email: string;
+  telefone: number;
+  cep: number;
+  uf: string;
+  cidade: string;
+  numero: number;
+  bairro: string;
+  logradouro: string;
+  tipo: string;
+  grupocadCpd: number;
+  ativo: number;
+  dda: number;
   dtAlteracao: Date;
 }
 
-interface SendOrder {
-  initialsOrder?: string;
-  orderCod: number;
-  clientCod: number;
-  sellerCod: number;
-  agentCod?: number;
-  brandCod: number;
-  shippingCod: number;
-  documentNumber: string;
-  valueST?: number;
-  noteValue: number;
-  merchandiseValue: number;
-  refuseCod?: number;
-  refuse?: string;
-  deliveryDate: Date;
-  billingDate?: Date;
-  paymentCondition?: string;
-  position: string;
-  detailPosition: string;
-  species?: number;
-  products: {
-    id: string;
-    cod: Number;
-    description: String;
-    position: String;
-    primaryColor?: String;
-    secondaryColor?: String;
-    primaryCodColor?: String;
-    secondaryCodColor?: String;
-    ncm?: number;
-    codGrid?: number;
-    grid?: String;
-    reference: String;
-    quantity?: Number;
-    sequence: Number;
-    value?: Number;
-    measuredUnit?: String;
-    cancellationReason?: string;
-    cancellationReasonCod?: number;
-  }[];
+interface SendClient {
+  codCliente: number;
+  cnpjCliente: string;
+  razaoSocialCliente: string;
+  nomeFantasiaCliente: string;
+  emailCliente: string;
+  telefoneCliente: string;
+  cepCliente: string;
+  ufCliente: string;
+  cidadeCliente: string;
+  bairroCliente: string;
+  logradouroCliente: string;
+  numeroLogradouroCliente: number;
+  latitudeCliente?: number;
+  longitudeCliente?: number;
+  tipoCadastroCliente: string;
+  idGrupoCadCliente: string;
+  dataModificacaoCliente: Date;
+  situacaoCliente: string;
+  ddaCliente: "Sim" | "Não";
 }
 
-export class OrderViewImportPortal {
+export class ClientViewImportPortal {
   readonly pageSize = 50000;
 
   constructor(private sendData: SendData) {}
 
-  async difDates(date1: Date, date2: Date) {
-    var diffMs = date2.getTime() - date1.getTime();
-    var diffHrs = Math.floor((diffMs % 86400000) / 3600000);
-    var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000);
-    var diffSecs = Math.round((((diffMs % 86400000) % 3600000) % 60000) / 1000);
-    var diff = diffHrs + "h " + diffMins + "m " + diffSecs + "s";
-
-    return diff;
+  normalizedCNPJ(cnpj: string) {
+    const zeros = "00000000000000";
+    return String(zeros.substring(0, 14 - cnpj.length) + cnpj);
   }
 
-  async onNormalizedOrder(itemsOrder: GetOrderItems[]): Promise<SendOrder[]> {
-    const groupOrders = await groupByObject(
-      itemsOrder,
-      (item) => item.pedidoCod
-    );
-
-    let normalizedOrders: SendOrder[] = [];
-
-    for (const orderGroup of groupOrders) {
-      const representanteResponse = await dbSiger.$ExecuteQuery<{
-        representanteCod: number;
-      }>(`
-        select rep.representanteCod 
-        from 01010s005.dev_pedido_rep rep 
-        where rep.pedidoCod = ${orderGroup.value} and rep.tipoRep = 1 
-        limit 1
-      `);
-
-      const prepostoResponse = await dbSiger.$ExecuteQuery<{
-        representanteCod: number;
-      }>(`
-        select rep.representanteCod 
-        from 01010s005.dev_pedido_rep rep 
-        where rep.pedidoCod = ${orderGroup.value} and rep.tipoRep = 2
-        limit 1
-      `);
-
-      const numeroNotaResponse = await dbSiger.$ExecuteQuery<{
-        numeroNota: number;
-      }>(`
-        select n.numeroNota
-        from 01010s005.dev_pedido_nota n 
-        where n.pedidoCod = ${orderGroup.value} 
-        limit 1
-      `);
-
-      const sellerCod =
-        representanteResponse &&
-        representanteResponse[0] &&
-        representanteResponse[0].representanteCod
-          ? representanteResponse[0].representanteCod
-          : 0;
-      const agentCod =
-        prepostoResponse &&
-        prepostoResponse[0] &&
-        prepostoResponse[0].representanteCod
-          ? prepostoResponse[0].representanteCod
-          : 0;
-      const documentNumber =
-        numeroNotaResponse &&
-        numeroNotaResponse[0] &&
-        numeroNotaResponse[0].numeroNota
-          ? String(numeroNotaResponse[0].numeroNota)
-          : "";
-
-      const order = orderGroup.data[0];
-
-      const detailPosition =
-        Number(order.posicaoDetalhadaCod) === 5
-          ? order.posicaoDescricao
-          : order.posicaoDetalhadaDescicao;
-
-      const createOrder: SendOrder = {
-        orderCod: order.pedidoCod,
-        clientCod: order.clienteCod,
-        sellerCod,
-        agentCod,
-        brandCod: order.marcaCod,
-        shippingCod: order.transportadoraCod,
-        initialsOrder: order.sigemp,
-        valueST: order.vlrIcmsSt ? Number(order.vlrIcmsSt) : undefined,
-        noteValue: Number(order.vlrNota),
-        merchandiseValue: Number(order.vlrTotalMercadoria),
-        deliveryDate: order.dtEntrada,
-        billingDate: order.dtFaturamento,
-        paymentCondition: order.formaPagamento,
-        refuse: order.recusaDescicao,
-        refuseCod: order.recusaCod,
-        documentNumber,
-        detailPosition,
-        position: order.posicaoDescricao,
-        products: [],
-      };
-      orderGroup.value;
-      for (const itemOrder of orderGroup.data) {
-        createOrder.products.push({
-          id: String(itemOrder.itemId),
-          cod: itemOrder.produtoCod,
-          sequence: itemOrder.sequencia,
-          description: itemOrder.produtoDescricao,
-          position: itemOrder.itemPosition,
-          primaryColor: itemOrder.corUmDescricao ?? "-",
-          secondaryColor: itemOrder.corDoisDescricao,
-          reference: itemOrder.produtoReferencia,
-          quantity: Number(itemOrder.itemQtd),
-          codGrid: itemOrder.gradeCod,
-          grid: itemOrder.gradeDescricao,
-          measuredUnit: itemOrder.produtoUnidadeEstoque,
-          value: Number(itemOrder.vlrUnitario),
-        });
-      }
-
-      normalizedOrders.push(createOrder);
-    }
-
-    return normalizedOrders;
+  async onNormalizedOrder(clients: GetCliente[]): Promise<SendClient[]> {
+    return clients.map((client) => ({
+      codCliente: client.clienteCod,
+      cnpjCliente: this.normalizedCNPJ(String(client.cnpj)),
+      razaoSocialCliente: client.razaoSocial,
+      nomeFantasiaCliente: client.nomeFantasia,
+      emailCliente: client.email,
+      telefoneCliente: String(client.telefone),
+      cepCliente: String(client.cep),
+      ufCliente: client.uf,
+      cidadeCliente: client.cidade,
+      bairroCliente: client.bairro,
+      logradouroCliente: client.logradouro,
+      numeroLogradouroCliente: client.numero,
+      tipoCadastroCliente: client.tipo,
+      idGrupoCadCliente: String(client.grupocadCpd),
+      dataModificacaoCliente: client.dtAlteracao,
+      situacaoCliente: String(client.ativo),
+      ddaCliente: client.dda === 1 ? "Sim" : "Não",
+    }));
   }
 
-  async sendOrder(itemsOrder: GetOrderItems[]) {
-    const normalizedOrders = await this.onNormalizedOrder(itemsOrder);
+  async sendClient(sellers: GetCliente[]) {
+    const normalized = await this.onNormalizedOrder(sellers);
 
-    await this.sendData.post("/order/importV2", normalizedOrders);
+    await this.sendData.post("/clientPj/import", normalized);
   }
 
   async execute({ search }: { search?: string }) {
     try {
-      const whereNormalized = search ? `where ${search}` : ``;
+      const query = `c.tipo = 'C'`;
+      const whereNormalized = search
+        ? `where ${search} and ${query}`
+        : `where ${query}`;
 
       const totalItems = Number(
         (
           await dbSiger.$ExecuteQuery<{ total: string }>(
             `
-        select count(*) as total from 01010s005.dev_pedido_v2 p
-          inner join 01010s005.dev_pedido_item_v2 i on p.codigo = i.pedidoCod 
-        ${whereNormalized};
-        `
-          )
-        )[0].total
-      );
-      const totalPedidos = Number(
-        (
-          await dbSiger.$ExecuteQuery<{ total: string }>(
+              select count(*) as total from 01010s005.dev_cliente c            
+              ${whereNormalized};
             `
-        select count(*) as total from 01010s005.dev_pedido_v2 p
-          
-        ${whereNormalized};
-        `
           )
         )[0].total
       );
-      const totalPage = Math.ceil(totalItems / this.pageSize);
 
-      const startDate = new Date();
+      const totalPage = Math.ceil(totalItems / this.pageSize);
 
       for (let index = 0; index < totalPage; index++) {
         const limit = this.pageSize;
         const offset = this.pageSize * index;
 
-        const itemsOrder = await dbSiger.$ExecuteQuery<GetOrderItems>(
+        const clients = await dbSiger.$ExecuteQuery<GetCliente>(
           `
           select 
-            p.sigemp,
-            p.codigo as pedidoCod,
-            p.posicaoDetalhadaCod,
-            p.posicaoCod,
-            p.posicaoDescricao,
-            p.posicaoDetalhadaDescicao,
-            p.clienteCod,
-            p.vlrTotalMercadoria,
-            p.vlrNota,
-            p.dtFaturamento,
-            p.dtEntrada,
-            p.formaPagamento,
-            p.especieCod,
-            p.transportadoraCod,
-      
-            i.id as itemId,
-            i.produtoCod,
-            i.sequencia,
-            i.posicao as itemPosition,
-            i.qtd as itemQtd,
-            i.vlrLiquido,
-            i.vlrUnitario as vlrUnitario,
-            i.marcaCod,
-            i.recusaCod,i.recusaDescicao,
-  
-            prod.descricao as produtoDescricao,
-            prod.descricaoComplementar as produtoDescricaoComplementar,
-            prod.referencia as produtoReferencia,
-            prod.unidadeEstoque as produtoUnidadeEstoque,
-            prod.gradeCod,
-          
-            g.descricao as gradeDescricao,
-          
-            cor1.descricao as corUmDescricao,
-            cor2.descricao as corDoisDescricao,
-          
-            i.dtAlteracao
-      
-          from 01010s005.dev_pedido p
-            inner join 01010s005.dev_pedido_item_v2 i on p.codigo = i.pedidoCod 
-            inner join 01010s005.dev_produto prod on i.produtoCod = prod.codigo
-            left join 01010s005.dev_grade_produto g on prod.gradeCod = g.codigo
-            left join 01010s005.dev_cor_produto cor1 on prod.corUmCod = cor1.codigo
-            left join 01010s005.dev_cor_produto cor2 on prod.corDoisCod = cor2.codigo
-            
+            c.clienteCod,
+            c.cnpj,
+            c.razaoSocial,
+            c.nomeFantasia,
+            e.email,
+            c.telefone,
+            c.cep,
+            c.uf,
+            c.cidade,
+            c.bairro,
+            c.logradouro,
+            c.numero,
+            c.tipo,
+            c.grupocadCpd,
+            c.ativo,
+            c.dda,
+            c.dtAlteracao    
+          from 01010s005.dev_cliente c 
+          left join 01010s005.dev_cliente_email e on e.clienteCod = c.clienteCod
           ${whereNormalized}
-          order by p.dtEntrada desc
+          order by c.clienteCod desc
           limit ${limit}
           offset ${offset}
           ;
-  `
+          `
         );
 
-        await this.sendOrder(itemsOrder);
-        console.log(`${index + 1} de ${totalPage}`);
+        await this.sendClient(clients);
       }
-
-      const endDate = new Date();
-
-      console.log(`-> Total pedidos: ${totalPedidos}`);
-      console.log(`-> Total itens: ${totalItems}`);
-      console.log("-> " + (await this.difDates(startDate, endDate)));
     } catch (error) {
       console.log(error);
     }

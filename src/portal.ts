@@ -99,6 +99,13 @@ export class Portal {
       await this.fiveMinuteCron();
       await this.twoDayCron();
       await this.fiveMinuteExecute();
+      await orderViewImportPortal.execute({
+        search: "p.posicaoCod = 9",
+      });
+      // await brandViewImportPortal.execute({});
+      // await sellerViewImportPortal.execute({});
+      // await clientViewImportPortal.execute({});
+      // await billetViewImportPortal.execute({});
       // await this.twoDayExecute();
     } catch (err) {
       console.log("error!");

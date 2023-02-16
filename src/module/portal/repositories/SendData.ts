@@ -15,8 +15,11 @@ export class SendData {
         this.token = (await this.authorizationRepository.singIn()).token;
       }
 
+      const page = pathUrl === "/order/importV2" ? 500 : 20000;
+
       var offset = 0;
-      for (const content of splitArrObj(data, 500)) {
+      for (const content of splitArrObj(data, page)) {
+        offset += content.length;
         try {
           await apiPortal({
             method: "post",
