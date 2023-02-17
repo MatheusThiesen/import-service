@@ -96,7 +96,7 @@ export class Portal {
   }
 
   async fiveMinuteCron() {
-    cron.schedule("0 */5 * * * *", async () => {
+    cron.schedule("0 */20 * * * *", async () => {
       try {
         await this.fiveMinuteExecute();
       } catch (error) {
