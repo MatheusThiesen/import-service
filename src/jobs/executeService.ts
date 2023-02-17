@@ -1,9 +1,5 @@
 import { Job } from "bull";
-import {
-  gridImportPortal,
-  orderImportPortal,
-  productImportPortal,
-} from "../module/portal/useCases";
+import {} from "../module/portal/useCases";
 
 export interface ExecuteFunctionProps {
   service: "ProductImportPortal" | "OrderImportPortal" | "GridImportPortal";
@@ -15,15 +11,15 @@ export default {
     try {
       switch (service) {
         case "ProductImportPortal":
-          productImportPortal.execute();
+          // productImportPortal.execute();
           break;
 
         case "OrderImportPortal":
-          orderImportPortal.execute();
+          // orderImportPortal.execute();
           break;
 
         case "GridImportPortal":
-          gridImportPortal.execute();
+          // gridImportPortal.execute();
           break;
 
         default:
