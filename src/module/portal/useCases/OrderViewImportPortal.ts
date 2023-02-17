@@ -309,7 +309,7 @@ export class OrderViewImportPortal {
           
             i.dtAlteracao
       
-          from 01010s005.dev_pedido p
+          from 01010s005.dev_pedido_v2 p
             inner join 01010s005.dev_pedido_item_v2 i on p.codigo = i.pedidoCod 
             inner join 01010s005.dev_produto prod on i.produtoCod = prod.codigo
             left join 01010s005.dev_grade_produto g on prod.gradeCod = g.codigo
