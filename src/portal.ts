@@ -1,6 +1,13 @@
 import "dotenv/config";
 import * as cron from "node-cron";
-import { orderViewImportPortal } from "./module/portal/useCases";
+import {
+  billetViewImportPortal,
+  brandViewImportPortal,
+  clientViewImportPortal,
+  orderViewImportPortal,
+  sellerViewImportPortal,
+  serverPortal,
+} from "./module/portal/useCases";
 
 export class Portal {
   async getFormatDate({
@@ -67,7 +74,7 @@ export class Portal {
   }
 
   async twoDayExecute() {
-    const query = `p.dtEntrada > '${await this.getFormatDate({
+    const queryOrder = `p.dtEntrada > '${await this.getFormatDate({
       dateType: "date",
       minutes: 60 * 24 * 365,
       operationType: "pre",
@@ -79,9 +86,13 @@ export class Portal {
     `;
 
     await orderViewImportPortal.execute({
-      // search: "p.codigo = 1249226",
-      search: query,
+      search: queryOrder,
     });
+
+    await brandViewImportPortal.execute({});
+    await sellerViewImportPortal.execute({});
+    await clientViewImportPortal.execute({});
+    await billetViewImportPortal.execute({});
   }
 
   async twoDayCron() {
@@ -96,20 +107,18 @@ export class Portal {
 
   async execute() {
     try {
-      await this.fiveMinuteCron();
-      await this.twoDayCron();
-      await this.fiveMinuteExecute();
-      await orderViewImportPortal.execute({
-        search: "p.posicaoCod = 9",
-      });
-      // await brandViewImportPortal.execute({});
-      // await sellerViewImportPortal.execute({});
-      // await clientViewImportPortal.execute({});
-      // await billetViewImportPortal.execute({});
+      // await this.fiveMinuteCron();
+      // await this.twoDayCron();
+      // await this.fiveMinuteExecute();
       // await this.twoDayExecute();
+
+      await serverPortal.execute();
     } catch (err) {
       console.log("error!");
       console.log(err);
     }
   }
 }
+
+const portal = new Portal();
+portal.execute();

@@ -247,6 +247,7 @@ export class OrderViewImportPortal {
           )
         )[0].total
       );
+
       const totalPedidos = Number(
         (
           await dbSiger.$ExecuteQuery<{ total: string }>(
@@ -258,6 +259,7 @@ export class OrderViewImportPortal {
           )
         )[0].total
       );
+
       const totalPage = Math.ceil(totalItems / this.pageSize);
 
       const startDate = new Date();
