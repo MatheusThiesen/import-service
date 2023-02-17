@@ -54,12 +54,44 @@ export class Portal {
   async fiveMinuteExecute() {
     const query = `p.dtAlteracao > '${await this.getFormatDate({
       dateType: "date",
-      minutes: 60 * 24,
+      minutes: 60 * 24 * 2,
       operationType: "pre",
     })}'`;
 
     await orderViewImportPortal.execute({
       search: query,
+    });
+
+    await brandViewImportPortal.execute({
+      search: `m.dtAlteracao > '${await this.getFormatDate({
+        dateType: "date",
+        minutes: 60 * 24 * 2,
+        operationType: "pre",
+      })}'`,
+    });
+
+    await sellerViewImportPortal.execute({
+      search: `r.dtAlteracao > '${await this.getFormatDate({
+        dateType: "date",
+        minutes: 60 * 24 * 2,
+        operationType: "pre",
+      })}'`,
+    });
+
+    await clientViewImportPortal.execute({
+      search: `c.dtAlteracao > '${await this.getFormatDate({
+        dateType: "date",
+        minutes: 60 * 24 * 2,
+        operationType: "pre",
+      })}'`,
+    });
+
+    await billetViewImportPortal.execute({
+      search: `t.dtAlteracao > '${await this.getFormatDate({
+        dateType: "date",
+        minutes: 60 * 24 * 2,
+        operationType: "pre",
+      })}'`,
     });
   }
 
@@ -73,7 +105,7 @@ export class Portal {
     });
   }
 
-  async twoDayExecute() {
+  async oneDayExecute() {
     const queryOrder = `p.dtEntrada > '${await this.getFormatDate({
       dateType: "date",
       minutes: 60 * 24 * 365,
@@ -95,10 +127,10 @@ export class Portal {
     await billetViewImportPortal.execute({});
   }
 
-  async twoDayCron() {
-    cron.schedule("0 30 */23,*/12  * * *", async () => {
+  async oneDayCron() {
+    cron.schedule("0 30 */23 * * *", async () => {
       try {
-        await this.twoDayExecute();
+        await this.oneDayExecute();
       } catch (error) {
         console.log(error);
       }
@@ -107,10 +139,8 @@ export class Portal {
 
   async execute() {
     try {
-      // await this.fiveMinuteCron();
-      // await this.twoDayCron();
-      // await this.fiveMinuteExecute();
-      // await this.twoDayExecute();
+      await this.fiveMinuteCron();
+      await this.fiveMinuteExecute();
 
       await serverPortal.execute();
     } catch (err) {

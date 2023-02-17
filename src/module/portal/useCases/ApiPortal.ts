@@ -1,3 +1,4 @@
+import * as cors from "cors";
 import "dotenv/config";
 import * as express from "express";
 import {
@@ -11,6 +12,7 @@ export class ServerPortal {
   async execute() {
     try {
       const app = express();
+      app.use(cors());
       app.use(express.json());
 
       app.post("/service/portal", async (req, res) => {
@@ -18,7 +20,7 @@ export class ServerPortal {
 
         const entitiesCorrect = ["pedido", "cliente", "boleto", "vendedor"];
 
-        if (!entity || !search) {
+        if (!entity) {
           return res.status(400).send({ message: `Bad request` });
         }
 
@@ -29,22 +31,22 @@ export class ServerPortal {
         switch (entity) {
           case "pedido":
             await orderViewImportPortal.execute({
-              search: search,
+              search: search ?? undefined,
             });
             break;
           case "cliente":
             await clientViewImportPortal.execute({
-              search: search,
+              search: search ?? undefined,
             });
             break;
           case "boleto":
             await billetViewImportPortal.execute({
-              search: search,
+              search: search ?? undefined,
             });
             break;
           case "vendedor":
             await sellerViewImportPortal.execute({
-              search: search,
+              search: search ?? undefined,
             });
             break;
         }
