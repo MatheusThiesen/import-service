@@ -153,11 +153,11 @@ export class Portal {
 
   async execute() {
     try {
+      await serverPortal.execute();
+
       await this.twoDayExecute();
       await this.fiveMinuteCron();
       await this.twoDayCron();
-
-      await serverPortal.execute();
     } catch (err) {
       console.log("error!");
       console.log(err);
