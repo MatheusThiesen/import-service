@@ -137,10 +137,25 @@ export class Portal {
     });
   }
 
+  async twoDayExecute() {
+    await billetViewImportPortal.execute({});
+  }
+
+  async twoDayCron() {
+    cron.schedule("0 30 */9,*/12 * * *", async () => {
+      try {
+        await this.oneDayExecute();
+      } catch (error) {
+        console.log(error);
+      }
+    });
+  }
+
   async execute() {
     try {
+      await this.twoDayExecute();
       await this.fiveMinuteCron();
-      await this.fiveMinuteExecute();
+      await this.twoDayCron();
 
       await serverPortal.execute();
     } catch (err) {
