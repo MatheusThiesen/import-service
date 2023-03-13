@@ -6,7 +6,7 @@ class DbSiger {
     port: Number(process.env.RECH_MARIADB_PORT),
     user: process.env.RECH_MARIADB_USER,
     password: process.env.RECH_MARIADB_PASS,
-    connectionLimit: 5,
+    connectionLimit: 15,
   });
 
   private connection: any;
@@ -28,7 +28,7 @@ class DbSiger {
     } catch (err) {
       throw err;
     } finally {
-      this.closeConnection();
+      await this.closeConnection();
     }
   }
 }
