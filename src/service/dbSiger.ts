@@ -1,25 +1,26 @@
 import * as mariadb from "mariadb";
 
 class DbSiger {
-  public async $ExecuteQuery<T>(query: string): Promise<T[]> {
-    const pool = mariadb.createPool({
-      host: process.env.RECH_MARIADB_HOST,
-      port: Number(process.env.RECH_MARIADB_PORT),
-      user: process.env.RECH_MARIADB_USER,
-      password: process.env.RECH_MARIADB_PASS,
-      connectionLimit: 15,
-    });
+  private pool = mariadb.createPool({
+    host: process.env.RECH_MARIADB_HOST,
+    port: Number(process.env.RECH_MARIADB_PORT),
+    user: process.env.RECH_MARIADB_USER,
+    password: process.env.RECH_MARIADB_PASS,
+    connectionLimit: 15,
+  });
 
-    const connection = await pool.getConnection();
-    const rows = await connection.query(query);
+  public async $ExecuteQuery<T>(query: string): Promise<T[]> {
+    let conn = await this.pool.getConnection();
+    const rows = await conn.query(query);
 
     try {
       delete rows.meta;
-      await connection.end();
+
       return rows;
     } catch (err) {
-      await connection.end();
       throw err;
+    } finally {
+      if (conn) conn.end().then();
     }
   }
 }
