@@ -1,12 +1,7 @@
 import * as cors from "cors";
 import "dotenv/config";
 import * as express from "express";
-import {
-  billetViewImportPortal,
-  clientViewImportPortal,
-  orderViewImportPortal,
-  sellerViewImportPortal,
-} from "./";
+import { queue } from "src/queue";
 
 export class ServerPortal {
   async execute() {
@@ -30,23 +25,28 @@ export class ServerPortal {
 
         switch (entity) {
           case "pedido":
-            await orderViewImportPortal.execute({
+            queue.push({
               search: search ?? undefined,
+              entity: "orderViewImportPortal",
             });
+
             break;
           case "cliente":
-            await clientViewImportPortal.execute({
+            queue.push({
               search: search ?? undefined,
+              entity: "clientViewImportPortal",
             });
             break;
           case "boleto":
-            await billetViewImportPortal.execute({
+            queue.push({
               search: search ?? undefined,
+              entity: "billetViewImportPortal",
             });
             break;
           case "vendedor":
-            await sellerViewImportPortal.execute({
+            queue.push({
               search: search ?? undefined,
+              entity: "sellerViewImportPortal",
             });
             break;
         }
