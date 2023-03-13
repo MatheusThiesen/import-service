@@ -15,11 +15,11 @@ class DbSiger {
 
     try {
       delete rows.meta;
+      await connection.end();
       return rows;
     } catch (err) {
-      throw err;
-    } finally {
       await connection.end();
+      throw err;
     }
   }
 }
