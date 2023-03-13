@@ -1,13 +1,7 @@
 import "dotenv/config";
 import * as cron from "node-cron";
-import {
-  billetViewImportPortal,
-  brandViewImportPortal,
-  clientViewImportPortal,
-  orderViewImportPortal,
-  sellerViewImportPortal,
-  serverPortal,
-} from "./module/portal/useCases";
+import { serverPortal } from "./module/portal/useCases";
+import { queue } from "./queue";
 
 export class Portal {
   async getFormatDate({
@@ -58,40 +52,45 @@ export class Portal {
       operationType: "pre",
     })}'`;
 
-    await orderViewImportPortal.execute({
+    queue.push({
       search: query,
+      entity: "orderViewImportPortal",
     });
 
-    await brandViewImportPortal.execute({
+    queue.push({
       search: `m.dtAlteracao > '${await this.getFormatDate({
         dateType: "date",
         minutes: 60 * 24 * 2,
         operationType: "pre",
       })}'`,
+      entity: "brandViewImportPortal",
     });
 
-    await sellerViewImportPortal.execute({
+    queue.push({
       search: `r.dtAlteracao > '${await this.getFormatDate({
         dateType: "date",
         minutes: 60 * 24 * 2,
         operationType: "pre",
       })}'`,
+      entity: "sellerViewImportPortal",
     });
 
-    await clientViewImportPortal.execute({
+    queue.push({
       search: `c.dtAlteracao > '${await this.getFormatDate({
         dateType: "date",
         minutes: 60 * 24 * 2,
         operationType: "pre",
       })}'`,
+      entity: "clientViewImportPortal",
     });
 
-    await billetViewImportPortal.execute({
+    queue.push({
       search: `t.dtAlteracao > '${await this.getFormatDate({
         dateType: "date",
         minutes: 60 * 24 * 2,
         operationType: "pre",
       })}'`,
+      entity: "billetViewImportPortal",
     });
   }
 
@@ -117,32 +116,28 @@ export class Portal {
     })}'
     `;
 
-    await orderViewImportPortal.execute({
+    queue.push({
       search: queryOrder,
+      entity: "orderViewImportPortal",
     });
 
-    await brandViewImportPortal.execute({});
-    await sellerViewImportPortal.execute({});
-    await clientViewImportPortal.execute({});
-    await billetViewImportPortal.execute({});
+    queue.push({
+      entity: "brandViewImportPortal",
+    });
+
+    queue.push({
+      entity: "sellerViewImportPortal",
+    });
+    queue.push({
+      entity: "clientViewImportPortal",
+    });
+    queue.push({
+      entity: "billetViewImportPortal",
+    });
   }
 
   async oneDayCron() {
-    cron.schedule("0 30 */23 * * *", async () => {
-      try {
-        await this.oneDayExecute();
-      } catch (error) {
-        console.log(error);
-      }
-    });
-  }
-
-  async twoDayExecute() {
-    await billetViewImportPortal.execute({});
-  }
-
-  async twoDayCron() {
-    cron.schedule("0 30 */9,*/12 * * *", async () => {
+    cron.schedule("0 30 */22 * * *", async () => {
       try {
         await this.oneDayExecute();
       } catch (error) {
@@ -154,10 +149,8 @@ export class Portal {
   async execute() {
     try {
       await serverPortal.execute();
-
-      await this.twoDayExecute();
       await this.fiveMinuteCron();
-      await this.twoDayCron();
+      await this.oneDayCron();
     } catch (err) {
       console.log("error!");
       console.log(err);

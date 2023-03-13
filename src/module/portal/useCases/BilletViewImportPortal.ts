@@ -43,7 +43,7 @@ interface SendBillet {
 }
 
 export class BilletViewImportPortal {
-  readonly pageSize = 50000;
+  readonly pageSize = 5000;
 
   constructor(private sendData: SendData) {}
 

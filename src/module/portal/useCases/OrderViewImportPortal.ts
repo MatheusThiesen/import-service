@@ -1,3 +1,4 @@
+import { diffDates } from "../../../helpers/diffDates";
 import { groupByObject } from "../../../helpers/groupByObject";
 import { dbSiger } from "../../../service/dbSiger";
 import { SendData } from "../repositories/SendData";
@@ -89,18 +90,7 @@ interface SendOrder {
 
 export class OrderViewImportPortal {
   readonly pageSize = 50000;
-
   constructor(private sendData: SendData) {}
-
-  async difDates(date1: Date, date2: Date) {
-    var diffMs = date2.getTime() - date1.getTime();
-    var diffHrs = Math.floor((diffMs % 86400000) / 3600000);
-    var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000);
-    var diffSecs = Math.round((((diffMs % 86400000) % 3600000) % 60000) / 1000);
-    var diff = diffHrs + "h " + diffMins + "m " + diffSecs + "s";
-
-    return diff;
-  }
 
   async onNormalizedOrder(itemsOrder: GetOrderItems[]): Promise<SendOrder[]> {
     const groupOrders = await groupByObject(
@@ -265,74 +255,77 @@ export class OrderViewImportPortal {
       const startDate = new Date();
 
       for (let index = 0; index < totalPage; index++) {
-        const limit = this.pageSize;
-        const offset = this.pageSize * index;
+        try {
+          const limit = this.pageSize;
+          const offset = this.pageSize * index;
 
-        const itemsOrder = await dbSiger.$ExecuteQuery<GetOrderItems>(
-          `
-          select 
-            p.sigemp,
-            p.codigo as pedidoCod,
-            p.posicaoDetalhadaCod,
-            p.posicaoCod,
-            p.posicaoDescricao,
-            p.posicaoDetalhadaDescicao,
-            p.clienteCod,
-            p.vlrTotalMercadoria,
-            p.vlrNota,
-            p.dtFaturamento,
-            p.dtEntrada,
-            p.formaPagamento,
-            p.especieCod,
-            p.transportadoraCod,
-      
-            i.id as itemId,
-            i.produtoCod,
-            i.sequencia,
-            i.posicao as itemPosition,
-            i.qtd as itemQtd,
-            i.vlrLiquido,
-            i.vlrUnitario as vlrUnitario,
-            i.marcaCod,
-            i.recusaCod,i.recusaDescicao,
-  
-            prod.descricao as produtoDescricao,
-            prod.descricaoComplementar as produtoDescricaoComplementar,
-            prod.referencia as produtoReferencia,
-            prod.unidadeEstoque as produtoUnidadeEstoque,
-            prod.gradeCod,
-          
-            g.descricao as gradeDescricao,
-          
-            cor1.descricao as corUmDescricao,
-            cor2.descricao as corDoisDescricao,
-          
-            i.dtAlteracao
-      
-          from 01010s005.dev_pedido_v2 p
-            inner join 01010s005.dev_pedido_item_v2 i on p.codigo = i.pedidoCod 
-            inner join 01010s005.dev_produto prod on i.produtoCod = prod.codigo
-            left join 01010s005.dev_grade_produto g on prod.gradeCod = g.codigo
-            left join 01010s005.dev_cor_produto cor1 on prod.corUmCod = cor1.codigo
-            left join 01010s005.dev_cor_produto cor2 on prod.corDoisCod = cor2.codigo
+          const itemsOrder = await dbSiger.$ExecuteQuery<GetOrderItems>(
+            `
+            select 
+              p.sigemp,
+              p.codigo as pedidoCod,
+              p.posicaoDetalhadaCod,
+              p.posicaoCod,
+              p.posicaoDescricao,
+              p.posicaoDetalhadaDescicao,
+              p.clienteCod,
+              p.vlrTotalMercadoria,
+              p.vlrNota,
+              p.dtFaturamento,
+              p.dtEntrada,
+              p.formaPagamento,
+              p.especieCod,
+              p.transportadoraCod,
+        
+              i.id as itemId,
+              i.produtoCod,
+              i.sequencia,
+              i.posicao as itemPosition,
+              i.qtd as itemQtd,
+              i.vlrLiquido,
+              i.vlrUnitario as vlrUnitario,
+              i.marcaCod,
+              i.recusaCod,i.recusaDescicao,
+    
+              prod.descricao as produtoDescricao,
+              prod.descricaoComplementar as produtoDescricaoComplementar,
+              prod.referencia as produtoReferencia,
+              prod.unidadeEstoque as produtoUnidadeEstoque,
+              prod.gradeCod,
             
-          ${whereNormalized}
-          order by p.dtEntrada desc
-          limit ${limit}
-          offset ${offset}
+              g.descricao as gradeDescricao,
+            
+              cor1.descricao as corUmDescricao,
+              cor2.descricao as corDoisDescricao,
+            
+              i.dtAlteracao
+        
+            from 01010s005.dev_pedido_v2 p
+              inner join 01010s005.dev_pedido_item_v2 i on p.codigo = i.pedidoCod 
+              inner join 01010s005.dev_produto prod on i.produtoCod = prod.codigo
+              left join 01010s005.dev_grade_produto g on prod.gradeCod = g.codigo
+              left join 01010s005.dev_cor_produto cor1 on prod.corUmCod = cor1.codigo
+              left join 01010s005.dev_cor_produto cor2 on prod.corDoisCod = cor2.codigo
+              
+            ${whereNormalized}
+            limit ${limit}
+            offset ${offset}
           ;
   `
-        );
+          );
 
-        await this.sendOrder(itemsOrder);
-        console.log(`${index + 1} de ${totalPage}`);
+          await this.sendOrder(itemsOrder);
+          console.log(`${index + 1} de ${totalPage}`);
+        } catch (error) {
+          console.log(error);
+        }
       }
 
       const endDate = new Date();
 
       console.log(`-> Total pedidos: ${totalPedidos}`);
       console.log(`-> Total itens: ${totalItems}`);
-      console.log("-> " + (await this.difDates(startDate, endDate)));
+      console.log("-> " + (await diffDates(startDate, endDate)));
     } catch (error) {
       console.log(error);
     }

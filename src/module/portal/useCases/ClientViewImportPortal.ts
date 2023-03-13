@@ -44,7 +44,7 @@ interface SendClient {
 }
 
 export class ClientViewImportPortal {
-  readonly pageSize = 50000;
+  readonly pageSize = 10000;
 
   constructor(private sendData: SendData) {}
 
