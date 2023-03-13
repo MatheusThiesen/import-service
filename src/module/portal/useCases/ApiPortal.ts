@@ -1,7 +1,7 @@
 import * as cors from "cors";
 import "dotenv/config";
 import * as express from "express";
-import { queue } from "src/queue";
+import { queue } from "../../../queue";
 
 export class ServerPortal {
   async execute() {
