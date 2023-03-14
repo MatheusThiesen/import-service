@@ -20,6 +20,7 @@ export class SendData {
       var offset = 0;
       for (const content of splitArrObj(data, page)) {
         offset += content.length;
+
         try {
           await apiPortal({
             method: "post",
@@ -35,7 +36,21 @@ export class SendData {
             },
           });
         } catch (error) {
-          console.log(error);
+          this.token = (await this.authorizationRepository.singIn()).token;
+
+          await apiPortal({
+            method: "post",
+            url: pathUrl,
+            headers: {
+              ["x-access-token"]: `Bearer ${this.token}`,
+            },
+            data: {
+              total: data.length,
+              offset: offset,
+              contents: content,
+              newSiger: true,
+            },
+          });
         }
       }
 

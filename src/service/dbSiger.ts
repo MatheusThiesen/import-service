@@ -10,10 +10,11 @@ class DbSiger {
   });
 
   public async $ExecuteQuery<T>(query: string): Promise<T[]> {
-    let conn = await this.pool.getConnection();
-    const rows = await conn.query(query);
+    let conn;
 
     try {
+      conn = await this.pool.getConnection();
+      const rows = await conn.query(query);
       delete rows.meta;
 
       return rows;
