@@ -178,6 +178,7 @@ export class OrderViewImportPortal {
         deliveryDate: order.dtEntrada,
         billingDate: order.dtFaturamento,
         paymentCondition: order.formaPagamento,
+        species: order.especieCod,
         refuse: order.recusaDescicao,
         refuseCod: order.recusaCod,
         cancellationReasonCod: motivoCancelamentoResponse[0]
