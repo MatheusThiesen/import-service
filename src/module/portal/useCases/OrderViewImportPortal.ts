@@ -61,6 +61,7 @@ interface SendOrder {
   deliveryDate: Date;
   billingDate?: Date;
   paymentCondition?: string;
+  keyNfe?: string;
   position: string;
   detailPosition: string;
   species?: number;
@@ -121,9 +122,23 @@ export class OrderViewImportPortal {
 
       const numeroNotaResponse = await dbSiger.$ExecuteQuery<{
         numeroNota: number;
+        chaveNota: string;
       }>(`
-        select n.numeroNota
+        select  n.numeroNota,
+                concat( 
+                  LPAD(nChave.cUF, 2, '0'),
+                  LPAD(nChave.ano, 2, '0'),
+                  LPAD(nChave.mes, 2, '0'),
+                  LPAD(nChave.CNPJ, 14, '0'),
+                  LPAD(nChave.mod, 2, '0'),
+                  LPAD(nChave.serie, 3, '0'),
+                  LPAD(nChave.nNF, 9, '0'),
+                  LPAD(nChave.tpEmis, 1, '0'),
+                  LPAD(nChave.cNF, 8, '0'),
+                  LPAD(nChave.cDV, 1, '0')
+                  ) as chaveNota
         from 01010s005.dev_pedido_nota n 
+        left join 01010s005.DEV_NOTA_CHAVE nChave on nChave.nNF = n.numeroNota 
         where n.pedidoCod = ${orderGroup.value} 
         limit 1
       `);
@@ -155,6 +170,12 @@ export class OrderViewImportPortal {
         numeroNotaResponse[0] &&
         numeroNotaResponse[0].numeroNota
           ? String(numeroNotaResponse[0].numeroNota)
+          : "";
+      const keyNfe =
+        numeroNotaResponse &&
+        numeroNotaResponse[0] &&
+        numeroNotaResponse[0].chaveNota
+          ? String(numeroNotaResponse[0].chaveNota)
           : "";
 
       const order = orderGroup.data[0];
@@ -188,6 +209,7 @@ export class OrderViewImportPortal {
           ? motivoCancelamentoResponse[0].descricao
           : undefined,
         documentNumber,
+        keyNfe,
         detailPosition,
         position: order.posicaoDescricao,
         products: [],
