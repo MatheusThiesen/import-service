@@ -48,7 +48,7 @@ export class Portal {
   async fiveMinuteExecute() {
     const query = `p.dtAlteracao > '${await this.getFormatDate({
       dateType: "date",
-      minutes: 60 * 24 * 2,
+      minutes: 60 * 24 * 1,
       operationType: "pre",
     })}'`;
 
@@ -95,7 +95,7 @@ export class Portal {
   }
 
   async fiveMinuteCron() {
-    cron.schedule("0 */20 * * * *", async () => {
+    cron.schedule("0 */30 * * * *", async () => {
       try {
         await this.fiveMinuteExecute();
       } catch (error) {
