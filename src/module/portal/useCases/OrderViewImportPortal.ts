@@ -102,6 +102,13 @@ export class OrderViewImportPortal {
     let normalizedOrders: SendOrder[] = [];
 
     for (const orderGroup of groupOrders) {
+      const order = orderGroup.data[0];
+
+      const detailPosition =
+        Number(order.posicaoDetalhadaCod) === 5
+          ? order.posicaoDescricao
+          : order.posicaoDetalhadaDescicao;
+
       const representanteResponse = await dbSiger.$ExecuteQuery<{
         representanteCod: number;
       }>(`
@@ -120,28 +127,31 @@ export class OrderViewImportPortal {
         limit 1
       `);
 
-      const numeroNotaResponse = await dbSiger.$ExecuteQuery<{
-        numeroNota: number;
-        chaveNota: string;
-      }>(`
-        select  n.numeroNota,
-                concat( 
-                  LPAD(nChave.cUF, 2, '0'),
-                  LPAD(nChave.ano, 2, '0'),
-                  LPAD(nChave.mes, 2, '0'),
-                  LPAD(nChave.CNPJ, 14, '0'),
-                  LPAD(nChave.mod, 2, '0'),
-                  LPAD(nChave.serie, 3, '0'),
-                  LPAD(nChave.nNF, 9, '0'),
-                  LPAD(nChave.tpEmis, 1, '0'),
-                  LPAD(nChave.cNF, 8, '0'),
-                  LPAD(nChave.cDV, 1, '0')
-                  ) as chaveNota
-        from 01010s005.dev_pedido_nota n 
-        left join 01010s005.DEV_NOTA_CHAVE nChave on nChave.nNF = n.numeroNota 
-        where n.pedidoCod = ${orderGroup.value} 
-        limit 1
-      `);
+      let numeroNotaResponse = undefined;
+      if (["Faturado", "Liberado"]) {
+        numeroNotaResponse = await dbSiger.$ExecuteQuery<{
+          numeroNota: number;
+          chaveNota: string;
+        }>(`
+          select  n.numeroNota,
+                  concat( 
+                    LPAD(nChave.cUF, 2, '0'),
+                    LPAD(nChave.ano, 2, '0'),
+                    LPAD(nChave.mes, 2, '0'),
+                    LPAD(nChave.CNPJ, 14, '0'),
+                    LPAD(nChave.mod, 2, '0'),
+                    LPAD(nChave.serie, 3, '0'),
+                    LPAD(nChave.nNF, 9, '0'),
+                    LPAD(nChave.tpEmis, 1, '0'),
+                    LPAD(nChave.cNF, 8, '0'),
+                    LPAD(nChave.cDV, 1, '0')
+                    ) as chaveNota
+          from 01010s005.dev_pedido_nota n 
+          left join 01010s005.DEV_NOTA_CHAVE nChave on nChave.nNF = n.numeroNota 
+          where n.pedidoCod = ${orderGroup.value} 
+          limit 1
+        `);
+      }
 
       const motivoCancelamentoResponse = await dbSiger.$ExecuteQuery<{
         motivo: number;
@@ -177,13 +187,6 @@ export class OrderViewImportPortal {
         numeroNotaResponse[0].chaveNota
           ? String(numeroNotaResponse[0].chaveNota)
           : "";
-
-      const order = orderGroup.data[0];
-
-      const detailPosition =
-        Number(order.posicaoDetalhadaCod) === 5
-          ? order.posicaoDescricao
-          : order.posicaoDetalhadaDescicao;
 
       const createOrder: SendOrder = {
         orderCod: order.pedidoCod,
