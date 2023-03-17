@@ -128,7 +128,7 @@ export class OrderViewImportPortal {
       `);
 
       let numeroNotaResponse = undefined;
-      if (["Faturado", "Liberado"]) {
+      if (["faturado", "liberado"].includes(detailPosition.toLowerCase())) {
         numeroNotaResponse = await dbSiger.$ExecuteQuery<{
           numeroNota: number;
           chaveNota: string;
