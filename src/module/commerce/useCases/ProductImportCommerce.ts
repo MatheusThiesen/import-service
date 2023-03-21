@@ -1,6 +1,29 @@
-import { ProductRepository } from "../../entities/repositories/ProductRepository";
+import { dbSiger } from "src/service/dbSiger";
 import { SendDataRepository } from "../repositories/SendDataRepository";
 import { ExecuteServiceProps } from "../types/ExecuteService";
+
+interface ProductRecibe {
+  codigo: number;
+  situacao: number;
+  linhaProducao: number;
+  bloqVenda: number;
+  codAlternativo: string;
+  referencia: string;
+  descricao: string;
+  descricaoComplementar: string;
+  descricaoLonga: string;
+  precoPromo: number;
+  unidadeEstoque: string;
+  marcaCod: number;
+  corUmCod: number;
+  corDoisCod: number;
+  colecaoCod: number;
+  linhaCod: number;
+  grupoCod: number;
+  subGrupoCod: number;
+  genero: number;
+  precoVenda: number;
+}
 
 export interface ProductNormalized {
   cod: number;
@@ -9,91 +32,133 @@ export interface ProductNormalized {
   reference: string;
   description: string;
   completeDescription: string;
+  additionalDescription: string;
   salePrice: number;
   unitMeasure: string;
-  marcaCodigo?: number;
-  corPrimariaCodigo?: number;
-  corSecundariaCodigo?: number;
-  colecaoCodigo?: number;
-  linhaCodigo?: number;
-  grupoCodigo?: number;
-  subgrupoCodigo?: number;
-  precoVendaEmpresa?: number;
+  marcaCodigo: number;
+  corPrimariaCodigo: number;
+  corSecundariaCodigo: number;
+  colecaoCodigo: number;
+  linhaCodigo: number;
+  grupoCodigo: number;
+  subgrupoCodigo: number;
+  generoCodigo: number;
+  precoVendaEmpresa: number;
 }
 
 export class ProductImportCommerce {
-  constructor(
-    private sendData: SendDataRepository,
-    private productRepository: ProductRepository
-  ) {}
+  constructor(private sendData: SendDataRepository) {}
+
+  normalizedProduct(products: ProductRecibe[]): ProductNormalized[] {
+    return products.map((product) => ({
+      cod: product.codigo,
+      status:
+        product.linhaProducao === 0 && product.bloqVenda === 2
+          ? product.situacao
+          : 0,
+      alternativeCode: product.codAlternativo,
+      reference: product.referencia,
+      description: product.descricao,
+      completeDescription: product.descricaoLonga,
+      additionalDescription: product.descricaoComplementar,
+      salePrice: product.precoPromo,
+      unitMeasure: product.unidadeEstoque,
+      marcaCodigo: product.marcaCod,
+      corPrimariaCodigo: product.corUmCod,
+      corSecundariaCodigo: product.corDoisCod,
+      colecaoCodigo: product.colecaoCod,
+      linhaCodigo: product.linhaCod,
+      grupoCodigo: product.grupoCod,
+      subgrupoCodigo: product.subGrupoCod,
+      generoCodigo: product.genero,
+      precoVendaEmpresa: product.precoVenda,
+    }));
+  }
+
+  async getProducts({
+    search,
+    page,
+    pagesize,
+  }: {
+    search: string;
+    page: number;
+    pagesize: number;
+  }) {
+    const whereNormalized = search ? `where ${search}` : ``;
+    const limit = pagesize;
+    const offset = pagesize * page;
+
+    const productsResponse = await dbSiger.$ExecuteQuery<ProductRecibe>(`
+      select  p.codigo,
+        p.situacao,
+        p.linhaProducao,
+        p.bloqVenda,
+        p.codAlternativo,
+        p.referencia,
+        p.descricao,
+        p.descricaoComplementar,
+        p.descricaoLonga,
+        p.precoPromo,
+        p.unidadeEstoque,
+        p.marcaCod,
+        p.corUmCod,
+        p.corDoisCod,
+        p.colecaoCod,
+        p.linhaCod,		
+        p.grupoCod,
+        p.subGrupoCod,
+        p.genero,
+        p.precoVenda
+      from 01010s005.dev_produto p 
+      ${whereNormalized}
+      limit ${limit}
+      offset ${offset}
+      ;
+    `);
+
+    return this.normalizedProduct(productsResponse);
+  }
+
+  async getProductsTotal({ search }: { search: string }) {
+    const whereNormalized = search ? `where ${search}` : ``;
+
+    const productsTotal = Number(
+      (
+        await dbSiger.$ExecuteQuery<{ total: string }>(
+          `
+          select  p.codigo,
+          count(*) as total
+        from 01010s005.dev_produto p 
+        ${whereNormalized}
+        
+          ;
+      `
+        )
+      )[0].total
+    );
+
+    return productsTotal;
+  }
 
   async execute({ search }: ExecuteServiceProps) {
     const query = `brand.code IN (10,20,1,24,23,2,26,400) ${
       search ? `AND ${search}` : ""
     }`;
-    // brand.code IN (2) and  situation IN (2) and code in (211752)
 
-    const products = await this.productRepository.getAll({
-      fields: {
-        code: true,
-        situation: true,
-        alternateCode: true,
-        reference: true,
-        description: true,
-        completeDescription: true,
-        additionalDescription: true,
-        // salePrice: true,
-        promotionalPrice: true,
-        brand: {
-          code: true,
-        },
-        unitMeasure: {
-          unit: true,
-        },
-        predominantColor: {
-          colorCode: true,
-        },
-        secondColor: {
-          colorCode: true,
-        },
-        collection: {
-          collectionCode: true,
-        },
-        productLine: {
-          lineCode: true,
-        },
-        group: {
-          code: true,
-        },
-        subgroup: {
-          code: true,
-        },
-      },
+    const totalPages = await this.getProductsTotal({ search: query });
 
-      search: query,
-    });
+    for (let index = 0; index < totalPages; index++) {
+      const page = index;
 
-    const productNormalized: ProductNormalized[] = products.content.map(
-      (product) => ({
-        cod: product.code,
-        status: product.situation,
-        alternativeCode: product.alternateCode,
-        reference: product.reference,
-        description: product.description,
-        completeDescription: product.completeDescription,
-        additionalDescription: product.additionalDescription,
-        salePrice: product.promotionalPrice,
-        unitMeasure: product?.unitMeasure?.unit,
-        marcaCodigo: product?.brand?.code,
-        corPrimariaCodigo: product?.predominantColor?.colorCode,
-        corSecundariaCodigo: product?.secondColor?.colorCode,
-        colecaoCodigo: product?.collection?.collectionCode,
-        linhaCodigo: product?.productLine?.lineCode,
-        grupoCodigo: product?.group?.code,
-        subgrupoCodigo: product?.subgroup?.code,
-      })
-    );
+      const products = await this.getProducts({
+        search: query,
+        page: 0,
+        pagesize: 50,
+      });
 
-    await this.sendData.post("/products/import", productNormalized);
+      console.log(`products  ${page} de ${totalPages}`);
+
+      await this.sendData.post("/products/import", products);
+    }
   }
 }

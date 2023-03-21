@@ -41,16 +41,12 @@ export const collectionImportCommerce = new CollectionImportCommerce(
   sendData,
   entities.productCollection
 );
-export const productImportCommerce = new ProductImportCommerce(
-  sendData,
-  entities.product
-);
+export const productImportCommerce = new ProductImportCommerce(sendData);
 export const stockLocationImportCommerce = new StockLocationImportCommerce(
   sendData,
   entities.purchaseOrderItems,
   entities.accumulatedStock,
-  entities.orderItem,
-  entities.product
+  entities.orderItem
 );
 export const stockPromptDeliveryCommerce = new StockPromptDeliveryCommerce(
   sendData,

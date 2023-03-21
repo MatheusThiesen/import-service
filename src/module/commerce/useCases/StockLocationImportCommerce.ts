@@ -1,8 +1,8 @@
 import { groupByObject } from "../../../helpers/groupByObject";
 import { IAccumulatedStockRepository } from "../../../module/entities/repositories/types/IAccumulatedStockRepository";
 import { IOrderItemRepository } from "../../../module/entities/repositories/types/IOrderItemRepository";
-import { IProductRepository } from "../../../module/entities/repositories/types/IProductRepository";
 import { IPurchaseOrderItemsRepository } from "../../../module/entities/repositories/types/IPurchaseOrderItemsRepository";
+import { dbSiger } from "../../../service/dbSiger";
 import { SendDataRepository } from "../repositories/SendDataRepository";
 
 export interface StockLocationNormalized {
@@ -17,8 +17,7 @@ export class StockLocationImportCommerce {
     private sendData: SendDataRepository,
     private readonly purchaseOrderItemsRepository: IPurchaseOrderItemsRepository,
     private readonly accumulatedStockRepository: IAccumulatedStockRepository,
-    private readonly orderItemRepository: IOrderItemRepository,
-    private readonly productRepository: IProductRepository
+    private readonly orderItemRepository: IOrderItemRepository
   ) {}
 
   private async getCurrentDate({
@@ -59,25 +58,23 @@ export class StockLocationImportCommerce {
   private async getPromptDelivery(
     query: string
   ): Promise<StockLocationNormalized[]> {
-    const currentDate = await this.getCurrentDate({ type: "period" });
+    const whereNormalized = query ? `where ${query}` : ``;
 
-    const accumulatedStocks = await this.accumulatedStockRepository.getAll({
-      fields: {
-        period: true,
-        physicalQuantity: true,
-        reservedQuantity: true,
-        product: {
-          code: true,
-        },
-      },
-      search: `${query} AND period EQ ${currentDate} AND stockLocation.code IN (20,50) `,
-    });
+    const estoqueResponse = await dbSiger.$ExecuteQuery<{
+      produtoCod: number;
+      qtdLivre: number;
+    }>(`
+        select pe.produtoCod, (SUM(pe.qtdFisica) - SUM(pe.qtdReservada)) AS qtdLivre
+        from 01010s005.DEV_ESTOQUE_PRONTA_ENTREGA pe 
+        ${whereNormalized}
+        group by pe.produtoCod
+    `);
 
-    return accumulatedStocks.content.map((item) => ({
+    return estoqueResponse.map((item) => ({
       period: "pronta-entrega",
       name: "Pronta Entrega",
-      productCod: item.product.code,
-      qtd: item.physicalQuantity - item.reservedQuantity,
+      productCod: item.produtoCod,
+      qtd: item.qtdLivre,
     }));
   }
   private async getLocaleFuture(
@@ -187,15 +184,9 @@ export class StockLocationImportCommerce {
   }
 
   async execute() {
-    // 2 NIKE - 233 COLEÇÃO NIKE
-    // 10 ADIDAS - 66 COLEÇÃO ADIDAS
-    // 23 LACOSTE - 48 COLEÇÃO LACOSTE
-    // 400 US POLO
-
     const query = `
-      product.situation IN (2)
+      (pe.qtdFisica - pe.qtdReservada) > 0
       `;
-    // const query = `product.brand.code IN (400) AND product.situation IN (2)`;
 
     const promptDelivery = await this.getPromptDelivery(query);
     // const localeFuture = await this.getLocaleFuture(query);

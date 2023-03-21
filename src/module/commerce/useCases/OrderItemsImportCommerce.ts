@@ -1,10 +1,22 @@
-import { OrderItem } from "src/module/entities/model/OrderItem";
 import { IOrderItemRepository } from "src/module/entities/repositories/types/IOrderItemRepository";
+import { dbSiger } from "../../../service/dbSiger";
 import { SendDataRepository } from "../repositories/SendDataRepository";
 import { ExecuteServiceProps } from "../types/ExecuteService";
 
+interface OrderItemRecibe {
+  itemId: number;
+  produtoCod: number;
+  pedidoCod: number;
+  posicaoItemCod: number;
+  dtFaturamento: Date;
+  sequencia: number;
+  qtd: number;
+  vlrLiquido: number;
+  vlrUnitario: number;
+}
+
 interface OrderItemNormalized {
-  cod: number;
+  cod: string;
   qtd: number;
   value: number;
   valueTotal: number;
@@ -14,95 +26,98 @@ interface OrderItemNormalized {
 }
 
 export class OrderItemImportCommerce {
-  readonly size = 1000;
+  readonly pagesize = 1000;
 
   constructor(
     private sendData: SendDataRepository,
     private readonly orderItemRepository: IOrderItemRepository
   ) {}
 
-  onOrderItemNormalized(ordersItems: OrderItem[]): OrderItemNormalized[] {
-    const normalizedDate = (date: string) => {
-      const [day, month, year] = date.split("/");
-      const newDate = new Date(`${year}-${month}-${day}T00:00`);
-
-      return newDate;
-    };
-
+  onOrderItemNormalized(ordersItems: OrderItemRecibe[]): OrderItemNormalized[] {
     return ordersItems.map((item) => ({
-      pedidoCodigo: item.order.code,
-      produtoCodigo: item.product.code,
-      dataFaturmaneto: normalizedDate(item.order.deliveryDate),
-      cod: item.identifier,
-      status: item.positionItem,
-      qtd: item.quantity,
-      value: item.price,
-      valueTotal: item.grossAmount,
-      sequencia: item.itemNumber,
+      cod: item.itemId.toString(),
+      pedidoCodigo: item.pedidoCod,
+      produtoCodigo: item.produtoCod,
+      dataFaturmaneto: item.dtFaturamento,
+      status: item.posicaoItemCod,
+      qtd: item.qtd,
+      value: item.vlrUnitario,
+      valueTotal: item.vlrLiquido,
+      sequencia: item.sequencia,
     }));
   }
 
-  async execute({ search }: ExecuteServiceProps) {
-    const orderItems = await this.orderItemRepository.getAll({
-      fields: {
-        product: {
-          code: true,
-        },
-        order: {
-          code: true,
-          deliveryDate: true,
-        },
-        quantity: true,
-        price: true,
-        grossAmount: true,
-        positionItem: true,
-        identifier: true,
-        itemNumber: true,
-      },
-      search,
-      isPagination: true,
-      page: 0,
-      size: this.size,
-    });
+  async getOrderItems({
+    search,
+    page,
+    pagesize,
+  }: {
+    search: string;
+    page: number;
+    pagesize: number;
+  }) {
+    const whereNormalized = search ? `where ${search}` : ``;
+    const limit = pagesize;
+    const offset = pagesize * page;
 
-    await this.sendData.post(
-      "/order-items/import",
-      this.onOrderItemNormalized(orderItems.content)
+    const itemsResponse = await dbSiger.$ExecuteQuery<OrderItemRecibe>(`
+      select  
+        i.id as itemId,
+		    i.produtoCod,
+        i.pedidoCod,
+        i.posicaoCod as posicaoItemCod,
+        p.dtFaturamento,
+        i.sequencia,
+        i.qtd,
+  		  i.vlrLiquido,
+        i.vlrUnitario as vlrUnitario
+      from 01010s005.dev_pedido_item_v2 i
+      inner join 01010s005.dev_pedido_v2 p on p.codigo = i.pedidoCod
+      ${whereNormalized}
+      limit ${limit}
+      offset ${offset}
+      ;
+    `);
+
+    return this.onOrderItemNormalized(itemsResponse);
+  }
+
+  async getTotalOrder({ search }: { search: string }) {
+    const whereNormalized = search ? `where ${search}` : ``;
+
+    const totalPedidos = Number(
+      (
+        await dbSiger.$ExecuteQuery<{ total: string }>(
+          `
+          select  
+            count(*) as total
+          from 01010s005.dev_pedido_item_v2 i
+          inner join 01010s005.dev_pedido_v2 p on p.codigo = i.pedidoCod
+          ${whereNormalized}
+          ;
+      `
+        )
+      )[0].total
     );
 
-    const totalPages = Number(orderItems.totalPages);
+    return totalPedidos;
+  }
+
+  async execute({ search }: ExecuteServiceProps) {
+    const totalPages = await this.getTotalOrder({ search });
 
     for (let index = 0; index < totalPages; index++) {
-      const page = index + 1;
+      const page = index;
+
+      const orderItems = await this.getOrderItems({
+        search: search,
+        page: page,
+        pagesize: this.pagesize,
+      });
 
       console.log(`orderItems  ${page} de ${totalPages}`);
 
-      const orderItemsResponse = await this.orderItemRepository.getAll({
-        fields: {
-          product: {
-            code: true,
-          },
-          order: {
-            code: true,
-            deliveryDate: true,
-          },
-          quantity: true,
-          price: true,
-          grossAmount: true,
-          positionItem: true,
-          identifier: true,
-          itemNumber: true,
-        },
-        search,
-        isPagination: true,
-        page: page,
-        size: this.size,
-      });
-
-      await this.sendData.post(
-        "/order-items/import",
-        this.onOrderItemNormalized(orderItemsResponse.content)
-      );
+      await this.sendData.post("/order-items/import", orderItems);
     }
   }
 }
