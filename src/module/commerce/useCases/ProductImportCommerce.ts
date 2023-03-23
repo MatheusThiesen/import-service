@@ -1,4 +1,4 @@
-import { dbSiger } from "src/service/dbSiger";
+import { dbSiger } from "../../../service/dbSiger";
 import { SendDataRepository } from "../repositories/SendDataRepository";
 import { ExecuteServiceProps } from "../types/ExecuteService";
 
@@ -47,6 +47,8 @@ export interface ProductNormalized {
 }
 
 export class ProductImportCommerce {
+  readonly size = 5000;
+
   constructor(private sendData: SendDataRepository) {}
 
   normalizedProduct(products: ProductRecibe[]): ProductNormalized[] {
@@ -141,7 +143,7 @@ export class ProductImportCommerce {
   }
 
   async execute({ search }: ExecuteServiceProps) {
-    const query = `brand.code IN (10,20,1,24,23,2,26,400) ${
+    const query = `marcaCod IN (10,20,1,24,23,2,26,400) ${
       search ? `AND ${search}` : ""
     }`;
 
@@ -152,11 +154,9 @@ export class ProductImportCommerce {
 
       const products = await this.getProducts({
         search: query,
-        page: 0,
-        pagesize: 50,
+        page: page,
+        pagesize: this.size,
       });
-
-      console.log(`products  ${page} de ${totalPages}`);
 
       await this.sendData.post("/products/import", products);
     }

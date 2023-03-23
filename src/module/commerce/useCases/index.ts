@@ -10,6 +10,7 @@ import { ListPriceImportCommerce } from "./ListPriceImportCommerce";
 import { OrderItemImportCommerce } from "./OrderItemsImportCommerce";
 import { ProductImportCommerce } from "./ProductImportCommerce";
 import { PurchaseOrderCommerce } from "./PurchaseOrderCommerce";
+import { StockFutureCommerce } from "./StockFutureCommerce";
 import { StockLocationImportCommerce } from "./StockLocationImportCommerce";
 import { StockPromptDeliveryCommerce } from "./StockPromptDeliveryCommerce";
 import { SubGroupImportCommerce } from "./SubGroupImportCommerce";
@@ -49,8 +50,7 @@ export const stockLocationImportCommerce = new StockLocationImportCommerce(
   entities.orderItem
 );
 export const stockPromptDeliveryCommerce = new StockPromptDeliveryCommerce(
-  sendData,
-  entities.accumulatedStock
+  sendData
 );
 export const purchaseOrderCommerce = new PurchaseOrderCommerce(
   sendData,
@@ -64,3 +64,4 @@ export const listPriceImportCommerce = new ListPriceImportCommerce(
   sendData,
   entities.itemPriceListRepository
 );
+export const stockFutureCommerce = new StockFutureCommerce(sendData);

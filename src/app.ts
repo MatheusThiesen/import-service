@@ -8,7 +8,9 @@ import {
   lineImportCommerce,
   listPriceImportCommerce,
   orderItemImportCommerce,
+  productImportCommerce,
   purchaseOrderCommerce,
+  stockFutureCommerce,
   stockPromptDeliveryCommerce,
   subgroupImportCommerce,
 } from "./module/commerce/useCases";
@@ -65,7 +67,91 @@ export class App {
     return `${dateLabel} EQ "${date}" AND ${timeLabel} GTE ${time}`;
   }
 
+  async getFormatDate({
+    dateType,
+    minutes,
+    operationType,
+  }: {
+    minutes: number;
+    operationType: "pre" | "pos";
+    dateType: "date" | "dateTime";
+  }) {
+    const dateNow = new Date();
+
+    if (operationType === "pre") {
+      dateNow.setMinutes(dateNow.getMinutes() - minutes);
+    } else {
+      dateNow.setMinutes(dateNow.getMinutes() + minutes);
+    }
+
+    const day = dateNow.toLocaleString("pt-br", {
+      day: "2-digit",
+    });
+
+    const month = dateNow.toLocaleString("pt-br", {
+      month: "2-digit",
+    });
+
+    const year = dateNow.toLocaleString("pt-br", {
+      year: "numeric",
+    });
+
+    const time = dateNow.toLocaleString("pt-br", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+    if (dateType === "date") {
+      return `${year}-${month}-${day}`;
+    } else {
+      return `${year}-${month}-${day}T${time}`;
+    }
+  }
+
   async fiveMinuteExecute() {
+    await productImportCommerce.execute({
+      search: `p.dtAlteracao > '${await this.getFormatDate({
+        dateType: "date",
+        minutes: 60 * 24 * 1,
+        operationType: "pre",
+      })}'`,
+    });
+
+    await stockPromptDeliveryCommerce.execute({
+      search: `pe.dtAlteracao > '${await this.getFormatDate({
+        dateType: "date",
+        minutes: 60 * 24 * 1,
+        operationType: "pre",
+      })}'`,
+    });
+
+    await stockFutureCommerce.execute({
+      search: `m.produtoCod in (
+        select distinct produtoCod from (
+          select i.produtoCod
+          from 01010s005.dev_pedido_item_v2 i
+          inner join 01010s005.dev_pedido_v2 p on p.codigo = pedidoCod
+          where i.dtAlteracao > '${await this.getFormatDate({
+            dateType: "date",
+            minutes: 60 * 24 * 1,
+            operationType: "pre",
+          })}' and i.posicaoCod in (1,3) and p.especieCod = 9
+          
+          union 
+          
+          select m.produtoCod
+          from 01010s005.dev_metas m
+          where m.dtAlteracao > '${await this.getFormatDate({
+            dateType: "date",
+            minutes: 60 * 24 * 1,
+            operationType: "pre",
+          })}'
+        
+        ) as analises
+      ) and 
+      m.periodo >= concat(TO_CHAR(CURDATE(),'YYYY-MM'),'-','01') `,
+    });
+
     const queryFiveMinute = this.getQueryUpdateAt({ minute: 10 });
     await colorImportCommerce.execute({ search: queryFiveMinute });
     await subgroupImportCommerce.execute({ search: queryFiveMinute });
@@ -73,12 +159,6 @@ export class App {
     await brandImportCommerce.execute({ search: queryFiveMinute });
     await collectionImportCommerce.execute({ search: queryFiveMinute });
     await groupImportCommerce.execute({ search: queryFiveMinute });
-    await stockPromptDeliveryCommerce.execute({
-      search: queryFiveMinute,
-    });
-    await orderItemImportCommerce.execute({
-      search: queryFiveMinute,
-    });
     await listPriceImportCommerce.execute({
       search: queryFiveMinute,
     });
@@ -144,13 +224,24 @@ export class App {
 
   async execute() {
     try {
+      await productImportCommerce.execute({
+        search: `p.dtAlteracao > '${await this.getFormatDate({
+          dateType: "date",
+          minutes: 60 * 24 * 10,
+          operationType: "pre",
+        })}'`,
+      });
+      await stockFutureCommerce.execute({
+        search: "m.qtdAberto > 0",
+      });
+      await stockPromptDeliveryCommerce.execute({
+        search: "(pe.qtdFisica - pe.qtdReservada) > 0",
+      });
       await this.fiveMinuteCron();
       await observableFolder();
       await this.oneDayCron();
-
       // const queryOrderItem = `entryDate GTE "01/10/2021" AND order.positionOrder IN (2,3)`;
       // const queryPurchaseOrder = `product.situation IN (2) AND deliveryDeadlineDate GT "01/01/2023" AND itemStatus IN (2)`;
-
       // await purchaseOrderCommerce.execute({
       //   search: queryPurchaseOrder,
       // });

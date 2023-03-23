@@ -1,5 +1,4 @@
-import { AccumulatedStock } from "src/module/entities/model/AccumulatedStock";
-import { IAccumulatedStockRepository } from "../../entities/repositories/types/IAccumulatedStockRepository";
+import { dbSiger } from "../../../service/dbSiger";
 import { SendDataRepository } from "../repositories/SendDataRepository";
 import { ExecuteServiceProps } from "../types/ExecuteService";
 
@@ -10,13 +9,15 @@ export interface StockLocationNormalized {
   qtd: number;
 }
 
-export class StockPromptDeliveryCommerce {
-  readonly size = 1000;
+export interface StockRecibe {
+  produtoCod: number;
+  qtdLivre: number;
+}
 
-  constructor(
-    private sendData: SendDataRepository,
-    private readonly accumulatedStockRepository: IAccumulatedStockRepository
-  ) {}
+export class StockPromptDeliveryCommerce {
+  readonly size = 5000;
+
+  constructor(private sendData: SendDataRepository) {}
 
   private async getCurrentDate({
     type,
@@ -35,66 +36,75 @@ export class StockPromptDeliveryCommerce {
     }
   }
 
-  private onNormalizedStock(accumulatedStocks: AccumulatedStock[]) {
+  private onNormalizedStock(accumulatedStocks: StockRecibe[]) {
     return accumulatedStocks.map((item) => ({
       period: "pronta-entrega",
       name: "Pronta Entrega",
-      productCod: item.product.code,
-      qtd: Math.trunc(item.physicalQuantity - item.reservedQuantity),
+      productCod: item.produtoCod,
+      qtd: Math.trunc(item.qtdLivre),
     }));
   }
 
-  async execute({ search }: ExecuteServiceProps) {
-    const query = `product.situation IN (2) ${search ? `AND ${search}` : ""}`;
-    const currentDate = await this.getCurrentDate({ type: "period" });
+  async getStocks({
+    search,
+    page,
+    pagesize,
+  }: {
+    search: string;
+    page: number;
+    pagesize: number;
+  }) {
+    const limit = pagesize;
+    const offset = pagesize * page;
 
-    const accumulatedStocks = await this.accumulatedStockRepository.getAll({
-      fields: {
-        period: true,
-        physicalQuantity: true,
-        reservedQuantity: true,
-        product: {
-          code: true,
-        },
-      },
-      search: `${query} AND period EQ ${currentDate} AND stockLocation.code IN (20) `,
-      isPagination: true,
-      page: 0,
-      size: this.size,
-    });
+    const productsResponse = await dbSiger.$ExecuteQuery<StockRecibe>(`
+      select 
+        pe.produtoCod,
+        (SUM(pe.qtdFisica) - SUM(pe.qtdReservada)) AS qtdLivre
+      from 01010s005.DEV_ESTOQUE_PRONTA_ENTREGA pe 
+      ${search}
+      group by pe.produtoCod
+      limit ${limit}
+      offset ${offset}
+      ;
+    `);
 
-    await this.sendData.post(
-      "/stock-locations/import",
-      this.onNormalizedStock(accumulatedStocks.content)
+    return this.onNormalizedStock(productsResponse);
+  }
+
+  async getStocksTotal({ search }: { search: string }) {
+    const stocksTotal = Number(
+      (
+        await dbSiger.$ExecuteQuery<{ total: string }>(
+          `
+          select count(*) as total from (
+            select (count(*) - count(*) + 1) as "total"
+            from 01010s005.DEV_ESTOQUE_PRONTA_ENTREGA pe 
+            ${search}
+            group by pe.produtoCod
+          )  as analytics;
+      `
+        )
+      )[0].total
     );
 
-    const totalPages = Number(accumulatedStocks.totalPages);
+    return stocksTotal;
+  }
+
+  async execute({ search }: ExecuteServiceProps) {
+    const query = search ? `where ${search}` : ``;
+    const totalPages = await this.getStocksTotal({ search: query });
 
     for (let index = 0; index < totalPages; index++) {
-      const page = index + 1;
+      const page = index;
 
-      console.log(`accumulated-stocks  ${page} de ${totalPages}`);
+      const stocks = await this.getStocks({
+        search: query,
+        page: page,
+        pagesize: this.size,
+      });
 
-      const accumulatedStocksResponse =
-        await this.accumulatedStockRepository.getAll({
-          fields: {
-            period: true,
-            physicalQuantity: true,
-            reservedQuantity: true,
-            product: {
-              code: true,
-            },
-          },
-          search: `${query} AND period EQ ${currentDate} AND stockLocation.code IN (20) `,
-          isPagination: true,
-          page: page,
-          size: this.size,
-        });
-
-      await this.sendData.post(
-        "/stock-locations/import",
-        this.onNormalizedStock(accumulatedStocksResponse.content)
-      );
+      await this.sendData.post("/stock-locations/import", stocks);
     }
   }
 }
