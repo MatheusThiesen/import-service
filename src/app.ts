@@ -214,6 +214,9 @@ export class App {
         this.fiveMinuteCron(),
         observableFolder(),
         this.oneDayCron(),
+        productImportCommerce.execute({
+          search: `p.situacao = 2 and p.linhaProducao = 0 and bloqVenda = 2`,
+        }),
       ]);
     } catch (err) {
       console.log("error!");
