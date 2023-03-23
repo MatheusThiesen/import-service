@@ -129,7 +129,7 @@ export class OrderViewImportPortal {
 
       let numeroNotaResponse = undefined;
       const now = new Date();
-      now.setDate(now.getDate() - 1);
+      now.setDate(now.getDate() - 3);
 
       if (
         ["faturado"].includes(detailPosition.toLowerCase()) &&
