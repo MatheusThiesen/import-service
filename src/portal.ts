@@ -95,9 +95,25 @@ export class Portal {
   }
 
   async fiveMinuteCron() {
-    cron.schedule("0 */30 * * * *", async () => {
+    cron.schedule("0 */15 * * * *", async () => {
       try {
         await this.fiveMinuteExecute();
+      } catch (error) {
+        console.log(error);
+      }
+    });
+  }
+
+  async sixtyMinuteExecute() {
+    queue.push({
+      entity: "billetViewImportPortal",
+    });
+  }
+
+  async sixtyMinuteCron() {
+    cron.schedule("0 */60 * * * *", async () => {
+      try {
+        await this.sixtyMinuteExecute();
       } catch (error) {
         console.log(error);
       }
@@ -148,9 +164,12 @@ export class Portal {
 
   async execute() {
     try {
-      await serverPortal.execute();
-      await this.fiveMinuteCron();
-      await this.oneDayCron();
+      await Promise.all([
+        serverPortal.execute(),
+        this.fiveMinuteCron(),
+        this.oneDayCron(),
+        this.sixtyMinuteCron(),
+      ]);
     } catch (err) {
       console.log("error!");
       console.log(err);

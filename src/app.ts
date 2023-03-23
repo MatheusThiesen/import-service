@@ -7,9 +7,7 @@ import {
   groupImportCommerce,
   lineImportCommerce,
   listPriceImportCommerce,
-  orderItemImportCommerce,
   productImportCommerce,
-  purchaseOrderCommerce,
   stockFutureCommerce,
   stockPromptDeliveryCommerce,
   subgroupImportCommerce,
@@ -109,24 +107,23 @@ export class App {
   }
 
   async fiveMinuteExecute() {
-    await productImportCommerce.execute({
-      search: `p.dtAlteracao > '${await this.getFormatDate({
-        dateType: "date",
-        minutes: 60 * 24 * 1,
-        operationType: "pre",
-      })}'`,
-    });
-
-    await stockPromptDeliveryCommerce.execute({
-      search: `pe.dtAlteracao > '${await this.getFormatDate({
-        dateType: "date",
-        minutes: 60 * 24 * 1,
-        operationType: "pre",
-      })}'`,
-    });
-
-    await stockFutureCommerce.execute({
-      search: `m.produtoCod in (
+    await Promise.all([
+      productImportCommerce.execute({
+        search: `p.dtAlteracao > '${await this.getFormatDate({
+          dateType: "date",
+          minutes: 60 * 24 * 1,
+          operationType: "pre",
+        })}'`,
+      }),
+      stockPromptDeliveryCommerce.execute({
+        search: `pe.dtAlteracao > '${await this.getFormatDate({
+          dateType: "date",
+          minutes: 60 * 24 * 1,
+          operationType: "pre",
+        })}'`,
+      }),
+      stockFutureCommerce.execute({
+        search: `m.produtoCod in (
         select distinct produtoCod from (
           select i.produtoCod
           from 01010s005.dev_pedido_item_v2 i
@@ -150,7 +147,8 @@ export class App {
         ) as analises
       ) and 
       m.periodo >= concat(TO_CHAR(CURDATE(),'YYYY-MM'),'-','01') `,
-    });
+      }),
+    ]);
 
     const queryFiveMinute = this.getQueryUpdateAt({ minute: 10 });
     await colorImportCommerce.execute({ search: queryFiveMinute });
@@ -161,16 +159,6 @@ export class App {
     await groupImportCommerce.execute({ search: queryFiveMinute });
     await listPriceImportCommerce.execute({
       search: queryFiveMinute,
-    });
-
-    const queryFiveMinuteAlterLabel = this.getQueryUpdateAt({
-      minute: 10,
-      dateLabel: "lastRegistryChangeDate",
-      timeLabel: "lastRegistryChangeTime",
-    });
-
-    await purchaseOrderCommerce.execute({
-      search: queryFiveMinuteAlterLabel,
     });
   }
   async fiveMinuteCron() {
@@ -193,22 +181,6 @@ export class App {
     await brandImportCommerce.execute({ search: queryDay });
     await collectionImportCommerce.execute({ search: queryDay });
     await groupImportCommerce.execute({ search: queryDay });
-    await stockPromptDeliveryCommerce.execute({
-      search: queryDay,
-    });
-    await orderItemImportCommerce.execute({
-      search: queryDay,
-    });
-
-    const queryDayAlterLabel = this.getQueryUpdateAt({
-      minute: dayCalc,
-      dateLabel: "lastRegistryChangeDate",
-      timeLabel: "lastRegistryChangeTime",
-    });
-
-    await purchaseOrderCommerce.execute({
-      search: queryDayAlterLabel,
-    });
   }
   async oneDayCron() {
     cron.schedule("0 59 */23 * * *", async () => {
@@ -224,30 +196,25 @@ export class App {
 
   async execute() {
     try {
-      await productImportCommerce.execute({
-        search: `p.dtAlteracao > '${await this.getFormatDate({
-          dateType: "date",
-          minutes: 60 * 24 * 10,
-          operationType: "pre",
-        })}'`,
-      });
-      await stockFutureCommerce.execute({
-        search: "m.qtdAberto > 0",
-      });
-      await stockPromptDeliveryCommerce.execute({
-        search: "(pe.qtdFisica - pe.qtdReservada) > 0",
-      });
-      await this.fiveMinuteCron();
-      await observableFolder();
-      await this.oneDayCron();
-      // const queryOrderItem = `entryDate GTE "01/10/2021" AND order.positionOrder IN (2,3)`;
-      // const queryPurchaseOrder = `product.situation IN (2) AND deliveryDeadlineDate GT "01/01/2023" AND itemStatus IN (2)`;
-      // await purchaseOrderCommerce.execute({
-      //   search: queryPurchaseOrder,
+      // await productImportCommerce.execute({
+      //   search: `p.dtAlteracao > '${await this.getFormatDate({
+      //     dateType: "date",
+      //     minutes: 60 * 24 * 10,
+      //     operationType: "pre",
+      //   })}'`,
       // });
-      // await orderItemImportCommerce.execute({
-      //   search: queryOrderItem,
+      // await stockFutureCommerce.execute({
+      //   search: "m.qtdAberto > 0",
       // });
+      // await stockPromptDeliveryCommerce.execute({
+      //   search: "(pe.qtdFisica - pe.qtdReservada) > 0",
+      // });
+
+      await Promise.all([
+        this.fiveMinuteCron(),
+        observableFolder(),
+        this.oneDayCron(),
+      ]);
     } catch (err) {
       console.log("error!");
       console.log(err);
