@@ -10,10 +10,20 @@ export interface StockLocationNormalized {
   date: Date;
 }
 
+export interface ProductRecibe {
+  codigo: number;
+}
+
 export interface ItemsRecibe {
   produtoCod: number;
   qtd: number;
   dtFaturamento: string;
+}
+
+export interface reserveRecibe {
+  produtoCod: number;
+  qtd: number;
+  dtEntrega: string;
 }
 
 export interface PurchaseRecibe {
@@ -46,54 +56,138 @@ export class StockFutureCommerce {
     return date;
   }
 
-  async onNormalizedStock(purchasesRecibe: PurchaseRecibe[]) {
+  async onNormalizedStock(productsRecibe: ProductRecibe[]) {
     const accumulatedStocks: StockLocationNormalized[] = [];
 
-    for (const purchase of purchasesRecibe) {
+    const now = new Date();
+    const periodMonth = ("00" + String(now.getMonth() + 1)).slice(-2);
+    const periodYear = now.getFullYear();
+
+    const periodNow = `${periodMonth}-${periodYear}`;
+
+    for (const product of productsRecibe) {
+      const purchases = await this.getPurchases({
+        productCod: product.codigo,
+      });
+      accumulatedStocks.push(
+        ...purchases.map((purchase) => ({
+          period: purchase.periodo,
+          name: this.normalizedPeriodName(purchase.periodo),
+          productCod: purchase.produtoCod,
+          qtd: Math.trunc(Number(purchase.qtd)),
+          date: this.normalizedPeriodDate(purchase.periodo),
+        }))
+      );
+
       const items = await this.getItems({
-        productCod: purchase.produtoCod,
-        period: purchase.periodo,
+        productCod: product.codigo,
       });
 
-      accumulatedStocks.push({
-        period: purchase.periodo,
-        name: this.normalizedPeriodName(purchase.periodo),
-        productCod: purchase.produtoCod,
-        qtd: Math.trunc(Number(purchase.qtd) - items),
-        date: this.normalizedPeriodDate(purchase.periodo),
-      });
+      for (const item of items) {
+        const reserves = await this.getReserves({
+          productCod: product.codigo,
+          period: item.dtFaturamento,
+        });
+
+        const qtdAvailable = item.qtd - reserves;
+
+        const findOne = accumulatedStocks.find(
+          (f) =>
+            f.productCod === item.produtoCod && f.period === item.dtFaturamento
+        );
+
+        if (findOne) {
+          findOne.qtd = findOne.qtd - qtdAvailable;
+        } else {
+          const findFirst = accumulatedStocks.find(
+            (f) =>
+              f.productCod === item.produtoCod &&
+              accumulatedStocks &&
+              this.normalizedPeriodDate(f.period) <
+                this.normalizedPeriodDate(item.dtFaturamento)
+          );
+          if (findFirst) {
+            findFirst.qtd = findFirst.qtd - qtdAvailable;
+          }
+        }
+      }
+      const findNowStock = accumulatedStocks.find(
+        (f) =>
+          f.productCod === product.codigo &&
+          f.date >= this.normalizedPeriodDate(periodNow)
+      );
+
+      for (const stock of accumulatedStocks) {
+        if (findNowStock) {
+          if (stock.date < findNowStock.date) {
+            findNowStock.qtd = findNowStock.qtd + stock.qtd;
+            stock.qtd = 0;
+          }
+        }
+      }
     }
 
     return accumulatedStocks;
   }
 
-  async getItems({
+  async getItems({ productCod }: { productCod: number }) {
+    const itemsResponse = await dbSiger.$ExecuteQuery<ItemsRecibe>(`
+      select 
+        i.produtoCod, 
+        TO_CHAR(i.dtFaturamento,'MM-YYYY') as dtFaturamento, 
+        sum(i.qtd ) as qtd
+      from 01010s005.dev_pedido_item_v2 i
+      where 
+        i.produtoCod in (${productCod}) and 
+        i.posicaoCod = 1
+      group by i.produtoCod, TO_CHAR(i.dtFaturamento,'MM-YYYY');
+    `);
+
+    return itemsResponse;
+  }
+
+  async getReserves({
     productCod,
     period,
   }: {
     productCod: number;
     period: string;
   }) {
-    const itemsResponse = await dbSiger.$ExecuteQuery<ItemsRecibe>(`
+    const itemsResponse = await dbSiger.$ExecuteQuery<reserveRecibe>(`
       select 
-        i.produtoCod, 
-        TO_CHAR(i.dtFaturamento,'MM-YYYY') as dtFaturamento, 
-        sum(i.qtd) as qtd
-      from 01010s005.dev_pedido_item_v2 i 
-      where i.posicaoCod in (1,3) and 
-            i.produtoCod in (${productCod}) and 
-            TO_CHAR(i.dtFaturamento,'MM-YYYY') in ('${period}')
-      group by i.produtoCod, TO_CHAR(i.dtFaturamento,'MM-YYYY')
-      ;
+        r.produtoCod, 
+        TO_CHAR(r.dtEntrega,'MM-YYYY') as dtEntrega, 
+        sum(r.qtdReservada ) as qtd
+      from 01010s005.dev_item_reserva r
+      where 
+        r.produtoCod in (${productCod}) and
+        TO_CHAR(r.dtEntrega,'MM-YYYY') in ('${period}')
+      group by r.produtoCod, TO_CHAR(r.dtEntrega,'MM-YYYY');
     `);
 
-    return itemsResponse.reduce(
-      (accumulator, currentValue) => accumulator + currentValue.qtd,
-      0
-    );
+    return itemsResponse.reduce((accumulator, currentValue) => {
+      const convertNumber = Number(currentValue.qtd);
+      return accumulator + convertNumber;
+    }, 0);
   }
 
-  async getPurchases({
+  async getPurchases({ productCod }: { productCod: number }) {
+    const productsResponse = await dbSiger.$ExecuteQuery<PurchaseRecibe>(`
+    select  
+      m.produtoCod, 
+      TO_CHAR(m.periodo,'MM-YYYY') as periodo, 
+      SUM(m.qtdAberto) as qtd
+    from 01010s005.dev_metas m 
+    where 
+      m.produtoCod in (${productCod})
+    group by produtoCod, TO_CHAR(m.periodo,'MM-YYYY')
+    ;
+  `);
+
+    return productsResponse;
+  }
+
+  async getProducts({
     search,
     page,
     pagesize,
@@ -105,13 +199,11 @@ export class StockFutureCommerce {
     const limit = pagesize;
     const offset = pagesize * page;
 
-    const productsResponse = await dbSiger.$ExecuteQuery<PurchaseRecibe>(`
-    select  m.produtoCod, 
-        TO_CHAR(m.periodo,'MM-YYYY') as periodo, 
-        SUM(m.qtdAberto) as qtd
-    from 01010s005.dev_metas m 
+    const productsResponse = await dbSiger.$ExecuteQuery<ProductRecibe>(`
+    select  
+      p.codigo
+    FROM 01010s005.dev_produto p
     ${search}
-    group by produtoCod, TO_CHAR(m.periodo,'MM-YYYY')
     limit ${limit}
     offset ${offset}
     ;
@@ -120,35 +212,31 @@ export class StockFutureCommerce {
     return await this.onNormalizedStock(productsResponse);
   }
 
-  async getPurchasesTotal({ search }: { search: string }) {
-    const stocksTotal = Number(
+  async getProductsTotal({ search }: { search: string }) {
+    const productsTotal = Number(
       (
         await dbSiger.$ExecuteQuery<{ total: string }>(
           `
           select count(*) as total
-          from (
-            select  m.produtoCod
-            from 01010s005.dev_metas m 
-            ${search}
-            group by produtoCod, TO_CHAR(m.periodo,'MM-YYYY')
-          ) as metas
+          FROM 01010s005.dev_produto p
+          ${search}
       `
         )
       )[0].total
     );
 
-    return stocksTotal;
+    return productsTotal;
   }
 
   async execute({ search }: ExecuteServiceProps) {
     const query = search ? `where ${search}` : ``;
 
-    const totalPages = await this.getPurchasesTotal({ search: query });
+    const totalPages = await this.getProductsTotal({ search: query });
 
     for (let index = 0; index < totalPages; index++) {
       const page = index;
 
-      const stocks = await this.getPurchases({
+      const stocks = await this.getProducts({
         search: query,
         page: page,
         pagesize: this.size,

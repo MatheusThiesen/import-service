@@ -11,6 +11,9 @@ export type Task = {
     | "brandViewImportPortal"
     | "clientViewImportPortal"
     | "orderViewImportPortal"
+    | "brandsToSellerViewImportPortal"
+    | "eanViewImportPortal"
+    | "gridViewImportPortal"
     | "sellerViewImportPortal";
 };
 

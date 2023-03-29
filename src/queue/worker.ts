@@ -3,8 +3,11 @@ import "dotenv/config";
 import { done } from "fastq";
 import {
   billetViewImportPortal,
+  brandsToSellerViewImportPortal,
   brandViewImportPortal,
   clientViewImportPortal,
+  eanViewImportPortal,
+  gridViewImportPortal,
   orderViewImportPortal,
   sellerViewImportPortal,
 } from "../module/portal/useCases";
@@ -26,6 +29,15 @@ export async function worker(arg: Task, cb: done) {
       break;
     case "sellerViewImportPortal":
       await sellerViewImportPortal.execute({ search: arg.search });
+      break;
+    case "brandsToSellerViewImportPortal":
+      await brandsToSellerViewImportPortal.execute({ search: arg.search });
+      break;
+    case "eanViewImportPortal":
+      await eanViewImportPortal.execute({ search: arg.search });
+      break;
+    case "gridViewImportPortal":
+      await gridViewImportPortal.execute({ search: arg.search });
       break;
   }
 

@@ -92,6 +92,33 @@ export class Portal {
       })}'`,
       entity: "billetViewImportPortal",
     });
+
+    queue.push({
+      entity: "brandsToSellerViewImportPortal",
+      search: `rm.dtAlteracao > '${await this.getFormatDate({
+        dateType: "date",
+        minutes: 60 * 24 * 2,
+        operationType: "pre",
+      })}'`,
+    });
+
+    queue.push({
+      entity: "gridViewImportPortal",
+      search: `g.dtAlteracao > '${await this.getFormatDate({
+        dateType: "date",
+        minutes: 60 * 24 * 2,
+        operationType: "pre",
+      })}'`,
+    });
+
+    queue.push({
+      entity: "eanViewImportPortal",
+      search: `e.dtAlteracao > '${await this.getFormatDate({
+        dateType: "date",
+        minutes: 60 * 24 * 2,
+        operationType: "pre",
+      })}'`,
+    });
   }
 
   async fiveMinuteCron() {
@@ -136,11 +163,9 @@ export class Portal {
       search: queryOrder,
       entity: "orderViewImportPortal",
     });
-
     queue.push({
       entity: "brandViewImportPortal",
     });
-
     queue.push({
       entity: "sellerViewImportPortal",
     });
@@ -149,6 +174,12 @@ export class Portal {
     });
     queue.push({
       entity: "billetViewImportPortal",
+    });
+    queue.push({
+      entity: "brandsToSellerViewImportPortal",
+    });
+    queue.push({
+      entity: "gridViewImportPortal",
     });
   }
 

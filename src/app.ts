@@ -65,14 +65,14 @@ export class App {
     return `${dateLabel} EQ "${date}" AND ${timeLabel} GTE ${time}`;
   }
 
-  async getFormatDate({
+  getFormatDate({
     dateType,
     minutes,
     operationType,
   }: {
     minutes: number;
     operationType: "pre" | "pos";
-    dateType: "date" | "dateTime";
+    dateType: "date" | "dateTime" | "time";
   }) {
     const dateNow = new Date();
 
@@ -99,36 +99,40 @@ export class App {
       minute: "2-digit",
       second: "2-digit",
     });
-    if (dateType === "date") {
-      return `${year}-${month}-${day}`;
-    } else {
-      return `${year}-${month}-${day}T${time}`;
+
+    switch (dateType) {
+      case "date":
+        return `${year}-${month}-${day}`;
+      case "dateTime":
+        return `${year}-${month}-${day}T${time}`;
+      case "time":
+        return time.replace(/[^a-zA-Z0-9]/g, "");
     }
   }
 
   async fiveMinuteExecute() {
     await Promise.all([
       productImportCommerce.execute({
-        search: `p.dtAlteracao > '${await this.getFormatDate({
+        search: `p.dtAlteracao > '${this.getFormatDate({
           dateType: "date",
           minutes: 60 * 24 * 1,
           operationType: "pre",
         })}'`,
       }),
       stockPromptDeliveryCommerce.execute({
-        search: `pe.dtAlteracao > '${await this.getFormatDate({
+        search: `pe.dtAlteracao > '${this.getFormatDate({
           dateType: "date",
           minutes: 60 * 24 * 1,
           operationType: "pre",
         })}'`,
       }),
       stockFutureCommerce.execute({
-        search: `m.produtoCod in (
+        search: `p.codigo in (
         select distinct produtoCod from (
           select i.produtoCod
           from 01010s005.dev_pedido_item_v2 i
           inner join 01010s005.dev_pedido_v2 p on p.codigo = pedidoCod
-          where i.dtAlteracao > '${await this.getFormatDate({
+          where i.dtAlteracao > '${this.getFormatDate({
             dateType: "date",
             minutes: 60 * 24 * 1,
             operationType: "pre",
@@ -138,15 +142,14 @@ export class App {
           
           select m.produtoCod
           from 01010s005.dev_metas m
-          where m.dtAlteracao > '${await this.getFormatDate({
+          where m.dtAlteracao > '${this.getFormatDate({
             dateType: "date",
             minutes: 60 * 24 * 1,
             operationType: "pre",
           })}'
         
         ) as analises
-      ) and 
-      m.periodo >= concat(TO_CHAR(CURDATE(),'YYYY-MM'),'-','01') `,
+      ) `,
       }),
     ]);
 
@@ -214,9 +217,38 @@ export class App {
         this.fiveMinuteCron(),
         observableFolder(),
         this.oneDayCron(),
-        productImportCommerce.execute({
-          search: `p.situacao = 2 and p.linhaProducao = 0 and bloqVenda = 2`,
-        }),
+        // stockFutureCommerce.execute({
+        //   // `p.codigo = 217090`,
+        //   search: `p.codigo in (
+        //     select distinct produtoCod
+        //     from (
+        //         select i.produtoCod
+        //         from 01010s005.dev_pedido_item_v2 i
+        //         inner join 01010s005.dev_pedido_v2 p on p.codigo = pedidoCod
+        //         where i.dtAlteracao > '${this.getFormatDate({
+        //           dateType: "date",
+        //           minutes: 60 * 24 * 1,
+        //           operationType: "pre",
+        //         })}' and i.posicaoCod in (1,3) and p.especieCod = 9 and i.hrAlteracao > '${this.getFormatDate({
+        //           dateType: "time",
+        //           minutes: 20,
+        //           operationType: "pre",
+        //         })}'
+        //         union
+        //         select m.produtoCod
+        //         from 01010s005.dev_metas m
+        //         where m.dtAlteracao > '${this.getFormatDate({
+        //           dateType: "date",
+        //           minutes: 60 * 24 * 1,
+        //           operationType: "pre",
+        //         })}' and m.hrAlteracao > '${this.getFormatDate({
+        //           dateType: "date",
+        //           minutes: 60 * 24 * 1,
+        //           operationType: "time",
+        //         })}'
+        //     ) as anality
+        //   ) `,
+        // }),
       ]);
     } catch (err) {
       console.log("error!");
