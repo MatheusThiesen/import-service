@@ -2,6 +2,7 @@ import { dbSiger } from "../../../service/dbSiger";
 import { SendData } from "../repositories/SendData";
 
 interface GetBrandsToSeller {
+  eanId: number;
   produtoCod: string;
   gradeCod: string;
   gradeDescricao: string;
@@ -60,7 +61,7 @@ export class EanViewImportPortal {
       codGrade: grid.gradeCod,
       decriçãoGrade: grid.gradeDescricao,
       sequencial: Number(grid.sequencial).toString(),
-      idEan: grid.sequencial,
+      idEan: grid.eanId.toString(),
       qtd1: grid.qtd1,
       qtd2: grid.qtd2,
       qtd3: grid.qtd3,
@@ -82,8 +83,6 @@ export class EanViewImportPortal {
 
   async sendEan(brandsToSeller: GetBrandsToSeller[]) {
     const normalized = await this.onNormalizedEan(brandsToSeller);
-
-    console.log(normalized);
 
     await this.sendData.post("/product/ean/import", normalized);
   }
@@ -117,6 +116,7 @@ export class EanViewImportPortal {
             e.gradeDescricao,
             e.sequencial,
             e.ean,
+            e.eanId,
             e.qtd1,e.qtd2,e.qtd3,e.qtd4,e.qtd5,e.qtd6,e.qtd7,e.qtd8,
             e.tpEmb1,e.tpEmb2,e.tpEmb3,e.tpEmb4,e.tpEmb5,e.tpEmb6,e.tpEmb7,e.tpEmb8
           FROM 01010s005.dev_ean_grade e
