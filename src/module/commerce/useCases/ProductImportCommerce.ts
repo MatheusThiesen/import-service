@@ -7,6 +7,7 @@ interface ProductRecibe {
   situacao: number;
   linhaProducao: number;
   bloqVenda: number;
+  bloqProducao: number;
   codAlternativo: string;
   referencia: string;
   descricao: string;
@@ -55,7 +56,9 @@ export class ProductImportCommerce {
     return products.map((product) => ({
       cod: product.codigo,
       status:
-        product.linhaProducao === 0 && product.bloqVenda === 2
+        product.linhaProducao === 0 &&
+        product.bloqVenda === 2 &&
+        product.bloqProducao === 2
           ? product.situacao
           : 0,
       alternativeCode: product.codAlternativo,
@@ -131,8 +134,7 @@ export class ProductImportCommerce {
           select  p.codigo,
           count(*) as total
         from 01010s005.dev_produto p 
-        ${whereNormalized}
-        
+        ${whereNormalized}  
           ;
       `
         )

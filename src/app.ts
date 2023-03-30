@@ -8,7 +8,6 @@ import {
   lineImportCommerce,
   listPriceImportCommerce,
   productImportCommerce,
-  stockFutureCommerce,
   stockPromptDeliveryCommerce,
   subgroupImportCommerce,
 } from "./module/commerce/useCases";
@@ -126,31 +125,31 @@ export class App {
           operationType: "pre",
         })}'`,
       }),
-      stockFutureCommerce.execute({
-        search: `p.codigo in (
-        select distinct produtoCod from (
-          select i.produtoCod
-          from 01010s005.dev_pedido_item_v2 i
-          inner join 01010s005.dev_pedido_v2 p on p.codigo = pedidoCod
-          where i.dtAlteracao > '${this.getFormatDate({
-            dateType: "date",
-            minutes: 60 * 24 * 1,
-            operationType: "pre",
-          })}' and i.posicaoCod in (1,3) and p.especieCod = 9
-          
-          union 
-          
-          select m.produtoCod
-          from 01010s005.dev_metas m
-          where m.dtAlteracao > '${this.getFormatDate({
-            dateType: "date",
-            minutes: 60 * 24 * 1,
-            operationType: "pre",
-          })}'
-        
-        ) as analises
-      ) `,
-      }),
+      // stockFutureCommerce.execute({
+      //   search: `p.codigo in (
+      //   select distinct produtoCod from (
+      //     select i.produtoCod
+      //     from 01010s005.dev_pedido_item_v2 i
+      //     inner join 01010s005.dev_pedido_v2 p on p.codigo = pedidoCod
+      //     where i.dtAlteracao > '${this.getFormatDate({
+      //       dateType: "date",
+      //       minutes: 60 * 24 * 1,
+      //       operationType: "pre",
+      //     })}' and i.posicaoCod in (1,3) and p.especieCod = 9
+
+      //     union
+
+      //     select m.produtoCod
+      //     from 01010s005.dev_metas m
+      //     where m.dtAlteracao > '${this.getFormatDate({
+      //       dateType: "date",
+      //       minutes: 60 * 24 * 1,
+      //       operationType: "pre",
+      //     })}'
+
+      //   ) as analises
+      // ) `,
+      // }),
     ]);
 
     const queryFiveMinute = this.getQueryUpdateAt({ minute: 10 });
@@ -186,7 +185,7 @@ export class App {
     await groupImportCommerce.execute({ search: queryDay });
   }
   async oneDayCron() {
-    cron.schedule("0 59 */23 * * *", async () => {
+    cron.schedule("0 0 */3 * * *", async () => {
       try {
         // console.log(`[SINC-CommerceApi] 1Hour Data ${this.now()}`);
 
@@ -217,6 +216,16 @@ export class App {
         this.fiveMinuteCron(),
         observableFolder(),
         this.oneDayCron(),
+        productImportCommerce.execute({
+          search: `p.bloqProducao <> 2 or
+          p.linhaProducao <> 0 or 
+          p.bloqVenda <> 2 or 
+          p.situacao <> 2`,
+        }),
+        stockPromptDeliveryCommerce.execute({
+          search: "(pe.qtdFisica - pe.qtdReservada) > 0",
+        }),
+
         // stockFutureCommerce.execute({
         //   // `p.codigo = 217090`,
         //   search: `p.codigo in (
