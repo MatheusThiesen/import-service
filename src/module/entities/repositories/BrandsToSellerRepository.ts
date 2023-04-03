@@ -1,13 +1,13 @@
 import { filterFieldsNormalized } from "../../../helpers/filterFieldsNormalized";
 import { dbSiger } from "../../../service/dbSiger";
-import { Brand } from "../model/Brand";
+import { BrandsToSeller } from "../model/BrandsToSeller";
 import {
-  IBrandRepository,
-  QueryBrandCountDTO,
-  QueryBrandFindAllDTO,
-} from "./types/IBrandRepository";
+  IBrandsToSellerRepository,
+  QueryBrandsToSellerCountDTO,
+  QueryBrandsToSellerFindAllDTO,
+} from "./types/IBrandsToSellerRepository";
 
-export class BrandRepository implements IBrandRepository {
+export class BrandsToSellerRepository implements IBrandsToSellerRepository {
   constructor() {}
 
   whereNormalized(search: string) {
@@ -15,12 +15,12 @@ export class BrandRepository implements IBrandRepository {
     return whereNormalized;
   }
 
-  async count(query: QueryBrandCountDTO): Promise<number> {
+  async count(query: QueryBrandsToSellerCountDTO): Promise<number> {
     const totalItems = Number(
       (
         await dbSiger.$ExecuteQuery<{ total: string }>(
           `
-            SELECT count(*) as total FROM 01010s005.DEV_MARCA m         
+            SELECT count(*) as total FROM 01010s005.DEV_REP_MARCA rm         
             ${this.whereNormalized(query.search)};
           `
         )
@@ -35,15 +35,15 @@ export class BrandRepository implements IBrandRepository {
     search,
     page = 0,
     pagesize = 200,
-  }: QueryBrandFindAllDTO) {
+  }: QueryBrandsToSellerFindAllDTO) {
     const limit = pagesize;
     const offset = pagesize * page;
 
-    const brands = await dbSiger.$ExecuteQuery<Brand>(
+    const BrandsToSellers = await dbSiger.$ExecuteQuery<BrandsToSeller>(
       `
       select 
-        ${filterFieldsNormalized(fields, "m")}
-      from 01010s005.DEV_MARCA m        
+        ${filterFieldsNormalized(fields, "rm")}
+      from 01010s005.DEV_REP_MARCA rm        
       ${this.whereNormalized(search)}
       limit ${limit}
       offset ${offset}
@@ -51,6 +51,6 @@ export class BrandRepository implements IBrandRepository {
       `
     );
 
-    return brands;
+    return BrandsToSellers;
   }
 }

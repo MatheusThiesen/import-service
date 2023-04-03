@@ -1,13 +1,13 @@
 import { filterFieldsNormalized } from "../../../helpers/filterFieldsNormalized";
 import { dbSiger } from "../../../service/dbSiger";
-import { Brand } from "../model/Brand";
+import { SubgroupProduct } from "../model/SubgroupProduct";
 import {
-  IBrandRepository,
-  QueryBrandCountDTO,
-  QueryBrandFindAllDTO,
-} from "./types/IBrandRepository";
+  ISubgroupProductRepository,
+  QuerySubgroupProductCountDTO,
+  QuerySubgroupProductFindAllDTO,
+} from "./types/ISubgroupProductRepository";
 
-export class BrandRepository implements IBrandRepository {
+export class SubgroupProductRepository implements ISubgroupProductRepository {
   constructor() {}
 
   whereNormalized(search: string) {
@@ -15,12 +15,12 @@ export class BrandRepository implements IBrandRepository {
     return whereNormalized;
   }
 
-  async count(query: QueryBrandCountDTO): Promise<number> {
+  async count(query: QuerySubgroupProductCountDTO): Promise<number> {
     const totalItems = Number(
       (
         await dbSiger.$ExecuteQuery<{ total: string }>(
           `
-            SELECT count(*) as total FROM 01010s005.DEV_MARCA m         
+            SELECT count(*) as total FROM 01010s005.DEV_SUBGRUPO_PRODUTO s         
             ${this.whereNormalized(query.search)};
           `
         )
@@ -35,15 +35,15 @@ export class BrandRepository implements IBrandRepository {
     search,
     page = 0,
     pagesize = 200,
-  }: QueryBrandFindAllDTO) {
+  }: QuerySubgroupProductFindAllDTO) {
     const limit = pagesize;
     const offset = pagesize * page;
 
-    const brands = await dbSiger.$ExecuteQuery<Brand>(
+    const SubgroupProducts = await dbSiger.$ExecuteQuery<SubgroupProduct>(
       `
       select 
-        ${filterFieldsNormalized(fields, "m")}
-      from 01010s005.DEV_MARCA m        
+        ${filterFieldsNormalized(fields, "s")}
+      from 01010s005.DEV_SUBGRUPO_PRODUTO s        
       ${this.whereNormalized(search)}
       limit ${limit}
       offset ${offset}
@@ -51,6 +51,6 @@ export class BrandRepository implements IBrandRepository {
       `
     );
 
-    return brands;
+    return SubgroupProducts;
   }
 }

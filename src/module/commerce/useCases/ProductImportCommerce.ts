@@ -48,7 +48,7 @@ export interface ProductNormalized {
 }
 
 export class ProductImportCommerce {
-  readonly size = 5000;
+  readonly pagesize = 5000;
 
   constructor(private sendData: SendDataRepository) {}
 
@@ -56,9 +56,7 @@ export class ProductImportCommerce {
     return products.map((product) => ({
       cod: product.codigo,
       status:
-        product.linhaProducao === 0 &&
-        product.bloqVenda === 2 &&
-        product.bloqProducao === 2
+        product.linhaProducao === 0 && product.bloqVenda === 2
           ? product.situacao
           : 0,
       alternativeCode: product.codAlternativo,
@@ -98,6 +96,7 @@ export class ProductImportCommerce {
         p.situacao,
         p.linhaProducao,
         p.bloqVenda,
+        p.bloqProducao,
         p.codAlternativo,
         p.referencia,
         p.descricao,
@@ -149,7 +148,8 @@ export class ProductImportCommerce {
       search ? `AND ${search}` : ""
     }`;
 
-    const totalPages = await this.getProductsTotal({ search: query });
+    const totalItems = await this.getProductsTotal({ search: query });
+    const totalPages = Math.ceil(totalItems / this.pagesize);
 
     for (let index = 0; index < totalPages; index++) {
       const page = index;
@@ -157,7 +157,7 @@ export class ProductImportCommerce {
       const products = await this.getProducts({
         search: query,
         page: page,
-        pagesize: this.size,
+        pagesize: this.pagesize,
       });
 
       await this.sendData.post("/products/import", products);

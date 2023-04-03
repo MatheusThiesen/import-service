@@ -1,23 +1,18 @@
 export class Color {
-  colorCode: number;
-  descriptionColor: string;
-  abbreviationColor: string;
-  measureType: number;
-  completeDescriptionColor: string;
-  observations: string;
-  rgbColor: string;
-  lastChangeDate: string;
-  lastChangeTime: number;
+  sigeemp: string;
+  corCod: number;
+  descricao: string;
+  descricaoCompleta: string;
+  rgb: string;
+  dtAlteracao: Date;
+  hrAlteracao: number;
 }
 export class ColorFields {
-  colorCode?: boolean;
-  descriptionColor?: boolean;
-  abbreviationColor?: boolean;
-  measureType?: boolean;
-  completeDescriptionColor?: boolean;
-  observations?: boolean;
-  rgbColor?: boolean;
-  lastChangeDate?: boolean;
-  lastChangeTime?: boolean;
+  sigeemp?: boolean;
+  corCod?: boolean;
+  descricao?: boolean;
+  descricaoCompleta?: boolean;
+  rgb?: boolean;
+  dtAlteracao?: boolean;
+  hrAlteracao?: boolean;
 }
-export class ColorExtraFields {}

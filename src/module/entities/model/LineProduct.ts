@@ -1,14 +1,14 @@
-export class Brand {
+export class LineProduct {
   sigeemp: string;
-  marcaCod: number;
+  linhaCod: number;
   descricao: string;
   situacao: number;
   dtAlteracao: Date;
   hrAlteracao: number;
 }
-export class BrandFields {
+export class LineProductFields {
   sigeemp?: boolean;
-  marcaCod?: boolean;
+  linhaCod?: boolean;
   descricao?: boolean;
   situacao?: boolean;
   dtAlteracao?: boolean;

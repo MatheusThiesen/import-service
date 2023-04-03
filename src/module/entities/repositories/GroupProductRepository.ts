@@ -1,26 +1,26 @@
 import { filterFieldsNormalized } from "../../../helpers/filterFieldsNormalized";
 import { dbSiger } from "../../../service/dbSiger";
-import { Brand } from "../model/Brand";
+import { GroupProduct } from "../model/GroupProduct";
 import {
-  IBrandRepository,
-  QueryBrandCountDTO,
-  QueryBrandFindAllDTO,
-} from "./types/IBrandRepository";
+  IGroupProductRepository,
+  QueryGroupProductCountDTO,
+  QueryGroupProductFindAllDTO,
+} from "./types/IGroupProductRepository";
 
-export class BrandRepository implements IBrandRepository {
+export class GroupProductRepository implements IGroupProductRepository {
   constructor() {}
 
-  whereNormalized(search: string) {
+  private whereNormalized(search: string) {
     const whereNormalized = search ? `where ${search}` : ``;
     return whereNormalized;
   }
 
-  async count(query: QueryBrandCountDTO): Promise<number> {
+  async count(query: QueryGroupProductCountDTO): Promise<number> {
     const totalItems = Number(
       (
         await dbSiger.$ExecuteQuery<{ total: string }>(
           `
-            SELECT count(*) as total FROM 01010s005.DEV_MARCA m         
+            SELECT count(*) as total FROM 01010s005.DEV_GRUPO_PRODUTO g         
             ${this.whereNormalized(query.search)};
           `
         )
@@ -35,15 +35,15 @@ export class BrandRepository implements IBrandRepository {
     search,
     page = 0,
     pagesize = 200,
-  }: QueryBrandFindAllDTO) {
+  }: QueryGroupProductFindAllDTO) {
     const limit = pagesize;
     const offset = pagesize * page;
 
-    const brands = await dbSiger.$ExecuteQuery<Brand>(
+    const GroupProducts = await dbSiger.$ExecuteQuery<GroupProduct>(
       `
       select 
-        ${filterFieldsNormalized(fields, "m")}
-      from 01010s005.DEV_MARCA m        
+        ${filterFieldsNormalized(fields, "g")}
+      from 01010s005.DEV_GRUPO_PRODUTO g        
       ${this.whereNormalized(search)}
       limit ${limit}
       offset ${offset}
@@ -51,6 +51,6 @@ export class BrandRepository implements IBrandRepository {
       `
     );
 
-    return brands;
+    return GroupProducts;
   }
 }

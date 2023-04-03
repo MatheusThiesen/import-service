@@ -14,7 +14,20 @@ export type Task = {
     | "brandsToSellerViewImportPortal"
     | "eanViewImportPortal"
     | "gridViewImportPortal"
-    | "sellerViewImportPortal";
+    | "sellerViewImportPortal"
+    | "productImportCommerce"
+    | "brandImportCommerce"
+    | "collectionImportCommerce"
+    | "colorImportCommerce"
+    | "groupImportCommerce"
+    | "subGroupImportCommerce"
+    | "lineImportCommerce"
+    | "listPriceImportCommerce"
+    | "brandsToSellerImportCommerce"
+    | "sellerImportCommerce"
+    | "conceptImportCommerce"
+    | "stockPromptDeliveryCommerce"
+    | "stockFutureCommerce";
 };
 
 export const queue: queueFastq<Task> = fastq(worker, CONCURRENCY);

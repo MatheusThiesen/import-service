@@ -1,13 +1,13 @@
 import { filterFieldsNormalized } from "../../../helpers/filterFieldsNormalized";
 import { dbSiger } from "../../../service/dbSiger";
-import { Brand } from "../model/Brand";
+import { Concept } from "../model/Concept";
 import {
-  IBrandRepository,
-  QueryBrandCountDTO,
-  QueryBrandFindAllDTO,
-} from "./types/IBrandRepository";
+  IConceptRepository,
+  QueryConceptCountDTO,
+  QueryConceptFindAllDTO,
+} from "./types/IConceptRepository";
 
-export class BrandRepository implements IBrandRepository {
+export class ConceptRepository implements IConceptRepository {
   constructor() {}
 
   whereNormalized(search: string) {
@@ -15,12 +15,12 @@ export class BrandRepository implements IBrandRepository {
     return whereNormalized;
   }
 
-  async count(query: QueryBrandCountDTO): Promise<number> {
+  async count(query: QueryConceptCountDTO): Promise<number> {
     const totalItems = Number(
       (
         await dbSiger.$ExecuteQuery<{ total: string }>(
           `
-            SELECT count(*) as total FROM 01010s005.DEV_MARCA m         
+            SELECT count(*) as total FROM 01010s005.DEV_CONCEITO c
             ${this.whereNormalized(query.search)};
           `
         )
@@ -35,15 +35,15 @@ export class BrandRepository implements IBrandRepository {
     search,
     page = 0,
     pagesize = 200,
-  }: QueryBrandFindAllDTO) {
+  }: QueryConceptFindAllDTO) {
     const limit = pagesize;
     const offset = pagesize * page;
 
-    const brands = await dbSiger.$ExecuteQuery<Brand>(
+    const Concepts = await dbSiger.$ExecuteQuery<Concept>(
       `
       select 
-        ${filterFieldsNormalized(fields, "m")}
-      from 01010s005.DEV_MARCA m        
+        ${filterFieldsNormalized(fields, "c")}
+      from 01010s005.DEV_CONCEITO c        
       ${this.whereNormalized(search)}
       limit ${limit}
       offset ${offset}
@@ -51,6 +51,6 @@ export class BrandRepository implements IBrandRepository {
       `
     );
 
-    return brands;
+    return Concepts;
   }
 }

@@ -1,4 +1,4 @@
-import { ColorRepository } from "../../../module/entities/repositories/ColorRepository";
+import { entities } from "../../../module/entities/useCases";
 import { SendDataRepository } from "../repositories/SendDataRepository";
 import { ExecuteServiceProps } from "../types/ExecuteService";
 
@@ -9,25 +9,23 @@ interface ColorNormalized {
 }
 
 export class ColorImportCommerce {
-  constructor(
-    private sendData: SendDataRepository,
-    private colorRepository: ColorRepository
-  ) {}
+  constructor(private sendData: SendDataRepository) {}
 
   async execute({ search }: ExecuteServiceProps) {
-    const colors = await this.colorRepository.getAll({
+    const colors = await entities.color.findAll({
       fields: {
-        colorCode: true,
-        descriptionColor: true,
-        rgbColor: true,
+        corCod: true,
+        descricao: true,
+        rgb: true,
       },
       search: search,
+      pagesize: 99999,
     });
 
-    const colorsNormalized: ColorNormalized[] = colors.content.map((color) => ({
-      cod: color.colorCode,
-      name: color.descriptionColor,
-      hex: color.rgbColor,
+    const colorsNormalized: ColorNormalized[] = colors.map((color) => ({
+      cod: color.corCod,
+      name: color.descricao,
+      hex: color.rgb,
     }));
 
     await this.sendData.post("/colors/import", colorsNormalized);

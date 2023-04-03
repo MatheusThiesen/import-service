@@ -1,4 +1,4 @@
-import { BrandRepository } from "../../entities/repositories/BrandRepository";
+import { entities } from "../../../module/entities/useCases";
 import { SendDataRepository } from "../repositories/SendDataRepository";
 import { ExecuteServiceProps } from "../types/ExecuteService";
 
@@ -9,25 +9,22 @@ interface BrandNormalized {
 }
 
 export class BrandImportCommerce {
-  constructor(
-    private sendData: SendDataRepository,
-    private brandRepository: BrandRepository
-  ) {}
+  constructor(private sendData: SendDataRepository) {}
 
   async execute({ search }: ExecuteServiceProps) {
-    const brands = await this.brandRepository.getAll({
+    const brands = await entities.brand.findAll({
       fields: {
-        code: true,
-        description: true,
-        situation: true,
+        marcaCod: true,
+        descricao: true,
+        situacao: true,
       },
       search,
     });
 
-    const brandsNormalized: BrandNormalized[] = brands.content.map((brand) => ({
-      cod: brand.code,
-      name: brand.description,
-      status: brand.situation,
+    const brandsNormalized: BrandNormalized[] = brands.map((brand) => ({
+      cod: brand.marcaCod,
+      name: brand.descricao,
+      status: brand.situacao,
     }));
 
     await this.sendData.post("/brands/import", brandsNormalized);

@@ -336,8 +336,8 @@ export class OrderViewImportPortal {
               inner join 01010s005.dev_pedido_item_v2 i on p.codigo = i.pedidoCod 
               inner join 01010s005.dev_produto prod on i.produtoCod = prod.codigo
               left join 01010s005.dev_grade_produto g on prod.gradeCod = g.codigo
-              left join 01010s005.dev_cor_produto cor1 on prod.corUmCod = cor1.codigo
-              left join 01010s005.dev_cor_produto cor2 on prod.corDoisCod = cor2.codigo
+              left join 01010s005.dev_cor_produto cor1 on prod.corUmCod = cor1.corCod
+              left join 01010s005.dev_cor_produto cor2 on prod.corDoisCod = cor2.corCod
               
             ${whereNormalized}
             limit ${limit}

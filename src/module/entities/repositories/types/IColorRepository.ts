@@ -1,9 +1,13 @@
-import { QueryEntitySiger } from "../../../../service/siger";
-import { Color, ColorExtraFields, ColorFields } from "../../model/Color";
-import { GetListAllResponse } from "../../useCases/GetListAll";
+import {
+  QueryCountEntitySiger,
+  QueryFindAllEntitySiger,
+} from "../../../../service/siger";
+import { Color, ColorFields } from "../../model/Color";
 
-export type QueryColorDTO = QueryEntitySiger<ColorFields, ColorExtraFields>;
+export type QueryColorFindAllDTO = QueryFindAllEntitySiger<ColorFields>;
+export type QueryColorCountDTO = QueryCountEntitySiger;
 
 export interface IColorRepository {
-  getAll(query: QueryColorDTO): Promise<GetListAllResponse<Color>>;
+  findAll(query: QueryColorFindAllDTO): Promise<Color[]>;
+  count(query: QueryColorCountDTO): Promise<number>;
 }

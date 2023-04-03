@@ -1,4 +1,4 @@
-import { ProductCollectionRepository } from "../../entities/repositories/ProductCollectionRepository";
+import { entities } from "../../../module/entities/useCases";
 import { SendDataRepository } from "../repositories/SendDataRepository";
 import { ExecuteServiceProps } from "../types/ExecuteService";
 
@@ -9,27 +9,26 @@ interface CollectionNormalized {
 }
 
 export class CollectionImportCommerce {
-  constructor(
-    private sendData: SendDataRepository,
-    private productCollectionRepository: ProductCollectionRepository
-  ) {}
+  constructor(private sendData: SendDataRepository) {}
 
   async execute({ search }: ExecuteServiceProps) {
-    const collections = await this.productCollectionRepository.getAll({
+    const collections = await entities.collectionProduct.findAll({
       fields: {
-        collectionCode: true,
-        collectionDescription: true,
-        situation: true,
+        colecaoCod: true,
+        descricao: true,
+        situacao: true,
       },
       search,
+      pagesize: 99999,
     });
 
-    const collectionsNormalized: CollectionNormalized[] =
-      collections.content.map((collection) => ({
-        cod: collection.collectionCode,
-        name: collection.collectionDescription,
-        status: collection.situation,
-      }));
+    const collectionsNormalized: CollectionNormalized[] = collections.map(
+      (collection) => ({
+        cod: collection.colecaoCod,
+        name: collection.descricao,
+        status: collection.situacao,
+      })
+    );
 
     await this.sendData.post("/collections/import", collectionsNormalized);
   }

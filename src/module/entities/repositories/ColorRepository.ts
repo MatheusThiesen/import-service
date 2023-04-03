@@ -1,29 +1,56 @@
 import { filterFieldsNormalized } from "../../../helpers/filterFieldsNormalized";
+import { dbSiger } from "../../../service/dbSiger";
 import { Color } from "../model/Color";
-import { GetListAll } from "../useCases/GetListAll";
-import { IColorRepository, QueryColorDTO } from "./types/IColorRepository";
+import {
+  IColorRepository,
+  QueryColorCountDTO,
+  QueryColorFindAllDTO,
+} from "./types/IColorRepository";
 
 export class ColorRepository implements IColorRepository {
-  constructor(private getListAll: GetListAll) {}
+  constructor() {}
 
-  async getAll({
+  whereNormalized(search: string) {
+    const whereNormalized = search ? `where ${search}` : ``;
+    return whereNormalized;
+  }
+
+  async count(query: QueryColorCountDTO): Promise<number> {
+    const totalItems = Number(
+      (
+        await dbSiger.$ExecuteQuery<{ total: string }>(
+          `
+            SELECT count(*) as total FROM 01010s005.DEV_COR_PRODUTO c         
+            ${this.whereNormalized(query.search)};
+          `
+        )
+      )[0].total
+    );
+
+    return totalItems;
+  }
+
+  async findAll({
     fields,
-    extraFields,
     search,
-    page,
-    size,
-    isPagination,
-  }: QueryColorDTO) {
-    const colors = await this.getListAll.execute<Color>({
-      entity: "colors",
-      search: search,
-      fields: filterFieldsNormalized(fields),
-      extraFields: filterFieldsNormalized(extraFields),
-      page,
-      size,
-      isPagination,
-    });
+    page = 0,
+    pagesize = 200,
+  }: QueryColorFindAllDTO) {
+    const limit = pagesize;
+    const offset = pagesize * page;
 
-    return colors;
+    const Colors = await dbSiger.$ExecuteQuery<Color>(
+      `
+      select 
+        ${filterFieldsNormalized(fields, "c")}
+      from 01010s005.DEV_COR_PRODUTO c        
+      ${this.whereNormalized(search)}
+      limit ${limit}
+      offset ${offset}
+      ;
+      `
+    );
+
+    return Colors;
   }
 }

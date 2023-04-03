@@ -29,6 +29,8 @@ export class SendDataRepository {
   async post(pathUrl: string, data: any[]) {
     try {
       if (data.length > 0) {
+        console.log(data);
+
         var offset = 0;
 
         if (!this.token) {

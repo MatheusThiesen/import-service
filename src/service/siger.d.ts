@@ -20,12 +20,20 @@ export interface SigerDTO<T> {
   totalPages: number;
 }
 
-export interface QueryEntitySiger<T, E> {
+export interface QueryEntitySiger<T> {
   fields: T;
-  extraFields?: E;
   search?: string;
-
-  isPagination?: boolean;
-  size?: number;
+  pagesize?: number;
   page?: number;
+}
+
+export interface QueryFindAllEntitySiger<T> {
+  fields: T;
+  search?: string;
+  pagesize?: number;
+  page?: number;
+}
+
+export interface QueryCountEntitySiger {
+  search?: string;
 }

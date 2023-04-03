@@ -2,15 +2,31 @@ import "dotenv/config";
 
 import { done } from "fastq";
 import {
+  brandImportCommerce,
+  brandsToSellerImportCommerce,
+  collectionImportCommerce,
+  colorImportCommerce,
+  conceptImportCommerce,
+  groupImportCommerce,
+  lineImportCommerce,
+  listPriceImportCommerce,
+  productImportCommerce,
+  sellerImportCommerce,
+  stockFutureCommerce,
+  stockPromptDeliveryCommerce,
+  subGroupImportCommerce,
+} from "../module/commerce/useCases";
+import {
   billetViewImportPortal,
-  brandsToSellerViewImportPortal,
   brandViewImportPortal,
+  brandsToSellerViewImportPortal,
   clientViewImportPortal,
   eanViewImportPortal,
   gridViewImportPortal,
   orderViewImportPortal,
   sellerViewImportPortal,
 } from "../module/portal/useCases";
+
 import { Task } from "./";
 
 export async function worker(arg: Task, cb: done) {
@@ -38,6 +54,45 @@ export async function worker(arg: Task, cb: done) {
       break;
     case "gridViewImportPortal":
       await gridViewImportPortal.execute({ search: arg.search });
+      break;
+    case "productImportCommerce":
+      await productImportCommerce.execute({ search: arg.search });
+      break;
+    case "brandImportCommerce":
+      await brandImportCommerce.execute({ search: arg.search });
+      break;
+    case "collectionImportCommerce":
+      await collectionImportCommerce.execute({ search: arg.search });
+      break;
+    case "colorImportCommerce":
+      await colorImportCommerce.execute({ search: arg.search });
+      break;
+    case "groupImportCommerce":
+      await groupImportCommerce.execute({ search: arg.search });
+      break;
+    case "lineImportCommerce":
+      await lineImportCommerce.execute({ search: arg.search });
+      break;
+    case "listPriceImportCommerce":
+      await listPriceImportCommerce.execute({ search: arg.search });
+      break;
+    case "brandsToSellerImportCommerce":
+      await brandsToSellerImportCommerce.execute({ search: arg.search });
+      break;
+    case "sellerImportCommerce":
+      await sellerImportCommerce.execute({ search: arg.search });
+      break;
+    case "stockPromptDeliveryCommerce":
+      await stockPromptDeliveryCommerce.execute({ search: arg.search });
+      break;
+    case "conceptImportCommerce":
+      await conceptImportCommerce.execute({ search: arg.search });
+      break;
+    case "subGroupImportCommerce":
+      await subGroupImportCommerce.execute({ search: arg.search });
+      break;
+    case "stockFutureCommerce":
+      await stockFutureCommerce.execute({ search: arg.search });
       break;
   }
 

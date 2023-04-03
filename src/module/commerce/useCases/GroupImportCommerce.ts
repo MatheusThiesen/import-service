@@ -1,4 +1,4 @@
-import { ProductGroupRepository } from "../../../module/entities/repositories/ProductGroupRepository";
+import { entities } from "../../../module/entities/useCases";
 import { SendDataRepository } from "../repositories/SendDataRepository";
 import { ExecuteServiceProps } from "../types/ExecuteService";
 
@@ -9,26 +9,24 @@ interface ProductGroupsNormalized {
 }
 
 export class GroupImportCommerce {
-  constructor(
-    private sendData: SendDataRepository,
-    private productGroupRepository: ProductGroupRepository
-  ) {}
+  constructor(private sendData: SendDataRepository) {}
 
   async execute({ search }: ExecuteServiceProps) {
-    const productGroups = await this.productGroupRepository.getAll({
+    const productGroups = await entities.groupProduct.findAll({
       fields: {
-        code: true,
-        description: true,
-        // situation: true, -> Erro no campo
+        grupoCod: true,
+        descricao: true,
+        situacao: true,
       },
       search: search,
+      pagesize: 99999,
     });
 
     const productGroupsNormalized: ProductGroupsNormalized[] =
-      productGroups.content.map((group) => ({
-        cod: group.code,
-        name: group.description,
-        status: 1,
+      productGroups.map((group) => ({
+        cod: group.grupoCod,
+        name: group.descricao,
+        status: group.situacao,
       }));
 
     await this.sendData.post("/groups/import", productGroupsNormalized);

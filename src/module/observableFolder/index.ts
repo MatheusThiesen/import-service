@@ -1,10 +1,5 @@
 import * as cron from "node-cron";
-import {
-  brandsToSeller,
-  concepts,
-  productConceptRules,
-  sellers,
-} from "./useCases";
+import { productConceptRules } from "./useCases";
 
 export async function executeEntities() {
   // //Produtos
@@ -15,15 +10,15 @@ export async function executeEntities() {
   // await purchasesOrder.execute();
   // //Items pedidos
   // await ordersItems.execute();
+  // //Conceito
+  // await concepts.execute();
+  // //Vendedores
+  // await sellers.execute();
+  // //Marca dos vendedores
+  // await brandsToSeller.execute();
 
-  //Conceito
-  await concepts.execute();
   //Regra de Produto Conceito
   await productConceptRules.execute();
-  //Vendedores
-  await sellers.execute();
-  //Marca dos vendedores
-  await brandsToSeller.execute();
 }
 
 export async function observableFolder() {

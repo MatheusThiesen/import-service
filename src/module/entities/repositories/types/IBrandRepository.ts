@@ -1,9 +1,13 @@
-import { QueryEntitySiger } from "../../../../service/siger";
-import { Brand, BrandExtraFields, BrandFields } from "../../model/Brand";
-import { GetListAllResponse } from "../../useCases/GetListAll";
+import {
+  QueryCountEntitySiger,
+  QueryFindAllEntitySiger,
+} from "../../../../service/siger";
+import { Brand, BrandFields } from "../../model/Brand";
 
-export type QueryBrandDTO = QueryEntitySiger<BrandFields, BrandExtraFields>;
+export type QueryBrandFindAllDTO = QueryFindAllEntitySiger<BrandFields>;
+export type QueryBrandCountDTO = QueryCountEntitySiger;
 
 export interface IBrandRepository {
-  getAll(query: QueryBrandDTO): Promise<GetListAllResponse<Brand>>;
+  findAll(query: QueryBrandFindAllDTO): Promise<Brand[]>;
+  count(query: QueryBrandCountDTO): Promise<number>;
 }

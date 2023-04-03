@@ -1,4 +1,4 @@
-import { ProductLineRepository } from "../../entities/repositories/ProductLineRepository";
+import { entities } from "../../../module/entities/useCases";
 import { SendDataRepository } from "../repositories/SendDataRepository";
 import { ExecuteServiceProps } from "../types/ExecuteService";
 
@@ -9,27 +9,26 @@ interface ProductLinesNormalized {
 }
 
 export class LineImportCommerce {
-  constructor(
-    private sendData: SendDataRepository,
-    private productLineRepository: ProductLineRepository
-  ) {}
+  constructor(private sendData: SendDataRepository) {}
 
   async execute({ search }: ExecuteServiceProps) {
-    const productLines = await this.productLineRepository.getAll({
+    const productLines = await entities.lineProduct.findAll({
       fields: {
-        lineCode: true,
-        lineDescription: true,
-        lineSituation: true,
+        linhaCod: true,
+        descricao: true,
+        situacao: true,
       },
       search,
+      pagesize: 99999,
     });
 
-    const productLinesNormalized: ProductLinesNormalized[] =
-      productLines.content.map((line) => ({
-        cod: line.lineCode,
-        name: line.lineDescription,
-        status: line.lineSituation,
-      }));
+    const productLinesNormalized: ProductLinesNormalized[] = productLines.map(
+      (line) => ({
+        cod: line.linhaCod,
+        name: line.descricao,
+        status: line.situacao,
+      })
+    );
 
     await this.sendData.post("/lines/import", productLinesNormalized);
   }

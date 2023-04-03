@@ -1,13 +1,13 @@
 import { filterFieldsNormalized } from "../../../helpers/filterFieldsNormalized";
 import { dbSiger } from "../../../service/dbSiger";
-import { Brand } from "../model/Brand";
+import { PriceList } from "../model/PriceList";
 import {
-  IBrandRepository,
-  QueryBrandCountDTO,
-  QueryBrandFindAllDTO,
-} from "./types/IBrandRepository";
+  IPriceListRepository,
+  QueryPriceListCountDTO,
+  QueryPriceListFindAllDTO,
+} from "./types/IPriceListRepository";
 
-export class BrandRepository implements IBrandRepository {
+export class PriceListRepository implements IPriceListRepository {
   constructor() {}
 
   whereNormalized(search: string) {
@@ -15,12 +15,12 @@ export class BrandRepository implements IBrandRepository {
     return whereNormalized;
   }
 
-  async count(query: QueryBrandCountDTO): Promise<number> {
+  async count(query: QueryPriceListCountDTO): Promise<number> {
     const totalItems = Number(
       (
         await dbSiger.$ExecuteQuery<{ total: string }>(
           `
-            SELECT count(*) as total FROM 01010s005.DEV_MARCA m         
+            SELECT count(*) as total FROM 01010s005.DEV_LISTA_PRECO l         
             ${this.whereNormalized(query.search)};
           `
         )
@@ -35,15 +35,15 @@ export class BrandRepository implements IBrandRepository {
     search,
     page = 0,
     pagesize = 200,
-  }: QueryBrandFindAllDTO) {
+  }: QueryPriceListFindAllDTO) {
     const limit = pagesize;
     const offset = pagesize * page;
 
-    const brands = await dbSiger.$ExecuteQuery<Brand>(
+    const PriceLists = await dbSiger.$ExecuteQuery<PriceList>(
       `
       select 
-        ${filterFieldsNormalized(fields, "m")}
-      from 01010s005.DEV_MARCA m        
+        ${filterFieldsNormalized(fields, "l")}
+      from 01010s005.DEV_LISTA_PRECO l        
       ${this.whereNormalized(search)}
       limit ${limit}
       offset ${offset}
@@ -51,6 +51,6 @@ export class BrandRepository implements IBrandRepository {
       `
     );
 
-    return brands;
+    return PriceLists;
   }
 }
