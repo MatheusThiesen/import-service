@@ -132,8 +132,8 @@ export class OrderViewImportPortal {
       now.setDate(now.getDate() - 3);
 
       if (
-        ["faturado"].includes(detailPosition.toLowerCase()) &&
-        order.dtFaturamento > now
+        ["faturado"].includes(detailPosition.toLowerCase())
+        // &&      order.dtFaturamento > now
       ) {
         numeroNotaResponse = await dbSiger.$ExecuteQuery<{
           numeroNota: number;
