@@ -1,0 +1,54 @@
+export class GridProduct {
+  sigeemp: string;
+  codigo: number;
+  descricao: string;
+  ativo: number;
+  c1: string;
+  c2: string;
+  c3: string;
+  c4: string;
+  c5: string;
+  c6: string;
+  c7: string;
+  c8: string;
+  c9: string;
+  c10: string;
+  c11: string;
+  c12: string;
+  c13: string;
+  c14: string;
+  c15: string;
+  c16: string;
+  c17: string;
+  c18: string;
+  c19: string;
+  dtAlteracao: Date;
+  hrAlteracao: number;
+}
+export class GridProductFields {
+  sigeemp?: boolean;
+  codigo?: boolean;
+  descricao?: boolean;
+  ativo?: boolean;
+  c1?: boolean;
+  c2?: boolean;
+  c3?: boolean;
+  c4?: boolean;
+  c5?: boolean;
+  c6?: boolean;
+  c7?: boolean;
+  c8?: boolean;
+  c9?: boolean;
+  c10?: boolean;
+  c11?: boolean;
+  c12?: boolean;
+  c13?: boolean;
+  c14?: boolean;
+  c15?: boolean;
+  c16?: boolean;
+  c17?: boolean;
+  c18?: boolean;
+  c19?: boolean;
+  dtAlteracao?: boolean;
+  hrAlteracao?: boolean;
+}

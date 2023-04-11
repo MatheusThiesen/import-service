@@ -1,0 +1,54 @@
+export class EanProduct {
+  sigeemp: string;
+  eanId: number;
+  produtoCod: number;
+  gradeCod: number;
+  gradeDescricao: string;
+  sequencial: number;
+  ean: string;
+  qtd1: number;
+  qtd2: number;
+  qtd3: number;
+  qtd4: number;
+  qtd5: number;
+  qtd6: number;
+  qtd7: number;
+  qtd8: number;
+  tpEmb1: number;
+  tpEmb2: number;
+  tpEmb3: number;
+  tpEmb4: number;
+  tpEmb5: number;
+  tpEmb6: number;
+  tpEmb7: number;
+  tpEmb8: number;
+  dtAlteracao: Date;
+  hrAlteracao: number;
+}
+export class EanProductFields {
+  sigeemp?: boolean;
+  eanId?: boolean;
+  produtoCod?: boolean;
+  gradeCod?: boolean;
+  gradeDescricao?: boolean;
+  sequencial?: boolean;
+  ean?: boolean;
+  qtd1?: boolean;
+  qtd2?: boolean;
+  qtd3?: boolean;
+  qtd4?: boolean;
+  qtd5?: boolean;
+  qtd6?: boolean;
+  qtd7?: boolean;
+  qtd8?: boolean;
+  tpEmb1?: boolean;
+  tpEmb2?: boolean;
+  tpEmb3?: boolean;
+  tpEmb4?: boolean;
+  tpEmb5?: boolean;
+  tpEmb6?: boolean;
+  tpEmb7?: boolean;
+  tpEmb8?: boolean;
+  dtAlteracao?: boolean;
+  hrAlteracao?: boolean;
+}

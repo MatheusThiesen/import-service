@@ -1,53 +1,31 @@
-import { dbSiger } from "../../../service/dbSiger";
+import { EanProduct } from "../../..//module/entities/model/EanProduct";
+import { entities } from "../../..//module/entities/useCases";
 import { SendData } from "../repositories/SendData";
 
-interface GetBrandsToSeller {
-  eanId: number;
-  produtoCod: string;
-  gradeCod: string;
-  gradeDescricao: string;
-  sequencial: string;
-  ean: string;
-  qtd1: string;
-  qtd2: string;
-  qtd3: string;
-  qtd4: string;
-  qtd5: string;
-  qtd6: string;
-  qtd7: string;
-  qtd8: string;
-  tipoEmb1: string;
-  tipoEmb2: string;
-  tipoEmb3: string;
-  tipoEmb4: string;
-  tipoEmb5: string;
-  tipoEmb6: string;
-  tipoEmb7: string;
-  tipoEmb8: string;
-}
-
-interface SendGrid {
-  codProduto: string;
-  codGrade: string;
-  decriçãoGrade: string;
-  sequencial: string;
+interface SendEan {
   idEan: string;
-  qtd1: string;
-  qtd2: string;
-  qtd3: string;
-  qtd4: string;
-  qtd5: string;
-  qtd6: string;
-  qtd7: string;
-  qtd8: string;
-  tipoEmb1: string;
-  tipoEmb2: string;
-  tipoEmb3: string;
-  tipoEmb4: string;
-  tipoEmb5: string;
-  tipoEmb6: string;
-  tipoEmb7: string;
-  tipoEmb8: string;
+  codigo: number;
+  ean: string;
+  codProduto: number;
+  codGrade: number;
+  decriçãoGrade: string;
+  sequencial: number;
+  qtd1: number;
+  qtd2?: number;
+  qtd3?: number;
+  qtd4?: number;
+  qtd5?: number;
+  qtd6?: number;
+  qtd7?: number;
+  qtd8?: number;
+  tipoEmb1?: number;
+  tipoEmb2?: number;
+  tipoEmb3?: number;
+  tipoEmb4?: number;
+  tipoEmb5?: number;
+  tipoEmb6?: number;
+  tipoEmb7?: number;
+  tipoEmb8?: number;
 }
 
 export class EanViewImportPortal {
@@ -55,78 +33,75 @@ export class EanViewImportPortal {
 
   constructor(private sendData: SendData) {}
 
-  async onNormalizedEan(grids: GetBrandsToSeller[]): Promise<SendGrid[]> {
-    return grids.map((grid) => ({
-      codProduto: grid.produtoCod,
-      codGrade: grid.gradeCod,
-      decriçãoGrade: grid.gradeDescricao,
-      sequencial: Number(grid.sequencial).toString(),
-      idEan: grid.eanId.toString(),
-      qtd1: grid.qtd1,
-      qtd2: grid.qtd2,
-      qtd3: grid.qtd3,
-      qtd4: grid.qtd4,
-      qtd5: grid.qtd5,
-      qtd6: grid.qtd6,
-      qtd7: grid.qtd7,
-      qtd8: grid.qtd8,
-      tipoEmb1: grid.tipoEmb1,
-      tipoEmb2: grid.tipoEmb2,
-      tipoEmb3: grid.tipoEmb3,
-      tipoEmb4: grid.tipoEmb4,
-      tipoEmb5: grid.tipoEmb5,
-      tipoEmb6: grid.tipoEmb6,
-      tipoEmb7: grid.tipoEmb7,
-      tipoEmb8: grid.tipoEmb8,
+  async sendEan(eans: EanProduct[]) {
+    const normalized: SendEan[] = eans.map((ean) => ({
+      idEan: String(ean.eanId),
+      codigo: Number(
+        `${ean.produtoCod}${Number(ean.eanId)}${Number(ean.sequencial)}`
+      ),
+      ean: ean.ean,
+      codProduto: ean.produtoCod,
+      codGrade: ean.gradeCod,
+      decriçãoGrade: ean.gradeDescricao,
+      sequencial: Number(ean.sequencial),
+      qtd1: ean.qtd1,
+      qtd2: ean.qtd2,
+      qtd3: ean.qtd3,
+      qtd4: ean.qtd4,
+      qtd5: ean.qtd5,
+      qtd6: ean.qtd6,
+      qtd7: ean.qtd7,
+      qtd8: ean.qtd8,
+      tipoEmb1: ean.tpEmb1,
+      tipoEmb2: ean.tpEmb2,
+      tipoEmb3: ean.tpEmb3,
+      tipoEmb4: ean.tpEmb4,
+      tipoEmb5: ean.tpEmb5,
+      tipoEmb6: ean.tpEmb6,
+      tipoEmb7: ean.tpEmb7,
+      tipoEmb8: ean.tpEmb8,
     }));
-  }
 
-  async sendEan(brandsToSeller: GetBrandsToSeller[]) {
-    const normalized = await this.onNormalizedEan(brandsToSeller);
-
-    await this.sendData.post("/product/ean/import", normalized);
+    return await this.sendData.post("/product/ean/import", normalized);
   }
 
   async execute({ search }: { search?: string }) {
     try {
-      const whereNormalized = search ? `where ${search}` : ``;
-
-      const totalItems = Number(
-        (
-          await dbSiger.$ExecuteQuery<{ total: string }>(
-            `
-        SELECT count(*) as total FROM 01010s005.dev_ean_grade e         
-        ${whereNormalized};
-        `
-          )
-        )[0].total
-      );
-
+      const totalItems = await entities.eanProduct.count({ search });
       const totalPage = Math.ceil(totalItems / this.pageSize);
 
       for (let index = 0; index < totalPage; index++) {
-        const limit = this.pageSize;
-        const offset = this.pageSize * index;
+        const eans = await entities.eanProduct.findAll({
+          fields: {
+            ean: true,
+            produtoCod: true,
+            gradeCod: true,
+            gradeDescricao: true,
+            sequencial: true,
+            eanId: true,
+            qtd1: true,
+            qtd2: true,
+            qtd3: true,
+            qtd4: true,
+            qtd5: true,
+            qtd6: true,
+            qtd7: true,
+            qtd8: true,
+            tpEmb1: true,
+            tpEmb2: true,
+            tpEmb3: true,
+            tpEmb4: true,
+            tpEmb5: true,
+            tpEmb6: true,
+            tpEmb7: true,
+            tpEmb8: true,
+          },
+          page: index,
+          pagesize: this.pageSize,
+          search: search,
+        });
 
-        const itemsOrder = await dbSiger.$ExecuteQuery<GetBrandsToSeller>(
-          `
-          SELECT 
-            e.produtoCod,
-            e.gradeCod,
-            e.gradeDescricao,
-            e.sequencial,
-            e.ean,
-            e.eanId,
-            e.qtd1,e.qtd2,e.qtd3,e.qtd4,e.qtd5,e.qtd6,e.qtd7,e.qtd8,
-            e.tpEmb1,e.tpEmb2,e.tpEmb3,e.tpEmb4,e.tpEmb5,e.tpEmb6,e.tpEmb7,e.tpEmb8
-          FROM 01010s005.dev_ean_grade e
-          ${whereNormalized}
-          limit ${limit}
-          offset ${offset};
-          `
-        );
-
-        await this.sendEan(itemsOrder);
+        await this.sendEan(eans);
       }
     } catch (error) {
       console.log(error);

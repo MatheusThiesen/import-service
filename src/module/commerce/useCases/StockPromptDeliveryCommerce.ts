@@ -94,7 +94,7 @@ export class StockPromptDeliveryCommerce {
   async execute({ search }: ExecuteServiceProps) {
     const query = search
       ? `where ${search} AND pe.localEstoque = 20`
-      : `pe.localEstoque = 20`;
+      : `where pe.localEstoque = 20`;
     const totalPages = await this.getStocksTotal({ search: query });
 
     for (let index = 0; index < totalPages; index++) {

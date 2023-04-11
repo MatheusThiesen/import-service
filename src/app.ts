@@ -118,7 +118,6 @@ export class App {
       try {
         queue.push({
           entity: "sellerImportCommerce",
-          search: `${this.queryBuilderUpdateTime("r", 2)}`,
         });
         queue.push({
           entity: "conceptImportCommerce",
@@ -147,7 +146,7 @@ export class App {
         });
         queue.push({
           entity: "productImportCommerce",
-          search: `${this.queryBuilderUpdateTime("p", 2)}`,
+          search: `${this.queryBuilderUpdateTime("p", 3)}`,
         });
         queue.push({
           entity: "stockPromptDeliveryCommerce",
@@ -185,6 +184,7 @@ export class App {
       await Promise.all([
         observableFolder(),
         this.fiveMinuteCron(),
+        this.thirtyMinuteCron(),
         this.oneDayCron(),
       ]);
     } catch (err) {

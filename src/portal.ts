@@ -49,8 +49,13 @@ export class Portal {
         });
 
         queue.push({
-          search: `${this.queryBuilderUpdateTime("t", 1)} `,
-          entity: "billetViewImportPortal",
+          search: `${this.queryBuilderUpdateTime("g", 1, 10)} `,
+          entity: "gridViewImportPortal",
+        });
+
+        queue.push({
+          search: `${this.queryBuilderUpdateTime("e", 1, 10)} `,
+          entity: "eanViewImportPortal",
         });
 
         queue.push({
@@ -80,7 +85,7 @@ export class Portal {
   }
 
   async thereHoursCron() {
-    cron.schedule("0 0 */3 * * *", async () => {
+    cron.schedule("50 3 */2 * * *", async () => {
       try {
         queue.push({
           entity: "billetViewImportPortal",
@@ -116,6 +121,13 @@ export class Portal {
         queue.push({
           entity: "clientViewImportPortal",
         });
+        queue.push({
+          entity: "gridViewImportPortal",
+        });
+        queue.push({
+          search: `${this.queryBuilderUpdateTime("e", 3)} `,
+          entity: "eanViewImportPortal",
+        });
       } catch (error) {
         console.log(error);
       }
@@ -129,6 +141,7 @@ export class Portal {
         this.fiveMinuteCron(),
         this.oneDayCron(),
         this.sixtyMinuteCron(),
+        this.thereHoursCron(),
       ]);
     } catch (err) {
       console.log("error!");

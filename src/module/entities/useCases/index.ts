@@ -3,6 +3,8 @@ import { BrandsToSellerRepository } from "../repositories/BrandsToSellerReposito
 import { CollectionProductRepository } from "../repositories/CollectionProductRepository";
 import { ColorRepository } from "../repositories/ColorRepository";
 import { ConceptRepository } from "../repositories/ConceptRepository";
+import { EanProductRepository } from "../repositories/EanProductRepository";
+import { GridProductRepository } from "../repositories/GridProductRepository";
 import { GroupProductRepository } from "../repositories/GroupProductRepository";
 import { LineProductRepository } from "../repositories/LineProductRepository";
 import { PriceListRepository } from "../repositories/PriceListRepository";
@@ -19,6 +21,8 @@ export const subgroupProduct = new SubgroupProductRepository();
 export const concept = new ConceptRepository();
 export const seller = new SellerRepository();
 export const brandsToSeller = new BrandsToSellerRepository();
+export const eanProduct = new EanProductRepository();
+export const gridProduct = new GridProductRepository();
 
 export const entities = {
   brand,
@@ -31,4 +35,6 @@ export const entities = {
   concept,
   seller,
   brandsToSeller,
+  eanProduct,
+  gridProduct,
 };

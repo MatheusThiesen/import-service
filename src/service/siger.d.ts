@@ -34,6 +34,11 @@ export interface QueryFindAllEntitySiger<T> {
   page?: number;
 }
 
+export interface QueryFindFirstEntitySiger<T> {
+  fields: T;
+  search?: string;
+}
+
 export interface QueryCountEntitySiger {
   search?: string;
 }
