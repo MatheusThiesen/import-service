@@ -136,6 +136,14 @@ export class Portal {
 
   async execute() {
     try {
+      queue.push({
+        entity: "gridViewImportPortal",
+      });
+
+      queue.push({
+        entity: "eanViewImportPortal",
+      });
+
       await Promise.all([
         serverPortal.execute(),
         this.fiveMinuteCron(),

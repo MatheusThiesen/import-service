@@ -151,28 +151,28 @@ export class App {
         queue.push({
           entity: "stockPromptDeliveryCommerce",
         });
-        // queue.push({
-        //   entity: "stockFutureCommerce",
-        //   search: `
-        //   p.codigo in (
-        //     select distinct produtoCod from (
-        //       select i.produtoCod
-        //       from 01010s005.dev_pedido_item_v2 i
-        //       inner join 01010s005.dev_pedido_v2 p on p.codigo = pedidoCod
-        //       where ${this.queryBuilderUpdateTime(
-        //         "i",
-        //         2
-        //       )} and i.posicaoCod in (1,3) and p.especieCod = 9
+        queue.push({
+          entity: "stockFutureCommerce",
+          search: `
+          p.codigo in (
+            select distinct produtoCod from (
+              select i.produtoCod
+              from 01010s005.dev_pedido_item_v2 i
+              inner join 01010s005.dev_pedido_v2 p on p.codigo = pedidoCod
+              where ${this.queryBuilderUpdateTime(
+                "i",
+                2
+              )} and i.posicaoCod in (1,3) and p.especieCod = 9
 
-        //       union
+              union
 
-        //       select m.produtoCod
-        //       from 01010s005.dev_metas m
-        //       where ${this.queryBuilderUpdateTime("m", 2)}
+              select m.produtoCod
+              from 01010s005.dev_metas m
+              where ${this.queryBuilderUpdateTime("m", 2)}
 
-        //     ) as analises
-        //   ) `,
-        // });
+            ) as analises
+          ) `,
+        });
       } catch (error) {
         console.log(error);
       }
@@ -181,6 +181,15 @@ export class App {
 
   async execute() {
     try {
+      queue.push({
+        entity: "stockFutureCommerce",
+        search: `
+          p.codigo in (
+            select p.codigo from 01010s005.dev_produto p 
+            where p.situacao = 2 and p.bloqVenda = 2 and p.linhaProducao = 0
+          ) `,
+      });
+
       await Promise.all([
         observableFolder(),
         this.fiveMinuteCron(),
@@ -197,75 +206,7 @@ export class App {
 const app = new App();
 app.execute();
 
-// stockFutureCommerce.execute({
-//   // `p.codigo = 217090`,
-//   search: `p.codigo in (
-//     select distinct produtoCod
-//     from (
-//         select i.produtoCod
-//         from 01010s005.dev_pedido_item_v2 i
-//         inner join 01010s005.dev_pedido_v2 p on p.codigo = pedidoCod
-//         where i.dtAlteracao > '${this.getFormatDate({
-//           dateType: "date",
-//           minutes: 60 * 24 * 1,
-//           operationType: "pre",
-//         })}' and i.posicaoCod in (1,3) and p.especieCod = 9 and i.hrAlteracao > '${this.getFormatDate({
-//           dateType: "time",
-//           minutes: 20,
-//           operationType: "pre",
-//         })}'
-//         union
-//         select m.produtoCod
-//         from 01010s005.dev_metas m
-//         where m.dtAlteracao > '${this.getFormatDate({
-//           dateType: "date",
-//           minutes: 60 * 24 * 1,
-//           operationType: "pre",
-//         })}' and m.hrAlteracao > '${this.getFormatDate({
-//           dateType: "date",
-//           minutes: 60 * 24 * 1,
-//           operationType: "time",
-//         })}'
-//     ) as anality
-//   ) `,
-// }),
-
-// await productImportCommerce.execute({
-//   search: `p.dtAlteracao > '${await this.getFormatDate({
-//     dateType: "date",
-//     minutes: 60 * 24 * 10,
-//     operationType: "pre",
-//   })}'`,
-// });
-// await stockFutureCommerce.execute({
-//   search: "m.qtdAberto > 0",
-// });
-// await stockPromptDeliveryCommerce.execute({
+// queue.push({
+//   entity: "stockPromptDeliveryCommerce",
 //   search: "(pe.qtdFisica - pe.qtdReservada) > 0",
 // });
-
-// stockFutureCommerce.execute({
-//   search: `p.codigo in (
-//   select distinct produtoCod from (
-//     select i.produtoCod
-//     from 01010s005.dev_pedido_item_v2 i
-//     inner join 01010s005.dev_pedido_v2 p on p.codigo = pedidoCod
-//     where i.dtAlteracao > '${this.getFormatDate({
-//       dateType: "date",
-//       minutes: 60 * 24 * 1,
-//       operationType: "pre",
-//     })}' and i.posicaoCod in (1,3) and p.especieCod = 9
-
-//     union
-
-//     select m.produtoCod
-//     from 01010s005.dev_metas m
-//     where m.dtAlteracao > '${this.getFormatDate({
-//       dateType: "date",
-//       minutes: 60 * 24 * 1,
-//       operationType: "pre",
-//     })}'
-
-//   ) as analises
-// ) `,
-// }),

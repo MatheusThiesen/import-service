@@ -33,7 +33,7 @@ export interface PurchaseRecibe {
 }
 
 export class StockFutureCommerce {
-  readonly size = 5000;
+  readonly size = 10000;
 
   constructor(private sendData: SendDataRepository) {}
 
@@ -99,23 +99,29 @@ export class StockFutureCommerce {
         if (findOne) {
           findOne.qtd = findOne.qtd - qtdAvailable;
         } else {
-          const findFirst = accumulatedStocks.find(
-            (f) =>
-              f.productCod === item.produtoCod &&
-              accumulatedStocks &&
-              this.normalizedPeriodDate(f.period) <
-                this.normalizedPeriodDate(item.dtFaturamento)
-          );
-          if (findFirst) {
-            findFirst.qtd = findFirst.qtd - qtdAvailable;
-          }
+          accumulatedStocks.push({
+            period: item.dtFaturamento,
+            name: this.normalizedPeriodName(item.dtFaturamento),
+            productCod: item.produtoCod,
+            qtd: Math.trunc(qtdAvailable * -1),
+            date: this.normalizedPeriodDate(item.dtFaturamento),
+          });
         }
       }
+
       const findNowStock = accumulatedStocks.find(
         (f) =>
           f.productCod === product.codigo &&
-          f.date >= this.normalizedPeriodDate(periodNow)
+          f.date === this.normalizedPeriodDate(periodNow)
       );
+
+      const periodNowAccumulatedStocks = {
+        period: periodNow,
+        name: this.normalizedPeriodName(periodNow),
+        productCod: product.codigo,
+        qtd: 0,
+        date: this.normalizedPeriodDate(periodNow),
+      };
 
       for (const stock of accumulatedStocks) {
         if (findNowStock) {
@@ -123,8 +129,16 @@ export class StockFutureCommerce {
             findNowStock.qtd = findNowStock.qtd + stock.qtd;
             stock.qtd = 0;
           }
+        } else {
+          if (stock.date < periodNowAccumulatedStocks.date) {
+            periodNowAccumulatedStocks.qtd =
+              periodNowAccumulatedStocks.qtd + stock.qtd;
+            stock.qtd = 0;
+          }
         }
       }
+
+      if (!findNowStock) accumulatedStocks.push(periodNowAccumulatedStocks);
     }
 
     return accumulatedStocks;
