@@ -29,7 +29,7 @@ interface SendEan {
 }
 
 export class EanViewImportPortal {
-  readonly pageSize = 50000;
+  readonly pageSize = 10000;
 
   constructor(private sendData: SendData) {}
 
