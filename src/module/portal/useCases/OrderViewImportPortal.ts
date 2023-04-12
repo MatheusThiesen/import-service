@@ -280,10 +280,6 @@ export class OrderViewImportPortal {
               ${whereNormalized}
               group by p.codigo 
             ) as anality
-            
-            
-          
-        ${whereNormalized};
         `
           )
         )[0].total
