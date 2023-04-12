@@ -184,10 +184,12 @@ export class App {
       queue.push({
         entity: "stockFutureCommerce",
         search: `
-          p.codigo in (
-            select p.codigo from 01010s005.dev_produto p 
-            where p.situacao = 2 and p.bloqVenda = 2 and p.linhaProducao = 0
-          ) `,
+        select count(p.codigo) from 01010s005.dev_produto p 
+inner join dev_metas m on m.produtoCod = p.codigo
+where p.situacao = 2 and
+	  p.bloqVenda = 2 and
+      p.linhaProducao = 0
+       `,
       });
 
       await Promise.all([

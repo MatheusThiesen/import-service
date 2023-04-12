@@ -110,9 +110,7 @@ export class StockFutureCommerce {
       }
 
       const findNowStock = accumulatedStocks.find(
-        (f) =>
-          f.productCod === product.codigo &&
-          f.date === this.normalizedPeriodDate(periodNow)
+        (f) => f.productCod === product.codigo && f.period === periodNow
       );
 
       const periodNowAccumulatedStocks = {
@@ -255,6 +253,8 @@ export class StockFutureCommerce {
         page: page,
         pagesize: this.size,
       });
+
+      console.log(JSON.stringify(stocks, null, 2));
 
       await this.sendData.post("/stock-locations/import", stocks);
     }
