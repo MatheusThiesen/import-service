@@ -254,8 +254,6 @@ export class StockFutureCommerce {
         pagesize: this.size,
       });
 
-      console.log(JSON.stringify(stocks, null, 2));
-
       await this.sendData.post("/stock-locations/import", stocks);
     }
   }
