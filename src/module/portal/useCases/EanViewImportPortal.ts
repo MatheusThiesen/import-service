@@ -66,8 +66,6 @@ export class EanViewImportPortal {
   }
 
   async execute({ search }: { search?: string }) {
-    const whereNormalized = search ? `where ${search}` : ``;
-
     try {
       const totalItems = await entities.eanProduct.count({ search });
       const totalPage = Math.ceil(totalItems / this.pageSize);
@@ -100,7 +98,7 @@ export class EanViewImportPortal {
           },
           page: index,
           pagesize: this.pageSize,
-          search: whereNormalized,
+          search: search,
         });
 
         await this.sendEan(eans);

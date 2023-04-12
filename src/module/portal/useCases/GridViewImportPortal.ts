@@ -30,8 +30,6 @@ export class GridViewImportPortal {
   constructor(private sendData: SendData) {}
 
   async execute({ search }: { search?: string }) {
-    const whereNormalized = search ? `where ${search}` : ``;
-
     const grids = await entities.gridProduct.findAll({
       fields: {
         codigo: true,
@@ -57,7 +55,7 @@ export class GridViewImportPortal {
         c18: true,
         c19: true,
       },
-      search: whereNormalized,
+      search: search,
     });
 
     const gridsNormalized: GridPortalSendProps[] = grids.map((grid) => ({
