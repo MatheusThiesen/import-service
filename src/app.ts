@@ -184,11 +184,14 @@ export class App {
       queue.push({
         entity: "stockFutureCommerce",
         search: `
-        select count(p.codigo) from 01010s005.dev_produto p 
-inner join dev_metas m on m.produtoCod = p.codigo
-where p.situacao = 2 and
-	  p.bloqVenda = 2 and
-      p.linhaProducao = 0
+
+        p.codigo in (
+          select prod.codigo from 01010s005.dev_produto prod 
+          inner join 01010s005.dev_metas m on m.produtoCod = prod.codigo
+          where prod.situacao = 2 and
+	          prod.bloqVenda = 2 and
+            prod.linhaProducao = 0 
+          )
        `,
       });
 
