@@ -14,7 +14,7 @@ export class NoteOrderViewImportPortal {
     }>(`
       select distinct 
             n.numeroNota,
-            n.pedidoCod,
+            n.pedidoCod
       from 01010s005.dev_pedido_nota n 
       ${whereNormalized};
     `);
