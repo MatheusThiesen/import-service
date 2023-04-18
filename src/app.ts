@@ -181,20 +181,6 @@ export class App {
 
   async execute() {
     try {
-      queue.push({
-        entity: "stockFutureCommerce",
-        search: `
-
-        p.codigo in (
-          select prod.codigo from 01010s005.dev_produto prod 
-          inner join 01010s005.dev_metas m on m.produtoCod = prod.codigo
-          where prod.situacao = 2 and
-	          prod.bloqVenda = 2 and
-            prod.linhaProducao = 0 
-          )
-       `,
-      });
-
       await Promise.all([
         observableFolder(),
         this.fiveMinuteCron(),

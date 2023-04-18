@@ -23,6 +23,7 @@ import {
   clientViewImportPortal,
   eanViewImportPortal,
   gridViewImportPortal,
+  noteOrderViewImportPortal,
   orderViewImportPortal,
   sellerViewImportPortal,
 } from "../module/portal/useCases";
@@ -54,6 +55,9 @@ export async function worker(arg: Task, cb: done) {
       break;
     case "gridViewImportPortal":
       await gridViewImportPortal.execute({ search: arg.search });
+      break;
+    case "noteOrderViewImportPortal":
+      await noteOrderViewImportPortal.execute({ search: arg.search });
       break;
     case "productImportCommerce":
       await productImportCommerce.execute({ search: arg.search });

@@ -136,6 +136,10 @@ export class Portal {
 
   async execute() {
     try {
+      queue.push({
+        entity: "noteOrderViewImportPortal",
+      });
+
       await Promise.all([
         serverPortal.execute(),
         this.fiveMinuteCron(),

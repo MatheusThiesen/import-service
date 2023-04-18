@@ -3,11 +3,12 @@ import { AuthorizationRepository } from "../repositories/Authorization";
 import { SendData } from "../repositories/SendData";
 import { ServerPortal } from "./ApiPortal";
 import { BilletViewImportPortal } from "./BilletViewImportPortal";
-import { BrandsToSellerViewImportPortal } from "./BrandsToSellerViewImportPortal";
 import { BrandViewImportPortal } from "./BrandViewImportPortal";
+import { BrandsToSellerViewImportPortal } from "./BrandsToSellerViewImportPortal";
 import { ClientViewImportPortal } from "./ClientViewImportPortal";
 import { EanViewImportPortal } from "./EanViewImportPortal";
 import { GridViewImportPortal } from "./GridViewImportPortal";
+import { NoteOrderViewImportPortal } from "./NoteOrderViewImportPortal";
 import { OrderViewImportPortal } from "./OrderViewImportPortal";
 import { SellerViewImportPortal } from "./SellerViewImportPortal";
 
@@ -20,6 +21,9 @@ export const brandViewImportPortal = new BrandViewImportPortal(sendData);
 export const sellerViewImportPortal = new SellerViewImportPortal(sendData);
 export const clientViewImportPortal = new ClientViewImportPortal(sendData);
 export const billetViewImportPortal = new BilletViewImportPortal(sendData);
+export const noteOrderViewImportPortal = new NoteOrderViewImportPortal(
+  sendData
+);
 export const brandsToSellerViewImportPortal =
   new BrandsToSellerViewImportPortal(sendData);
 

@@ -129,31 +129,18 @@ export class OrderViewImportPortal {
 
       let numeroNotaResponse = undefined;
       const now = new Date();
-      now.setDate(now.getDate() - 3);
+      now.setDate(now.getDate() - 10);
 
       if (
         ["faturado"].includes(detailPosition.toLowerCase())
-        // &&      order.dtFaturamento > now
+        // &&  order.dtFaturamento > now
       ) {
         numeroNotaResponse = await dbSiger.$ExecuteQuery<{
           numeroNota: number;
-          chaveNota: string;
+          // chaveNota: string;
         }>(`
-          select  n.numeroNota,
-                  concat( 
-                    LPAD(nChave.cUF, 2, '0'),
-                    LPAD(nChave.ano, 2, '0'),
-                    LPAD(nChave.mes, 2, '0'),
-                    LPAD(nChave.CNPJ, 14, '0'),
-                    LPAD(nChave.mod, 2, '0'),
-                    LPAD(nChave.serie, 3, '0'),
-                    LPAD(nChave.nNF, 9, '0'),
-                    LPAD(nChave.tpEmis, 1, '0'),
-                    LPAD(nChave.cNF, 8, '0'),
-                    LPAD(nChave.cDV, 1, '0')
-                    ) as chaveNota
+          select  n.numeroNota
           from 01010s005.dev_pedido_nota n 
-          left join 01010s005.DEV_NOTA_CHAVE nChave on nChave.nNF = n.numeroNota 
           where n.pedidoCod = ${orderGroup.value} 
           limit 1
         `);
@@ -190,7 +177,7 @@ export class OrderViewImportPortal {
       const keyNfe =
         numeroNotaResponse &&
         numeroNotaResponse[0] &&
-        numeroNotaResponse[0].chaveNota
+        numeroNotaResponse[0]?.chaveNota
           ? String(numeroNotaResponse[0].chaveNota)
           : "";
 
