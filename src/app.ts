@@ -72,29 +72,29 @@ export class App {
           entity: "stockPromptDeliveryCommerce",
           search: `${this.queryBuilderUpdateTime("pe", 1, 10)}`,
         });
-        // queue.push({
-        //   entity: "stockFutureCommerce",
-        //   search: `
-        //   p.codigo in (
-        //     select distinct produtoCod from (
-        //       select i.produtoCod
-        //       from 01010s005.dev_pedido_item_v2 i
-        //       inner join 01010s005.dev_pedido_v2 p on p.codigo = pedidoCod
-        //       where ${this.queryBuilderUpdateTime(
-        //         "i",
-        //         1,
-        //         10
-        //       )} and i.posicaoCod in (1,3) and p.especieCod = 9
+        queue.push({
+          entity: "stockFutureCommerce",
+          search: `
+          p.codigo in (
+            select distinct produtoCod from (
+              select i.produtoCod
+              from 01010s005.dev_pedido_item_v2 i
+              inner join 01010s005.dev_pedido_v2 p on p.codigo = pedidoCod
+              where ${this.queryBuilderUpdateTime(
+                "i",
+                1,
+                10
+              )} and i.posicaoCod in (1,3) and p.especieCod = 9
 
-        //       union
+              union
 
-        //       select m.produtoCod
-        //       from 01010s005.dev_metas m
-        //       where ${this.queryBuilderUpdateTime("m", 1, 10)}
+              select m.produtoCod
+              from 01010s005.dev_metas m
+              where ${this.queryBuilderUpdateTime("m", 1, 10)}
 
-        //     ) as analises
-        //   ) `,
-        // });
+            ) as analises
+          ) `,
+        });
       } catch (error) {
         console.log(error);
       }
@@ -200,4 +200,27 @@ app.execute();
 // queue.push({
 //   entity: "stockPromptDeliveryCommerce",
 //   search: "(pe.qtdFisica - pe.qtdReservada) > 0",
+// });
+
+// queue.push({
+//   entity: "stockFutureCommerce",
+//   search: `
+//   p.codigo in (
+//     select distinct produtoCod from (
+//       select i.produtoCod
+//       from 01010s005.dev_pedido_item_v2 i
+//       inner join 01010s005.dev_pedido_v2 p on p.codigo = pedidoCod
+//       where ${this.queryBuilderUpdateTime(
+//         "i",
+//         2
+//       )} and i.posicaoCod in (1,3) and p.especieCod = 9
+
+//       union
+
+//       select m.produtoCod
+//       from 01010s005.dev_metas m
+//       where ${this.queryBuilderUpdateTime("m", 2)}
+
+//     ) as analises
+//   ) `,
 // });

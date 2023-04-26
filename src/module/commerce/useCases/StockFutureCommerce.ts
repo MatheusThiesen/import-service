@@ -1,3 +1,4 @@
+import { diffDates } from "../../../helpers/diffDates";
 import { dbSiger } from "../../../service/dbSiger";
 import { SendDataRepository } from "../repositories/SendDataRepository";
 import { ExecuteServiceProps } from "../types/ExecuteService";
@@ -33,7 +34,7 @@ export interface PurchaseRecibe {
 }
 
 export class StockFutureCommerce {
-  readonly size = 10000;
+  readonly size = 500;
 
   constructor(private sendData: SendDataRepository) {}
 
@@ -243,10 +244,18 @@ export class StockFutureCommerce {
   async execute({ search }: ExecuteServiceProps) {
     const query = search ? `where ${search}` : ``;
 
-    const totalPages = await this.getProductsTotal({ search: query });
+    const startDate = new Date();
+
+    const totalProducts = await this.getProductsTotal({ search: query });
+    const totalPages = Math.ceil(totalProducts / this.size);
+
+    console.log("-> Produtos " + totalProducts);
+    console.log("-> Paginas " + totalPages);
 
     for (let index = 0; index < totalPages; index++) {
       const page = index;
+
+      console.log(`${page + 1} de ${totalPages}`);
 
       const stocks = await this.getProducts({
         search: query,
@@ -254,7 +263,12 @@ export class StockFutureCommerce {
         pagesize: this.size,
       });
 
-      await this.sendData.post("/stock-locations/import", stocks);
+      if (stocks.length > 0)
+        await this.sendData.post("/stock-locations/import", stocks);
     }
+
+    const endDate = new Date();
+
+    console.log("-> " + (await diffDates(startDate, endDate)));
   }
 }

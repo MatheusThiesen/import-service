@@ -2,8 +2,10 @@ import "dotenv/config";
 
 import { done } from "fastq";
 import {
+  branchActivistsImportCommerce,
   brandImportCommerce,
   brandsToSellerImportCommerce,
+  clientImportCommerce,
   collectionImportCommerce,
   colorImportCommerce,
   conceptImportCommerce,
@@ -97,6 +99,12 @@ export async function worker(arg: Task, cb: done) {
       break;
     case "stockFutureCommerce":
       await stockFutureCommerce.execute({ search: arg.search });
+      break;
+    case "branchActivistsImportCommerce":
+      await branchActivistsImportCommerce.execute({ search: arg.search });
+      break;
+    case "clientImportCommerce":
+      await clientImportCommerce.execute({ search: arg.search });
       break;
   }
 

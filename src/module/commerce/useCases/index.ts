@@ -1,8 +1,10 @@
 import { AuthorizationRepository } from "../repositories/AuthorizationRepository";
 import { SendDataRepository } from "../repositories/SendDataRepository";
 
+import { BranchActivistsImportCommerce } from "./BranchActivistsImportCommerce";
 import { BrandImportCommerce } from "./BrandImportCommerce";
 import { BrandsToSellerImportCommerce } from "./BrandsToSellerImportCommerce";
+import { ClientImportCommerce } from "./ClientImportCommerce";
 import { CollectionImportCommerce } from "./CollectionImportCommerce";
 import { ColorImportCommerce } from "./ColorImportCommerce";
 import { ConceptImportCommerce } from "./ConceptImportCommerce";
@@ -35,3 +37,7 @@ export const stockFutureCommerce = new StockFutureCommerce(sendData);
 export const stockPromptDeliveryCommerce = new StockPromptDeliveryCommerce(
   sendData
 );
+export const branchActivistsImportCommerce = new BranchActivistsImportCommerce(
+  sendData
+);
+export const clientImportCommerce = new ClientImportCommerce(sendData);
