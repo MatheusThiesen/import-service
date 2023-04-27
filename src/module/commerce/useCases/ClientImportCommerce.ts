@@ -1,4 +1,5 @@
-import { NumberToString } from "src/helpers/NumberToString";
+import { numberToString } from "../../../helpers/numberToString";
+import { stringToNumber } from "../../../helpers/stringToNumber";
 import { Client } from "../../../module/entities/model/Client";
 import { entities } from "../../entities/useCases";
 import { SendDataRepository } from "../repositories/SendDataRepository";
@@ -30,7 +31,7 @@ export interface IClientNormalized {
 }
 
 export class ClientImportCommerce {
-  readonly pagesize = 1000;
+  readonly pagesize = 1600;
 
   constructor(private sendData: SendDataRepository) {}
 
@@ -42,25 +43,25 @@ export class ClientImportCommerce {
         codigo: client.clienteCod,
         obs: ``,
         obsRestrita: ``,
-        cnpj: NumberToString(client.cnpj),
-        credito: client.credito,
+        cnpj: ("00000000000000" + numberToString(client.cnpj)).slice(-14),
+        credito: stringToNumber(client.credito),
         razaoSocial: client.razaoSocial,
         nomeFantasia: client.nomeFantasia,
         incricaoEstadual: client.ie,
-        celular: NumberToString(client.celular),
-        telefone: NumberToString(client.telefone),
-        telefone2: NumberToString(client.telefone2),
-        eAtivo: client.ativo,
+        celular: numberToString(client.celular),
+        telefone: numberToString(client.telefone),
+        telefone2: numberToString(client.telefone2),
+        eAtivo: stringToNumber(client.ativo),
         uf: client.uf,
-        cidadeIbgeCod: client.cidadeIbgeCod,
+        cidadeIbgeCod: stringToNumber(client.cidadeIbgeCod),
         cidade: client.cidade,
         bairro: client.bairro,
         logradouro: client.logradouro,
-        numero: NumberToString(client.numero),
+        numero: numberToString(client.numero),
         complemento: client.complemento,
-        cep: NumberToString(client.cep),
-        ramoAtividadeCodigo: client.grupoCadCod,
-        conceitoCodigo: client.conceitoCod,
+        cep: numberToString(client.cep),
+        ramoAtividadeCodigo: stringToNumber(client.grupoCadCod),
+        conceitoCodigo: stringToNumber(client.conceitoCod),
       };
 
       try {
