@@ -15,7 +15,7 @@ interface GetCliente {
   bairro: string;
   logradouro: string;
   tipo: string;
-  grupocadCpd: number;
+  grupoCadCod: number;
   ativo: number;
   dda: number;
   dtAlteracao: Date;
@@ -68,7 +68,7 @@ export class ClientViewImportPortal {
       logradouroCliente: client.logradouro,
       numeroLogradouroCliente: client.numero,
       tipoCadastroCliente: client.tipo,
-      idGrupoCadCliente: String(client.grupocadCpd),
+      idGrupoCadCliente: String(client.grupoCadCod),
       dataModificacaoCliente: client.dtAlteracao,
       situacaoCliente: String(client.ativo),
       ddaCliente: client.dda === 1 ? "Sim" : "Não",
@@ -121,7 +121,7 @@ export class ClientViewImportPortal {
             c.logradouro,
             c.numero,
             c.tipo,
-            c.grupocadCpd,
+            c.grupoCadCod,
             c.ativo,
             c.dda,
             c.dtAlteracao    

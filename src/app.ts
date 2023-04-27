@@ -1,6 +1,7 @@
 import "dotenv/config";
 import * as cron from "node-cron";
 import { getFormatDate } from "./helpers/getFormatDate";
+import { observableFolder } from "./module/observableFolder";
 import { queue } from "./queue";
 
 export class App {
@@ -179,20 +180,12 @@ export class App {
   }
 
   async execute() {
-    // queue.push({
-    //   entity: "branchActivistsImportCommerce",
-    // });
-    queue.push({
-      entity: "clientImportCommerce",
-      search: `c.clienteCod = 16485 `,
-    });
-
     try {
       await Promise.all([
-        // observableFolder(),
-        // this.fiveMinuteCron(),
-        // this.thirtyMinuteCron(),
-        // this.oneDayCron(),
+        observableFolder(),
+        this.fiveMinuteCron(),
+        this.thirtyMinuteCron(),
+        this.oneDayCron(),
       ]);
     } catch (err) {
       console.log("error!");
