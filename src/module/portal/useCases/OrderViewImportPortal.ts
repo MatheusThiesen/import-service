@@ -312,7 +312,7 @@ export class OrderViewImportPortal {
               prod.descricao as produtoDescricao,
               prod.descricaoComplementar as produtoDescricaoComplementar,
               prod.referencia as produtoReferencia,
-              prod.unidadeEstoque as produtoUnidadeEstoque,
+              prod.unidadeMedida as produtoUnidadeEstoque,
               prod.gradeCod,
             
               g.descricao as gradeDescricao,
