@@ -17,6 +17,8 @@ export interface IClientNormalized {
   celular?: string;
   telefone?: string;
   telefone2?: string;
+  email?: string;
+  email2?: string;
   eAtivo?: number;
   uf: string;
   cidadeIbgeCod?: number;
@@ -51,6 +53,8 @@ export class ClientImportCommerce {
         celular: numberToString(client.celular),
         telefone: numberToString(client.telefone),
         telefone2: numberToString(client.telefone2),
+        email: null,
+        email2: null,
         eAtivo: stringToNumber(client.ativo),
         uf: client.uf,
         cidadeIbgeCod: stringToNumber(client.cidadeIbgeCod),
@@ -64,21 +68,33 @@ export class ClientImportCommerce {
         conceitoCodigo: stringToNumber(client.conceitoCod),
       };
 
-      try {
-        const clientObsResponse = await entities.clientObs.findOne({
+      entities.clientObs
+        .findOne({
           search: `o.clienteCod = ${client.clienteCod}`,
           fields: {
             clienteCod: true,
             observacoes: true,
             observacoesRestritas: true,
           },
-        });
-
-        if (clientObsResponse) {
+        })
+        .then((clientObsResponse) => {
           normalizedClient.obs = clientObsResponse.observacoes;
           normalizedClient.obsRestrita = clientObsResponse.observacoesRestritas;
-        }
-      } catch (error) {}
+        });
+
+      entities.clientEmail
+        .findOne({
+          fields: {
+            clienteCod: true,
+            email: true,
+            email2: true,
+          },
+          search: `e.clienteCod = ${client.clienteCod}`,
+        })
+        .then((clientEmailResponse) => {
+          normalizedClient.email = clientEmailResponse.email;
+          normalizedClient.email2 = clientEmailResponse.email2;
+        });
 
       normalized.push(normalizedClient);
     }

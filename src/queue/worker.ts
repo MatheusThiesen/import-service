@@ -17,6 +17,7 @@ import {
   stockFutureCommerce,
   stockPromptDeliveryCommerce,
   subGroupImportCommerce,
+  walletSellerClientImportCommerce,
 } from "../module/commerce/useCases";
 import {
   billetViewImportPortal,
@@ -105,6 +106,9 @@ export async function worker(arg: Task, cb: done) {
       break;
     case "clientImportCommerce":
       await clientImportCommerce.execute({ search: arg.search });
+      break;
+    case "walletSellerClientImportCommerce":
+      await walletSellerClientImportCommerce.execute({ search: arg.search });
       break;
   }
 

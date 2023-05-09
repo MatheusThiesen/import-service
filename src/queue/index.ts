@@ -30,7 +30,8 @@ export type Task = {
     | "stockPromptDeliveryCommerce"
     | "stockFutureCommerce"
     | "branchActivistsImportCommerce"
-    | "clientImportCommerce";
+    | "clientImportCommerce"
+    | "walletSellerClientImportCommerce";
 };
 
 export const queue: queueFastq<Task> = fastq(worker, CONCURRENCY);

@@ -16,6 +16,7 @@ import { SellerImportCommerce } from "./SellerImportCommerce";
 import { StockFutureCommerce } from "./StockFutureCommerce";
 import { StockPromptDeliveryCommerce } from "./StockPromptDeliveryCommerce";
 import { SubGroupImportCommerce } from "./SubGroupImportCommerce";
+import { WalletSellerClientImportCommerce } from "./WalletSellerClientImportCommerce";
 
 const authorization = new AuthorizationRepository();
 export const sendData = new SendDataRepository(authorization);
@@ -41,3 +42,5 @@ export const branchActivistsImportCommerce = new BranchActivistsImportCommerce(
   sendData
 );
 export const clientImportCommerce = new ClientImportCommerce(sendData);
+export const walletSellerClientImportCommerce =
+  new WalletSellerClientImportCommerce(sendData);

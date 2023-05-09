@@ -59,6 +59,11 @@ export class Portal {
         });
 
         queue.push({
+          search: `${this.queryBuilderUpdateTime("n", 1, 10)} `,
+          entity: "noteOrderViewImportPortal",
+        });
+
+        queue.push({
           entity: "brandsToSellerViewImportPortal",
           search: `rm.dtAlteracao > '${getFormatDate({
             dateType: "date",
@@ -128,6 +133,10 @@ export class Portal {
           search: `${this.queryBuilderUpdateTime("e", 3)} `,
           entity: "eanViewImportPortal",
         });
+        queue.push({
+          search: `${this.queryBuilderUpdateTime("n", 10)} `,
+          entity: "noteOrderViewImportPortal",
+        });
       } catch (error) {
         console.log(error);
       }
@@ -136,10 +145,6 @@ export class Portal {
 
   async execute() {
     try {
-      queue.push({
-        entity: "noteOrderViewImportPortal",
-      });
-
       await Promise.all([
         serverPortal.execute(),
         this.fiveMinuteCron(),

@@ -14,7 +14,6 @@ interface ProductRecibe {
   descricaoComplementar: string;
   descricaoLonga: string;
   precoPromo: number;
-  unidadeEstoque: string;
   marcaCod: number;
   corUmCod: number;
   corDoisCod: number;
@@ -24,6 +23,11 @@ interface ProductRecibe {
   subGrupoCod: number;
   genero: number;
   precoVenda: number;
+  qtdEmbalagem: number;
+  obs: string;
+  ncm: string;
+  unidadeMedida: string;
+  unidadeMedidaDesc: string;
 }
 
 export interface ProductNormalized {
@@ -35,7 +39,6 @@ export interface ProductNormalized {
   completeDescription: string;
   additionalDescription: string;
   salePrice: number;
-  unitMeasure: string;
   marcaCodigo: number;
   corPrimariaCodigo: number;
   corSecundariaCodigo: number;
@@ -45,6 +48,11 @@ export interface ProductNormalized {
   subgrupoCodigo: number;
   generoCodigo: number;
   precoVendaEmpresa: number;
+  qtdEmbalagem: number;
+  obs: string;
+  ncm: string;
+  unitMeasure: string;
+  unitMeasureDesc: string;
 }
 
 export class ProductImportCommerce {
@@ -65,7 +73,6 @@ export class ProductImportCommerce {
       completeDescription: product.descricaoLonga,
       additionalDescription: product.descricaoComplementar,
       salePrice: product.precoPromo,
-      unitMeasure: product.unidadeEstoque,
       marcaCodigo: product.marcaCod,
       corPrimariaCodigo: product.corUmCod,
       corSecundariaCodigo: product.corDoisCod,
@@ -75,6 +82,11 @@ export class ProductImportCommerce {
       subgrupoCodigo: product.subGrupoCod,
       generoCodigo: product.genero,
       precoVendaEmpresa: product.precoVenda,
+      qtdEmbalagem: product?.qtdEmbalagem ? Number(product.qtdEmbalagem) : 0,
+      obs: product.obs,
+      ncm: product.ncm,
+      unitMeasure: product.unidadeMedida,
+      unitMeasureDesc: product.unidadeMedidaDesc,
     }));
   }
 
@@ -103,7 +115,6 @@ export class ProductImportCommerce {
         p.descricaoComplementar,
         p.descricaoLonga,
         p.precoPromo,
-        p.unidadeEstoque,
         p.marcaCod,
         p.corUmCod,
         p.corDoisCod,
@@ -112,7 +123,12 @@ export class ProductImportCommerce {
         p.grupoCod,
         p.subGrupoCod,
         p.genero,
-        p.precoVenda
+        p.precoVenda,
+        p.qtdEmbalagem,
+        p.obs,
+        p.ncm,
+        p.unidadeMedida,
+        p.unidadeMedidaDesc
       from 01010s005.dev_produto p 
       ${whereNormalized}
       limit ${limit}

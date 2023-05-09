@@ -1,6 +1,7 @@
 import { BrandRepository } from "../repositories/BrandRepository";
 import { BrandsToSellerRepository } from "../repositories/BrandsToSellerRepository";
 import { ClientRepository } from "../repositories/Client";
+import { ClientEmailRepository } from "../repositories/ClientEmailRepository";
 import { ClientObsRepository } from "../repositories/ClientObs";
 import { CollectionProductRepository } from "../repositories/CollectionProductRepository";
 import { ColorRepository } from "../repositories/ColorRepository";
@@ -31,6 +32,7 @@ export const registrationGroup = new RegistrationGroupRepository();
 export const linkClientSeller = new LinkClientSellerRepository();
 export const client = new ClientRepository();
 export const clientObs = new ClientObsRepository();
+export const clientEmail = new ClientEmailRepository();
 
 export const entities = {
   brand,
@@ -49,4 +51,5 @@ export const entities = {
   linkClientSeller,
   client,
   clientObs,
+  clientEmail,
 };
