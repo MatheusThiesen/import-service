@@ -173,6 +173,7 @@ export class App {
         });
         queue.push({
           entity: "stockPromptDeliveryCommerce",
+          search: `${this.queryBuilderUpdateTime("pe", 3)}`,
         });
         queue.push({
           entity: "stockFutureCommerce",
