@@ -29,6 +29,10 @@ export class App {
     cron.schedule("0 */10 * * * *", async () => {
       try {
         queue.push({
+          entity: "branchActivistsImportCommerce",
+          search: `${this.queryBuilderUpdateTime("g", 1, 10)}`,
+        });
+        queue.push({
           entity: "clientImportCommerce",
           search: `${this.queryBuilderUpdateTime("c", 1, 10)}`,
         });
@@ -147,6 +151,9 @@ export class App {
         });
         queue.push({
           entity: "subGroupImportCommerce",
+        });
+        queue.push({
+          entity: "branchActivistsImportCommerce",
         });
         queue.push({
           entity: "walletSellerClientImportCommerce",

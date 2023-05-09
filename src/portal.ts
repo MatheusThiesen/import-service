@@ -59,7 +59,7 @@ export class Portal {
         });
 
         queue.push({
-          search: `${this.queryBuilderUpdateTime("n", 1, 10)} `,
+          search: `${this.queryBuilderUpdateTime("n", 1)} `,
           entity: "noteOrderViewImportPortal",
         });
 
