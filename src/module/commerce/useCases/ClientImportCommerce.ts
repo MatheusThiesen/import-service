@@ -33,7 +33,7 @@ export interface IClientNormalized {
 }
 
 export class ClientImportCommerce {
-  readonly pagesize = 1600;
+  readonly pagesize = 200;
 
   constructor(private sendData: SendDataRepository) {}
 
@@ -78,8 +78,11 @@ export class ClientImportCommerce {
           },
         })
         .then((clientObsResponse) => {
-          normalizedClient.obs = clientObsResponse.observacoes;
-          normalizedClient.obsRestrita = clientObsResponse.observacoesRestritas;
+          if (clientObsResponse) {
+            normalizedClient.obs = clientObsResponse.observacoes;
+            normalizedClient.obsRestrita =
+              clientObsResponse.observacoesRestritas;
+          }
         });
 
       entities.clientEmail
@@ -92,8 +95,10 @@ export class ClientImportCommerce {
           search: `e.clienteCod = ${client.clienteCod}`,
         })
         .then((clientEmailResponse) => {
-          normalizedClient.email = clientEmailResponse.email;
-          normalizedClient.email2 = clientEmailResponse.email2;
+          if (clientEmailResponse) {
+            normalizedClient.email = clientEmailResponse.email;
+            normalizedClient.email2 = clientEmailResponse.email2;
+          }
         });
 
       normalized.push(normalizedClient);

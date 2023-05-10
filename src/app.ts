@@ -157,15 +157,15 @@ export class App {
         });
         queue.push({
           entity: "walletSellerClientImportCommerce",
+          search: `${this.queryBuilderUpdateTime("cr", 3)}`,
         });
         queue.push({
           entity: "clientImportCommerce",
-          search: `${this.queryBuilderUpdateTime("c", 10)}`,
+          search: `${this.queryBuilderUpdateTime("c", 3)}`,
         });
-
         queue.push({
           entity: "listPriceImportCommerce",
-          search: `${this.queryBuilderUpdateTime("l", 2)}`,
+          search: `${this.queryBuilderUpdateTime("l", 3)}`,
         });
         queue.push({
           entity: "productImportCommerce",
