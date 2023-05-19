@@ -77,7 +77,7 @@ export class BilletViewImportPortal {
 
   async execute({ search }: { search?: string }) {
     try {
-      const query = `t.situacao = 1`;
+      const query = `t.situacao in (1, 14)`;
       const whereNormalized = search
         ? `where ${search} and ${query}`
         : `where ${query}`;
