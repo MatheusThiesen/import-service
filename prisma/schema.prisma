@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./db/dev.db"
 }
 
 model Job {
@@ -41,4 +41,20 @@ model JobStatus {
   codigo Int      @id
   name   String
   JobRun JobRun[]
+}
+
+model QueryDb {
+  id            String    @id @default(uuid())
+  query         String
+  response      String?
+  responseLines Int?
+  startAt       DateTime
+  endAnt        DateTime?
+  error         String?
+  seconds       Decimal?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("queries")
 }
