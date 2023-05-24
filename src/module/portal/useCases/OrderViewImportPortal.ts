@@ -90,7 +90,7 @@ interface SendOrder {
 }
 
 export class OrderViewImportPortal {
-  readonly pageSize = 50000;
+  readonly pageSize = 10000;
   constructor(private sendData: SendData) {}
 
   async onNormalizedOrder(itemsOrder: GetOrderItems[]): Promise<SendOrder[]> {
@@ -243,14 +243,16 @@ export class OrderViewImportPortal {
 
   async execute({ search }: { search?: string }) {
     try {
-      const whereNormalized = search ? `where ${search}` : ``;
+      const whereNormalized = search
+        ? `where ${search} and p.sigemp = '018'`
+        : ``;
 
       const totalItems = Number(
         (
           await dbSiger.$ExecuteQuery<{ total: string }>(
             `
         select count(*) as total from 01010s005.dev_pedido_v2 p
-          inner join 01010s005.dev_pedido_item_v2 i on p.codigo = i.pedidoCod 
+          inner join 01010s005.dev_pedido_item i on p.codigo = i.pedidoCod 
         ${whereNormalized};
         `
           )
@@ -298,7 +300,6 @@ export class OrderViewImportPortal {
               p.formaPagamento,
               p.especieCod,
               p.transportadoraCod,
-        
               i.id as itemId,
               i.produtoCod,
               i.sequencia,
@@ -308,26 +309,22 @@ export class OrderViewImportPortal {
               i.vlrUnitario as vlrUnitario,
               i.marcaCod,
               i.recusaCod,i.recusaDescicao,
-    
-              prod.descricao as produtoDescricao,
-              prod.descricaoComplementar as produtoDescricaoComplementar,
-              prod.referencia as produtoReferencia,
-              prod.unidadeMedida as produtoUnidadeEstoque,
-              prod.gradeCod,
-            
-              g.descricao as gradeDescricao,
-            
-              cor1.descricao as corUmDescricao,
-              cor2.descricao as corDoisDescricao,
-            
+              
+              i.produtoDescricao as "produtoDescricao",
+              i.produtoDescricaoComplementar as "descricaoComplementar",
+              i.produtoReferencia as referencia,
+              
+              i.unidadeEstoque as unidadeEstoque,
+              i.gradeCod as gradeCod,
+              i.gradeDescricao as gradeDescricao,
+              
+              i.corUmDescricao as "corUmDescricao",
+              i.corDoisDescricao as "corDoisDescricao",
+
               i.dtAlteracao
-        
-            from 01010s005.dev_pedido_v2 p
-              inner join 01010s005.dev_pedido_item_v2 i on p.codigo = i.pedidoCod 
-              inner join 01010s005.dev_produto prod on i.produtoCod = prod.codigo
-              left join 01010s005.dev_grade_produto g on prod.gradeCod = g.codigo
-              left join 01010s005.dev_cor_produto cor1 on prod.corUmCod = cor1.corCod
-              left join 01010s005.dev_cor_produto cor2 on prod.corDoisCod = cor2.corCod
+                
+            from 01010s005.dev_pedido_item i
+            inner join 01010s005.dev_pedido_v2 p on p.codigo = i.pedidoCod and p.sigemp = i.sigemp
               
             ${whereNormalized}
             limit ${limit}
