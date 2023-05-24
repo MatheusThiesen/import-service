@@ -1,7 +1,6 @@
-import { PrismaClient } from "@prisma/client";
 import * as mariadb from "mariadb";
 
-const prisma = new PrismaClient();
+// const prisma = new PrismaClient();
 
 function toJson(data) {
   return JSON.stringify(data, (_, v) =>
@@ -21,62 +20,62 @@ class DbSiger {
   public async $ExecuteQuery<T>(query: string): Promise<T[]> {
     let conn;
 
-    const startAt = new Date();
+    // const startAt = new Date();
 
-    const createLog = await prisma.queryDb.create({
-      data: {
-        query: String(query.replace(/\r?\n|\r/g, "")).trim(),
-        startAt,
-      },
-    });
+    // const createLog = await prisma.queryDb.create({
+    //   data: {
+    //     query: String(query.replace(/\r?\n|\r/g, "")).trim(),
+    //     startAt,
+    //   },
+    // });
 
     try {
       conn = await this.pool.getConnection();
       const rows = await conn.query(query);
       delete rows.meta;
 
-      const endAnt = new Date();
+      // const endAnt = new Date();
 
-      const seconds = (endAnt.getTime() - startAt.getTime()) / 1000;
-      const response = JSON.stringify(toJson(rows));
+      // const seconds = (endAnt.getTime() - startAt.getTime()) / 1000;
+      // const response = JSON.stringify(toJson(rows));
 
-      try {
-        await prisma.queryDb.update({
-          data: {
-            endAnt,
-            seconds,
-            response,
-            responseLines: rows?.length,
-          },
-          where: {
-            id: createLog.id,
-          },
-        });
-      } catch (error) {
-        await prisma.queryDb.update({
-          data: {
-            endAnt: new Date(),
-            error: JSON.stringify(String(error)),
-          },
-          where: {
-            id: createLog.id,
-          },
-        });
-      }
+      // try {
+      //   await prisma.queryDb.update({
+      //     data: {
+      //       endAnt,
+      //       seconds,
+      //       response,
+      //       responseLines: rows?.length,
+      //     },
+      //     where: {
+      //       id: createLog.id,
+      //     },
+      //   });
+      // } catch (error) {
+      //   await prisma.queryDb.update({
+      //     data: {
+      //       endAnt: new Date(),
+      //       error: JSON.stringify(String(error)),
+      //     },
+      //     where: {
+      //       id: createLog.id,
+      //     },
+      //   });
+      // }
 
       return rows;
     } catch (err) {
-      prisma.queryDb
-        .update({
-          data: {
-            endAnt: new Date(),
-            error: JSON.stringify(String(err)),
-          },
-          where: {
-            id: createLog.id,
-          },
-        })
-        .then();
+      // prisma.queryDb
+      //   .update({
+      //     data: {
+      //       endAnt: new Date(),
+      //       error: JSON.stringify(String(err)),
+      //     },
+      //     where: {
+      //       id: createLog.id,
+      //     },
+      //   })
+      //   .then();
 
       throw err;
     } finally {
