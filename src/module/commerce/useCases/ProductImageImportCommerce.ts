@@ -21,8 +21,8 @@ export class ProductImageImportCommerce {
   constructor(private sendData: SendDataRepository) {}
 
   removeExtension(filename: string) {
-    const extensionIndex = filename.lastIndexOf(".");
-    return filename.substring(0, extensionIndex);
+    const splitName = filename.split(".");
+    return splitName.filter((_, i) => i !== splitName.length - 1);
   }
 
   async execute({ search }: ExecuteServiceProps) {
