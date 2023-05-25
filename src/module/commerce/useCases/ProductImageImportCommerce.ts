@@ -22,7 +22,7 @@ export class ProductImageImportCommerce {
 
   removeExtension(filename: string) {
     const splitName = filename.split(".");
-    return splitName.filter((_, i) => i !== splitName.length - 1);
+    return splitName.filter((_, i) => i !== splitName.length - 1).join(".");
   }
 
   async execute({ search }: ExecuteServiceProps) {
