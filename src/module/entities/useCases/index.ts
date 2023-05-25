@@ -7,6 +7,7 @@ import { CollectionProductRepository } from "../repositories/CollectionProductRe
 import { ColorRepository } from "../repositories/ColorRepository";
 import { ConceptRepository } from "../repositories/ConceptRepository";
 import { EanProductRepository } from "../repositories/EanProductRepository";
+import { EntityRepository } from "../repositories/EntityRepository";
 import { GridProductRepository } from "../repositories/GridProductRepository";
 import { GroupProductRepository } from "../repositories/GroupProductRepository";
 import { LineProductRepository } from "../repositories/LineProductRepository";
@@ -34,6 +35,11 @@ export const client = new ClientRepository();
 export const clientObs = new ClientObsRepository();
 export const clientEmail = new ClientEmailRepository();
 
+export const productImage = new EntityRepository({
+  table: "01010s005.DEV_PRODUTO_IMAGEM",
+  initial: "i",
+});
+
 export const entities = {
   brand,
   collectionProduct,
@@ -52,4 +58,5 @@ export const entities = {
   client,
   clientObs,
   clientEmail,
+  productImage,
 };
