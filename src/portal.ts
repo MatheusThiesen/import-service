@@ -145,6 +145,9 @@ export class Portal {
 
   async execute() {
     try {
+      // console.time()
+      // console.timeEnd()
+
       await Promise.all([
         serverPortal.execute(),
         this.fiveMinuteCron(),
