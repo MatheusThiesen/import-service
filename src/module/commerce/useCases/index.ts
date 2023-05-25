@@ -11,6 +11,7 @@ import { ConceptImportCommerce } from "./ConceptImportCommerce";
 import { GroupImportCommerce } from "./GroupImportCommerce";
 import { LineImportCommerce } from "./LineImportCommerce";
 import { ListPriceImportCommerce } from "./ListPriceImportCommerce";
+import { ProductImageImportCommerce } from "./ProductImageImportCommerce";
 import { ProductImportCommerce } from "./ProductImportCommerce";
 import { SellerImportCommerce } from "./SellerImportCommerce";
 import { StockFutureCommerce } from "./StockFutureCommerce";
@@ -44,3 +45,6 @@ export const branchActivistsImportCommerce = new BranchActivistsImportCommerce(
 export const clientImportCommerce = new ClientImportCommerce(sendData);
 export const walletSellerClientImportCommerce =
   new WalletSellerClientImportCommerce(sendData);
+export const productImageImportCommerce = new ProductImageImportCommerce(
+  sendData
+);

@@ -77,6 +77,10 @@ export class App {
           search: `${this.queryBuilderUpdateTime("l", 1, 10)}`,
         });
         queue.push({
+          entity: "productImageImportCommerce",
+          search: `${this.queryBuilderUpdateTime("i", 1, 10)}`,
+        });
+        queue.push({
           entity: "productImportCommerce",
           search: `${this.queryBuilderUpdateTime("p", 1, 10)}`,
         });
@@ -154,6 +158,10 @@ export class App {
         });
         queue.push({
           entity: "branchActivistsImportCommerce",
+        });
+        queue.push({
+          entity: "productImageImportCommerce",
+          search: `${this.queryBuilderUpdateTime("i", 3)}`,
         });
         queue.push({
           entity: "walletSellerClientImportCommerce",

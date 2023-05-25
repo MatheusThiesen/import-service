@@ -12,6 +12,7 @@ import {
   groupImportCommerce,
   lineImportCommerce,
   listPriceImportCommerce,
+  productImageImportCommerce,
   productImportCommerce,
   sellerImportCommerce,
   stockFutureCommerce,
@@ -109,6 +110,9 @@ export async function worker(arg: Task, cb: done) {
       break;
     case "walletSellerClientImportCommerce":
       await walletSellerClientImportCommerce.execute({ search: arg.search });
+      break;
+    case "productImageImportCommerce":
+      await productImageImportCommerce.execute({ search: arg.search });
       break;
   }
 

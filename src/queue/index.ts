@@ -31,6 +31,7 @@ export type Task = {
     | "stockFutureCommerce"
     | "branchActivistsImportCommerce"
     | "clientImportCommerce"
+    | "productImageImportCommerce"
     | "walletSellerClientImportCommerce";
 };
 
