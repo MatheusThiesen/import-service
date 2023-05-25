@@ -1,6 +1,6 @@
 export type ProductImage = {
   sigeemp: string;
-  productCod: number;
+  produtoCod: number;
   imagemNome: string;
   sequencia: number;
   dtAlteracao: Date;
@@ -8,7 +8,7 @@ export type ProductImage = {
 };
 export type ProductImageFields = {
   sigeemp?: boolean;
-  productCod?: boolean;
+  produtoCod?: boolean;
   imagemNome?: boolean;
   sequencia?: boolean;
   dtAlteracao?: boolean;

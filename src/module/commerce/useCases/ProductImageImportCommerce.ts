@@ -39,7 +39,7 @@ export class ProductImageImportCommerce {
         ProductImage
       >({
         fields: {
-          productCod: true,
+          produtoCod: true,
           imagemNome: true,
           sequencia: true,
         },
@@ -56,7 +56,7 @@ export class ProductImageImportCommerce {
         productImageResponse.map((item) => ({
           imagemNome: this.removeExtension(item.imagemNome),
           sequencia: Number(item.sequencia),
-          produtoCodigo: Number(item.productCod),
+          produtoCodigo: Number(item.produtoCod),
         }))
       );
     }
