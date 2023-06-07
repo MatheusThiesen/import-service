@@ -105,16 +105,6 @@ export class Portal {
     cron.schedule("0 30 */22 * * *", async () => {
       try {
         queue.push({
-          search: `p.dtEntrada > '${getFormatDate({
-            dateType: "date",
-            minutes: 60 * 24 * 365,
-            operationType: "pre",
-          })}' AND p.dtFaturamento < '${getFormatDate({
-            dateType: "date",
-            minutes: 60 * 24 * 365,
-            operationType: "pos",
-          })}'
-          `,
           entity: "orderViewImportPortal",
         });
         queue.push({

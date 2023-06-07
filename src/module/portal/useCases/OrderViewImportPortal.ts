@@ -265,7 +265,7 @@ export class OrderViewImportPortal {
             `
             select count(*) as total from (
               select count(*) as total from 01010s005.dev_pedido_v2 p
-              inner join 01010s005.dev_pedido_item_v2 i on p.codigo = i.pedidoCod
+              inner join 01010s005.dev_pedido_item i on p.codigo = i.pedidoCod
               ${whereNormalized}
               group by p.codigo 
             ) as anality
