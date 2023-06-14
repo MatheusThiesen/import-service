@@ -302,7 +302,6 @@ export class OrderViewImportPortal {
               p.formaPagamento,
               p.especieCod,
               p.transportadoraCod,
-              p.ncm,
               i.id as itemId,
               i.produtoCod,
               i.sequencia,
@@ -312,6 +311,7 @@ export class OrderViewImportPortal {
               i.vlrUnitario as vlrUnitario,
               i.marcaCod,
               i.recusaCod,i.recusaDescicao,
+              i.ncm,
               
               i.produtoDescricao as "produtoDescricao",
               i.produtoDescricaoComplementar as "descricaoComplementar",
