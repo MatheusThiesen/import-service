@@ -32,7 +32,7 @@ interface GetOrderItems {
   produtoDescricao: string;
   produtoDescricaoComplementar: string;
   produtoReferencia: string;
-  produtoUnidadeEstoque: string;
+  unidadeEstoque: string;
   gradeCod: number;
   gradeDescricao: string;
   corUmDescricao: string;
@@ -225,7 +225,7 @@ export class OrderViewImportPortal {
           quantity: Number(itemOrder.itemQtd),
           codGrid: itemOrder.gradeCod,
           grid: itemOrder.gradeDescricao,
-          measuredUnit: itemOrder.produtoUnidadeEstoque,
+          measuredUnit: itemOrder.unidadeEstoque,
           value: Number(itemOrder.vlrUnitario),
           ncm: Number(itemOrder?.ncm),
         });
