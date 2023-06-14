@@ -37,6 +37,7 @@ interface GetOrderItems {
   gradeDescricao: string;
   corUmDescricao: string;
   corDoisDescricao: string;
+  ncm?: number;
   // numeroNota: number;
   // serieNota: string;
   // representanteCod: number;
@@ -226,6 +227,7 @@ export class OrderViewImportPortal {
           grid: itemOrder.gradeDescricao,
           measuredUnit: itemOrder.produtoUnidadeEstoque,
           value: Number(itemOrder.vlrUnitario),
+          ncm: Number(itemOrder?.ncm),
         });
       }
 
@@ -300,6 +302,7 @@ export class OrderViewImportPortal {
               p.formaPagamento,
               p.especieCod,
               p.transportadoraCod,
+              p.ncm,
               i.id as itemId,
               i.produtoCod,
               i.sequencia,
