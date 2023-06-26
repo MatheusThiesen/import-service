@@ -138,6 +138,10 @@ export class Portal {
       // console.time()
       // console.timeEnd()
 
+      queue.push({
+        entity: "orderViewImportPortal",
+      });
+
       await Promise.all([
         serverPortal.execute(),
         this.fiveMinuteCron(),

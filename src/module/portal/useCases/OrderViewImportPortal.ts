@@ -314,8 +314,8 @@ export class OrderViewImportPortal {
               i.ncm,
               
               i.produtoDescricao as "produtoDescricao",
-              i.produtoDescricaoComplementar as "descricaoComplementar",
-              i.produtoReferencia as referencia,
+              i.produtoDescricaoComplementar as "produtoDescricaoComplementar",
+              i.produtoReferencia,
               
               i.unidadeEstoque as unidadeEstoque,
               i.gradeCod as gradeCod,
