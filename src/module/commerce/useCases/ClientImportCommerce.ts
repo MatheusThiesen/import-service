@@ -108,7 +108,7 @@ export class ClientImportCommerce {
   }
 
   async execute({ search }: ExecuteServiceProps) {
-    const query = search;
+    const query = search ? `${search} and c.tipo = 'C'` : "c.tipo = 'C'";
 
     const totalClient = await entities.client.count({ search: query });
     const totalPages = Math.ceil(totalClient / this.pagesize);
@@ -147,6 +147,8 @@ export class ClientImportCommerce {
       });
 
       const clients = await this.normalizedClient(clientsResponse);
+
+      console.log(clients);
 
       await this.sendData.post("/clients/import", clients);
     }
