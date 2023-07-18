@@ -148,8 +148,6 @@ export class ClientImportCommerce {
 
       const clients = await this.normalizedClient(clientsResponse);
 
-      console.log(clients);
-
       await this.sendData.post("/clients/import", clients);
     }
   }

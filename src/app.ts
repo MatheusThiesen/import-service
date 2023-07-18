@@ -202,6 +202,12 @@ export class App {
               from 01010s005.dev_metas m
               where ${this.queryBuilderUpdateTime("m", 2)}
 
+              union 
+
+              select r.produtoCod
+              from 01010s005.dev_item_reserva r
+              where ${this.queryBuilderUpdateTime("r", 2)}
+
             ) as analises
           ) `,
         });
