@@ -1,6 +1,8 @@
 import { AuthorizationRepository } from "../repositories/AuthorizationRepository";
 import { SendDataRepository } from "../repositories/SendDataRepository";
 
+import { BilletImportCommerce } from "./BilletImportCommerce";
+import { BillingLocationImportCommerce } from "./BillingLocationImportCommerce";
 import { BranchActivistsImportCommerce } from "./BranchActivistsImportCommerce";
 import { BrandImportCommerce } from "./BrandImportCommerce";
 import { BrandsToSellerImportCommerce } from "./BrandsToSellerImportCommerce";
@@ -11,12 +13,15 @@ import { ConceptImportCommerce } from "./ConceptImportCommerce";
 import { GroupImportCommerce } from "./GroupImportCommerce";
 import { LineImportCommerce } from "./LineImportCommerce";
 import { ListPriceImportCommerce } from "./ListPriceImportCommerce";
+import { OrderImportCommerce } from "./OrderImportCommerce";
+import { PaymentConditionImportCommerce } from "./PaymentConditionImportCommerce";
 import { ProductImageImportCommerce } from "./ProductImageImportCommerce";
 import { ProductImportCommerce } from "./ProductImportCommerce";
 import { SellerImportCommerce } from "./SellerImportCommerce";
 import { StockFutureCommerce } from "./StockFutureCommerce";
 import { StockPromptDeliveryCommerce } from "./StockPromptDeliveryCommerce";
 import { SubGroupImportCommerce } from "./SubGroupImportCommerce";
+import { TablePriceImportCommerce } from "./TablePriceImportCommerce";
 import { WalletSellerClientImportCommerce } from "./WalletSellerClientImportCommerce";
 
 const authorization = new AuthorizationRepository();
@@ -48,3 +53,11 @@ export const walletSellerClientImportCommerce =
 export const productImageImportCommerce = new ProductImageImportCommerce(
   sendData
 );
+export const paymentConditionImportCommerce =
+  new PaymentConditionImportCommerce(sendData);
+export const tablePriceImportCommerce = new TablePriceImportCommerce(sendData);
+export const billingLocationImportCommerce = new BillingLocationImportCommerce(
+  sendData
+);
+export const billetImportCommerce = new BilletImportCommerce(sendData);
+export const orderImportCommerce = new OrderImportCommerce(sendData);

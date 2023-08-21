@@ -2,6 +2,8 @@ import "dotenv/config";
 
 import { done } from "fastq";
 import {
+  billetImportCommerce,
+  billingLocationImportCommerce,
   branchActivistsImportCommerce,
   brandImportCommerce,
   brandsToSellerImportCommerce,
@@ -12,12 +14,15 @@ import {
   groupImportCommerce,
   lineImportCommerce,
   listPriceImportCommerce,
+  orderImportCommerce,
+  paymentConditionImportCommerce,
   productImageImportCommerce,
   productImportCommerce,
   sellerImportCommerce,
   stockFutureCommerce,
   stockPromptDeliveryCommerce,
   subGroupImportCommerce,
+  tablePriceImportCommerce,
   walletSellerClientImportCommerce,
 } from "../module/commerce/useCases";
 import {
@@ -113,6 +118,21 @@ export async function worker(arg: Task, cb: done) {
       break;
     case "productImageImportCommerce":
       await productImageImportCommerce.execute({ search: arg.search });
+      break;
+    case "paymentConditionImportCommerce":
+      await paymentConditionImportCommerce.execute({ search: arg.search });
+      break;
+    case "tablePriceImportCommerce":
+      await tablePriceImportCommerce.execute({ search: arg.search });
+      break;
+    case "billingLocationImportCommerce":
+      await billingLocationImportCommerce.execute({ search: arg.search });
+      break;
+    case "billetImportCommerce":
+      await billetImportCommerce.execute({ search: arg.search });
+      break;
+    case "orderImportCommerce":
+      await orderImportCommerce.execute({ search: arg.search });
       break;
   }
 

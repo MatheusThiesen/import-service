@@ -219,6 +219,27 @@ export class App {
 
   async execute() {
     try {
+      // queue.push({
+      //   entity: "billingLocationImportCommerce",
+      // });
+      // queue.push({
+      //   entity: "tablePriceImportCommerce",
+      // });
+      // queue.push({
+      //   entity: "paymentConditionImportCommerce",
+      // });
+      // queue.push({
+      //   entity: "walletSellerClientImportCommerce",
+      // });
+      // queue.push({
+      //   entity: "billetImportCommerce",
+      //   search: "t.numero = 425463",
+      // });
+      // queue.push({
+      //   entity: "orderImportCommerce",
+      //   search: "p.codigo = 1356111",
+      // });
+
       await Promise.all([
         observableFolder(),
         this.fiveMinuteCron(),

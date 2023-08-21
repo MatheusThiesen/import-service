@@ -38,6 +38,8 @@ interface GetOrderItems {
   corUmDescricao: string;
   corDoisDescricao: string;
   ncm?: number;
+  origemCod?: number;
+  origemDescricao: string;
   // numeroNota: number;
   // serieNota: string;
   // representanteCod: number;
@@ -68,6 +70,8 @@ interface SendOrder {
   species?: number;
   cancellationReason?: string;
   cancellationReasonCod?: number;
+  originCod: number | undefined;
+  originDesc: string | undefined;
   products: {
     id: string;
     cod: Number;
@@ -95,10 +99,7 @@ export class OrderViewImportPortal {
   constructor(private sendData: SendData) {}
 
   async onNormalizedOrder(itemsOrder: GetOrderItems[]): Promise<SendOrder[]> {
-    const groupOrders = await groupByObject(
-      itemsOrder,
-      (item) => item.pedidoCod
-    );
+    const groupOrders = groupByObject(itemsOrder, (item) => item.pedidoCod);
 
     let normalizedOrders: SendOrder[] = [];
 
@@ -209,6 +210,8 @@ export class OrderViewImportPortal {
         keyNfe,
         detailPosition,
         position: order.posicaoDescricao,
+        originCod: order.origemCod,
+        originDesc: order.origemDescricao,
         products: [],
       };
       orderGroup.value;
@@ -302,6 +305,7 @@ export class OrderViewImportPortal {
               p.formaPagamento,
               p.especieCod,
               p.transportadoraCod,
+              
               i.id as itemId,
               i.produtoCod,
               i.sequencia,
@@ -312,6 +316,9 @@ export class OrderViewImportPortal {
               i.marcaCod,
               i.recusaCod,i.recusaDescicao,
               i.ncm,
+
+              i.origemCod,
+              i.origemDescricao,
               
               i.produtoDescricao as "produtoDescricao",
               i.produtoDescricaoComplementar as "produtoDescricaoComplementar",

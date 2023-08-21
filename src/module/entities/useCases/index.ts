@@ -1,3 +1,5 @@
+import { BilletRepository } from "../repositories/BilletRepository";
+import { BillingLocationRepository } from "../repositories/BillingLocationRepository";
 import { BrandRepository } from "../repositories/BrandRepository";
 import { BrandsToSellerRepository } from "../repositories/BrandsToSellerRepository";
 import { ClientRepository } from "../repositories/Client";
@@ -12,10 +14,13 @@ import { GridProductRepository } from "../repositories/GridProductRepository";
 import { GroupProductRepository } from "../repositories/GroupProductRepository";
 import { LineProductRepository } from "../repositories/LineProductRepository";
 import { LinkClientSellerRepository } from "../repositories/LinkClientSeller";
+import { OrderRepository } from "../repositories/OrderRepository";
+import { PaymentConditionRepository } from "../repositories/PaymentConditionRepository";
 import { PriceListRepository } from "../repositories/PriceListRepository";
 import { RegistrationGroupRepository } from "../repositories/RegistrationGroup";
 import { SellerRepository } from "../repositories/SellerRepository";
 import { SubgroupProductRepository } from "../repositories/SubgroupProductRepository";
+import { TablePriceRepository } from "../repositories/TablePriceRepository";
 
 export const brand = new BrandRepository();
 export const collectionProduct = new CollectionProductRepository();
@@ -34,6 +39,11 @@ export const linkClientSeller = new LinkClientSellerRepository();
 export const client = new ClientRepository();
 export const clientObs = new ClientObsRepository();
 export const clientEmail = new ClientEmailRepository();
+export const paymentCondition = new PaymentConditionRepository();
+export const tablePrice = new TablePriceRepository();
+export const billingLocation = new BillingLocationRepository();
+export const billet = new BilletRepository();
+export const order = new OrderRepository();
 
 export const productImage = new EntityRepository({
   table: "01010s005.DEV_PRODUTO_IMAGEM",
@@ -59,4 +69,9 @@ export const entities = {
   clientObs,
   clientEmail,
   productImage,
+  paymentCondition,
+  tablePrice,
+  billingLocation,
+  billet,
+  order,
 };
