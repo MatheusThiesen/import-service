@@ -1,5 +1,6 @@
 import "dotenv/config";
 import * as cron from "node-cron";
+
 import { getFormatDate } from "./helpers/getFormatDate";
 import { observableFolder } from "./module/observableFolder";
 import { queue } from "./queue";
@@ -111,6 +112,22 @@ export class App {
             ) as analises
           ) `,
         });
+        queue.push({
+          entity: "orderImportCommerce",
+          search: `${this.queryBuilderUpdateTime("p", 1, 10)}`,
+        });
+        queue.push({
+          entity: "billingLocationImportCommerce",
+          search: `${this.queryBuilderUpdateTime("l", 1, 10)}`,
+        });
+        queue.push({
+          entity: "tablePriceImportCommerce",
+          search: `${this.queryBuilderUpdateTime("p", 1, 10)}`,
+        });
+        queue.push({
+          entity: "paymentConditionImportCommerce",
+          search: `${this.queryBuilderUpdateTime("p", 1, 10)}`,
+        });
       } catch (error) {
         console.log(error);
       }
@@ -122,6 +139,10 @@ export class App {
       try {
         queue.push({
           entity: "brandsToSellerImportCommerce",
+        });
+        queue.push({
+          entity: "billetImportCommerce",
+          search: `${this.queryBuilderUpdateTime("t", 1)}`,
         });
       } catch (error) {
         console.log(error);
@@ -158,6 +179,18 @@ export class App {
         });
         queue.push({
           entity: "branchActivistsImportCommerce",
+        });
+        queue.push({
+          entity: "billetImportCommerce",
+        });
+        queue.push({
+          entity: "billingLocationImportCommerce",
+        });
+        queue.push({
+          entity: "tablePriceImportCommerce",
+        });
+        queue.push({
+          entity: "paymentConditionImportCommerce",
         });
         queue.push({
           entity: "productImageImportCommerce",
@@ -211,6 +244,10 @@ export class App {
             ) as analises
           ) `,
         });
+        queue.push({
+          entity: "orderImportCommerce",
+          search: `${this.queryBuilderUpdateTime("p", 3)}`,
+        });
       } catch (error) {
         console.log(error);
       }
@@ -219,27 +256,6 @@ export class App {
 
   async execute() {
     try {
-      // queue.push({
-      //   entity: "billingLocationImportCommerce",
-      // });
-      // queue.push({
-      //   entity: "tablePriceImportCommerce",
-      // });
-      // queue.push({
-      //   entity: "paymentConditionImportCommerce",
-      // });
-      // queue.push({
-      //   entity: "walletSellerClientImportCommerce",
-      // });
-      // queue.push({
-      //   entity: "billetImportCommerce",
-      //   search: "t.numero = 425463",
-      // });
-      // queue.push({
-      //   entity: "orderImportCommerce",
-      //   search: "p.codigo = 1356111",
-      // });
-
       await Promise.all([
         observableFolder(),
         this.fiveMinuteCron(),
