@@ -64,6 +64,11 @@ export class Portal {
         });
 
         queue.push({
+          entity: "conceptViewImportPortal",
+          search: `${this.queryBuilderUpdateTime("c", 1, 10)}`,
+        });
+
+        queue.push({
           entity: "brandsToSellerViewImportPortal",
           search: `rm.dtAlteracao > '${getFormatDate({
             dateType: "date",
@@ -118,6 +123,9 @@ export class Portal {
         });
         queue.push({
           entity: "gridViewImportPortal",
+        });
+        queue.push({
+          entity: "conceptViewImportPortal",
         });
         queue.push({
           search: `${this.queryBuilderUpdateTime("e", 3)} `,

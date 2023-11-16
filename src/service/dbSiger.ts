@@ -32,7 +32,7 @@ class DbSiger {
     try {
       conn = await this.pool.getConnection();
       const rows = await conn.query(query);
-      delete rows.meta;
+      // delete rows.meta;
 
       // const endAnt = new Date();
 

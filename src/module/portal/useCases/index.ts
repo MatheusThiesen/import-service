@@ -6,6 +6,7 @@ import { BilletViewImportPortal } from "./BilletViewImportPortal";
 import { BrandViewImportPortal } from "./BrandViewImportPortal";
 import { BrandsToSellerViewImportPortal } from "./BrandsToSellerViewImportPortal";
 import { ClientViewImportPortal } from "./ClientViewImportPortal";
+import { ConceptViewImportPortal } from "./ConceptViewImportPortal";
 import { EanViewImportPortal } from "./EanViewImportPortal";
 import { GridViewImportPortal } from "./GridViewImportPortal";
 import { NoteOrderViewImportPortal } from "./NoteOrderViewImportPortal";
@@ -21,6 +22,7 @@ export const brandViewImportPortal = new BrandViewImportPortal(sendData);
 export const sellerViewImportPortal = new SellerViewImportPortal(sendData);
 export const clientViewImportPortal = new ClientViewImportPortal(sendData);
 export const billetViewImportPortal = new BilletViewImportPortal(sendData);
+export const conceptViewImportPortal = new ConceptViewImportPortal(sendData);
 export const noteOrderViewImportPortal = new NoteOrderViewImportPortal(
   sendData
 );

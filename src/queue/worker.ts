@@ -30,6 +30,7 @@ import {
   brandViewImportPortal,
   brandsToSellerViewImportPortal,
   clientViewImportPortal,
+  conceptViewImportPortal,
   eanViewImportPortal,
   gridViewImportPortal,
   noteOrderViewImportPortal,
@@ -41,6 +42,9 @@ import { Task } from "./";
 
 export async function worker(arg: Task, cb: done) {
   switch (arg.entity) {
+    case "conceptViewImportPortal":
+      await conceptViewImportPortal.execute({ search: arg.search });
+      break;
     case "orderViewImportPortal":
       await orderViewImportPortal.execute({ search: arg.search });
       break;

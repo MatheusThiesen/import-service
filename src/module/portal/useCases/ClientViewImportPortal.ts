@@ -1,3 +1,4 @@
+import { stringToNumber } from "../../../helpers/stringToNumber";
 import { dbSiger } from "../../../service/dbSiger";
 import { SendData } from "../repositories/SendData";
 
@@ -15,6 +16,7 @@ interface GetCliente {
   bairro: string;
   logradouro: string;
   tipo: string;
+  conceitoCod: string;
   grupoCadCod: number;
   ativo: number;
   dda: number;
@@ -56,6 +58,7 @@ export class ClientViewImportPortal {
   async onNormalizedOrder(clients: GetCliente[]): Promise<SendClient[]> {
     return clients.map((client) => ({
       codCliente: client.clienteCod,
+      conceitoCod: stringToNumber(client.conceitoCod),
       cnpjCliente: this.normalizedCNPJ(String(client.cnpj)),
       razaoSocialCliente: client.razaoSocial,
       nomeFantasiaCliente: client.nomeFantasia,
@@ -124,6 +127,7 @@ export class ClientViewImportPortal {
             c.grupoCadCod,
             c.ativo,
             c.dda,
+            c.conceitoCod,
             c.dtAlteracao    
           from 01010s005.dev_cliente c 
           left join 01010s005.dev_cliente_email e on e.clienteCod = c.clienteCod
