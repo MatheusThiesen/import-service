@@ -160,7 +160,7 @@ export class ProductImportCommerce {
   }
 
   async execute({ search }: ExecuteServiceProps) {
-    const query = `marcaCod IN (10,20,1,24,23,2,26,400) ${
+    const query = `marcaCod IN (10,20,1,24,23,2,26,400, 27 ) ${
       search ? `AND ${search}` : ""
     }`;
 
