@@ -35,6 +35,7 @@ import {
   gridViewImportPortal,
   noteOrderViewImportPortal,
   orderViewImportPortal,
+  registerGroupViewImportPortal,
   sellerViewImportPortal,
 } from "../module/portal/useCases";
 
@@ -42,6 +43,9 @@ import { Task } from "./";
 
 export async function worker(arg: Task, cb: done) {
   switch (arg.entity) {
+    case "registerGroupViewImportPortal":
+      await registerGroupViewImportPortal.execute({ search: arg.search });
+      break;
     case "conceptViewImportPortal":
       await conceptViewImportPortal.execute({ search: arg.search });
       break;

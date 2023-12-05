@@ -146,6 +146,10 @@ export class Portal {
       // console.time()
       // console.timeEnd()
 
+      queue.push({
+        entity: "registerGroupViewImportPortal",
+      });
+
       await Promise.all([
         serverPortal.execute(),
         this.fiveMinuteCron(),

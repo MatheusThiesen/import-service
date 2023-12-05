@@ -11,6 +11,7 @@ import { EanViewImportPortal } from "./EanViewImportPortal";
 import { GridViewImportPortal } from "./GridViewImportPortal";
 import { NoteOrderViewImportPortal } from "./NoteOrderViewImportPortal";
 import { OrderViewImportPortal } from "./OrderViewImportPortal";
+import { RegisterGroupViewImportPortal } from "./RegisterGroupViewImportPortal";
 import { SellerViewImportPortal } from "./SellerViewImportPortal";
 
 export const authorization = new AuthorizationRepository();
@@ -28,5 +29,8 @@ export const noteOrderViewImportPortal = new NoteOrderViewImportPortal(
 );
 export const brandsToSellerViewImportPortal =
   new BrandsToSellerViewImportPortal(sendData);
+export const registerGroupViewImportPortal = new RegisterGroupViewImportPortal(
+  sendData
+);
 
 export const serverPortal = new ServerPortal();
