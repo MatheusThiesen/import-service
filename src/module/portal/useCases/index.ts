@@ -9,6 +9,7 @@ import { ClientViewImportPortal } from "./ClientViewImportPortal";
 import { ConceptViewImportPortal } from "./ConceptViewImportPortal";
 import { EanViewImportPortal } from "./EanViewImportPortal";
 import { GridViewImportPortal } from "./GridViewImportPortal";
+import { HighlighterViewImportPortal } from "./HighlighterViewImportPortal";
 import { NoteOrderViewImportPortal } from "./NoteOrderViewImportPortal";
 import { OrderViewImportPortal } from "./OrderViewImportPortal";
 import { RegisterGroupViewImportPortal } from "./RegisterGroupViewImportPortal";
@@ -30,6 +31,9 @@ export const noteOrderViewImportPortal = new NoteOrderViewImportPortal(
 export const brandsToSellerViewImportPortal =
   new BrandsToSellerViewImportPortal(sendData);
 export const registerGroupViewImportPortal = new RegisterGroupViewImportPortal(
+  sendData
+);
+export const highlighterViewImportPortal = new HighlighterViewImportPortal(
   sendData
 );
 

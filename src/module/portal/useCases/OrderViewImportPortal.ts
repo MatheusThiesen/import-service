@@ -1,5 +1,10 @@
 import { diffDates } from "../../../helpers/diffDates";
 import { groupByObject } from "../../../helpers/groupByObject";
+import {
+  HighlightersOrder,
+  HighlightersOrderFields,
+} from "../../../module/entities/model/HighlightersOrder";
+import { entities } from "../../../module/entities/useCases";
 import { dbSiger } from "../../../service/dbSiger";
 import { SendData } from "../repositories/SendData";
 
@@ -61,6 +66,7 @@ interface SendOrder {
   merchandiseValue: number;
   refuseCod?: number;
   refuse?: string;
+  highlighterTag?: string[];
   deliveryDate: Date;
   billingDate?: Date;
   paymentCondition?: string;
@@ -129,17 +135,41 @@ export class OrderViewImportPortal {
         limit 1
       `);
 
+      let highlighterTag: string[] = [];
+
+      if (order?.especieCod !== 9) {
+        var regularExpressionHighlighter = /\[([^\]]+)\]/;
+        const highlighter = await entities.highlightersOrder.findAll<
+          HighlightersOrderFields,
+          HighlightersOrder
+        >({
+          fields: {
+            pedidoCod: true,
+            txtObs: true,
+          },
+          search: `dp.pedidoCod in (${orderGroup.value})`,
+        });
+
+        if (highlighter.length > 0) {
+          highlighter.forEach((item) => {
+            const highlighterNormalized = regularExpressionHighlighter?.exec(
+              item.txtObs
+            )?.[1];
+
+            if (highlighterNormalized) {
+              highlighterTag.push(highlighterNormalized);
+            }
+          });
+        }
+      }
+
       let numeroNotaResponse = undefined;
       const now = new Date();
       now.setDate(now.getDate() - 10);
 
-      if (
-        ["faturado"].includes(detailPosition.toLowerCase())
-        // &&  order.dtFaturamento > now
-      ) {
+      if (["faturado"].includes(detailPosition.toLowerCase())) {
         numeroNotaResponse = await dbSiger.$ExecuteQuery<{
           numeroNota: number;
-          // chaveNota: string;
         }>(`
           select  n.numeroNota
           from 01010s005.dev_pedido_nota n 
@@ -188,6 +218,7 @@ export class OrderViewImportPortal {
         clientCod: order.clienteCod,
         sellerCod,
         agentCod,
+        highlighterTag,
         brandCod: order.marcaCod,
         shippingCod: order.transportadoraCod,
         initialsOrder: order.sigemp,
@@ -214,7 +245,7 @@ export class OrderViewImportPortal {
         originDesc: order.origemDescricao,
         products: [],
       };
-      orderGroup.value;
+
       for (const itemOrder of orderGroup.data) {
         createOrder.products.push({
           id: String(itemOrder.itemId),

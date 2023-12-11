@@ -256,6 +256,11 @@ export class App {
 
   async execute() {
     try {
+      queue.push({
+        entity: "productImportCommerce",
+        search: "codigo = 281095",
+      });
+
       await Promise.all([
         observableFolder(),
         this.fiveMinuteCron(),

@@ -33,6 +33,7 @@ import {
   conceptViewImportPortal,
   eanViewImportPortal,
   gridViewImportPortal,
+  highlighterViewImportPortal,
   noteOrderViewImportPortal,
   orderViewImportPortal,
   registerGroupViewImportPortal,
@@ -43,6 +44,9 @@ import { Task } from "./";
 
 export async function worker(arg: Task, cb: done) {
   switch (arg.entity) {
+    case "highlighterViewImportPortal":
+      await highlighterViewImportPortal.execute({ search: arg.search });
+      break;
     case "registerGroupViewImportPortal":
       await registerGroupViewImportPortal.execute({ search: arg.search });
       break;

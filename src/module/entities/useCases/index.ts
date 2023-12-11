@@ -49,6 +49,14 @@ export const productImage = new EntityRepository({
   table: "01010s005.DEV_PRODUTO_IMAGEM",
   initial: "i",
 });
+export const highlighter = new EntityRepository({
+  table: "01010s005.DEV_DESTACADOR",
+  initial: "d",
+});
+export const highlightersOrder = new EntityRepository({
+  table: "01010s005.DEV_DESTACADOR_PEDIDO",
+  initial: "dp",
+});
 
 export const entities = {
   brand,
@@ -74,4 +82,6 @@ export const entities = {
   billingLocation,
   billet,
   order,
+  highlighter,
+  highlightersOrder,
 };

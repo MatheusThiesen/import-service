@@ -146,8 +146,20 @@ export class Portal {
       // console.time()
       // console.timeEnd()
 
+      // queue.push({
+      //   entity: "highlighterViewImportPortal",
+      // });
+      // queue.push({
+      //   entity: "orderViewImportPortal",
+      //   search: `
+      //   p.codigo in (1336554,1340619,1396628,1406705,1417188,1425011,1429682,1430172,1430823,1430889,1431243,1431299,1431867,1431975,1432074,1432121,1432255,1432256,1432268,1432358,1432599,1432600,1432610,1432629,1432675,1432679,1432681,1432692,1432745,1432746,1432748)
+      //   `,
+      // });
       queue.push({
-        entity: "registerGroupViewImportPortal",
+        entity: "orderViewImportPortal",
+        search: `
+        p.codigo in (1432268)
+        `,
       });
 
       await Promise.all([
