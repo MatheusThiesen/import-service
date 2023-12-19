@@ -7,6 +7,7 @@ const CONCURRENCY = 4;
 export type Task = {
   search?: string;
   entity:
+    | "walletSellerClientsViewImportPortal"
     | "highlighterViewImportPortal"
     | "registerGroupViewImportPortal"
     | "conceptViewImportPortal"

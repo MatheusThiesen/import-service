@@ -38,12 +38,16 @@ import {
   orderViewImportPortal,
   registerGroupViewImportPortal,
   sellerViewImportPortal,
+  walletSellerClientsViewImportPortal,
 } from "../module/portal/useCases";
 
 import { Task } from "./";
 
 export async function worker(arg: Task, cb: done) {
   switch (arg.entity) {
+    case "walletSellerClientsViewImportPortal":
+      await walletSellerClientsViewImportPortal.execute({ search: arg.search });
+      break;
     case "highlighterViewImportPortal":
       await highlighterViewImportPortal.execute({ search: arg.search });
       break;

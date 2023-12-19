@@ -8,7 +8,9 @@ interface GetCliente {
   razaoSocial: string;
   nomeFantasia: string;
   email: string;
+  email2: string;
   telefone: number;
+  telefone2: number;
   cep: number;
   uf: string;
   cidade: string;
@@ -20,6 +22,9 @@ interface GetCliente {
   grupoCadCod: number;
   ativo: number;
   dda: number;
+  suframa: string;
+  ie: string;
+  dtFundacao: Date;
   dtAlteracao: Date;
 }
 
@@ -29,7 +34,9 @@ interface SendClient {
   razaoSocialCliente: string;
   nomeFantasiaCliente: string;
   emailCliente: string;
+  email2Cliente: string;
   telefoneCliente: string;
+  telefone2Cliente: string;
   cepCliente: string;
   ufCliente: string;
   cidadeCliente: string;
@@ -42,6 +49,9 @@ interface SendClient {
   idGrupoCadCliente: string;
   dataModificacaoCliente: Date;
   situacaoCliente: string;
+  suframa: string;
+  ie: string;
+  dtFundacao: Date;
   ddaCliente: "Sim" | "Não";
 }
 
@@ -63,7 +73,9 @@ export class ClientViewImportPortal {
       razaoSocialCliente: client.razaoSocial,
       nomeFantasiaCliente: client.nomeFantasia,
       emailCliente: client.email,
+      email2Cliente: client.email2,
       telefoneCliente: String(client.telefone),
+      telefone2Cliente: String(client.telefone2),
       cepCliente: String(client.cep),
       ufCliente: client.uf,
       cidadeCliente: client.cidade,
@@ -74,6 +86,9 @@ export class ClientViewImportPortal {
       idGrupoCadCliente: String(client.grupoCadCod),
       dataModificacaoCliente: client.dtAlteracao,
       situacaoCliente: String(client.ativo),
+      suframa: client.suframa,
+      ie: client.ie,
+      dtFundacao: client.dtFundacao,
       ddaCliente: client.dda === 1 ? "Sim" : "Não",
     }));
   }
@@ -86,9 +101,10 @@ export class ClientViewImportPortal {
 
   async execute({ search }: { search?: string }) {
     try {
-      const query = `c.tipo = 'C'`;
+      const query = "c.tipo = 'C'";
+
       const whereNormalized = search
-        ? `where ${search} and ${query}`
+        ? `where ${query}  and ${search}`
         : `where ${query}`;
 
       const totalItems = Number(
@@ -96,7 +112,7 @@ export class ClientViewImportPortal {
           await dbSiger.$ExecuteQuery<{ total: string }>(
             `
               select count(*) as total from 01010s005.dev_cliente c            
-              ${whereNormalized};
+              ${whereNormalized}
             `
           )
         )[0].total
@@ -116,7 +132,9 @@ export class ClientViewImportPortal {
             c.razaoSocial,
             c.nomeFantasia,
             e.email,
+            e.email2,
             c.telefone,
+            c.telefone2,
             c.cep,
             c.uf,
             c.cidade,
@@ -128,6 +146,9 @@ export class ClientViewImportPortal {
             c.ativo,
             c.dda,
             c.conceitoCod,
+            c.suframa,
+            c.ie,
+            c.dtFundacao,
             c.dtAlteracao    
           from 01010s005.dev_cliente c 
           left join 01010s005.dev_cliente_email e on e.clienteCod = c.clienteCod

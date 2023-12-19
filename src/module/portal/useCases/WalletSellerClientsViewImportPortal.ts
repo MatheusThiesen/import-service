@@ -1,15 +1,17 @@
 import { entities } from "../../entities/useCases/index";
 import { SendData } from "../repositories/SendData";
 
-export class ConceptViewImportPortal {
+export class WalletSellerClientsViewImportPortal {
   readonly pagesize = 1600;
 
   constructor(private sendData: SendData) {}
 
   async execute({ search }: { search?: string }) {
+    const query = search ? `tipo = 2 and ${search}` : `tipo = 2`;
+
     try {
       const totalClient = await entities.linkClientSeller.count({
-        search: search,
+        search: query,
       });
       const totalPages = Math.ceil(totalClient / this.pagesize);
 
@@ -22,7 +24,7 @@ export class ConceptViewImportPortal {
             clienteCod: true,
             tipo: true,
           },
-          search,
+          search: query,
           page: page,
           pagesize: this.pagesize,
         });
@@ -30,17 +32,13 @@ export class ConceptViewImportPortal {
         const walletsClientsSellersNormalized = walletsClientsSellers.map(
           (item) => ({
             clienteCod: item.clienteCod,
-            sellerCod: item.representanteCod,
+            representanteCod: item.representanteCod,
             tipo: item.tipo,
           })
         );
 
         await this.sendData.post(
-          "/clients-to-sellers/import",
-          walletsClientsSellersNormalized
-        );
-        await this.sendData.post(
-          "/clients-to-sellers/import",
+          "/wallet-clients-to-seller/import",
           walletsClientsSellersNormalized
         );
       }

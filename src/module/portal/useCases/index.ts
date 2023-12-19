@@ -14,6 +14,7 @@ import { NoteOrderViewImportPortal } from "./NoteOrderViewImportPortal";
 import { OrderViewImportPortal } from "./OrderViewImportPortal";
 import { RegisterGroupViewImportPortal } from "./RegisterGroupViewImportPortal";
 import { SellerViewImportPortal } from "./SellerViewImportPortal";
+import { WalletSellerClientsViewImportPortal } from "./WalletSellerClientsViewImportPortal";
 
 export const authorization = new AuthorizationRepository();
 export const sendData = new SendData(authorization);
@@ -36,5 +37,7 @@ export const registerGroupViewImportPortal = new RegisterGroupViewImportPortal(
 export const highlighterViewImportPortal = new HighlighterViewImportPortal(
   sendData
 );
+export const walletSellerClientsViewImportPortal =
+  new WalletSellerClientsViewImportPortal(sendData);
 
 export const serverPortal = new ServerPortal();
