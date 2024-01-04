@@ -4,6 +4,8 @@ import { SendData } from "../repositories/SendData";
 interface GetSeller {
   sigemp: string;
   representanteCod: number;
+  cnpj: string;
+  tipoRep: number;
   abreviacao: string;
   descricao: string;
   email: string;
@@ -18,6 +20,8 @@ interface GetSeller {
 
 interface SendSeller {
   codRepresentante: number;
+  cnpjRepresentante: string;
+  tipoRepresentante: number;
   abreviacaoRepresentante: string;
   nomeCompletoRepresentante: string;
   emailRepresentante?: string;
@@ -34,9 +38,16 @@ export class SellerViewImportPortal {
 
   constructor(private sendData: SendData) {}
 
+  normalizedCNPJ(cnpj: string) {
+    const zeros = "00000000000000";
+    return String(zeros.substring(0, 14 - cnpj.length) + cnpj);
+  }
+
   async onNormalizedOrder(sellers: GetSeller[]): Promise<SendSeller[]> {
     return sellers.map((seller) => ({
       codRepresentante: seller.representanteCod,
+      tipoRepresentante: seller?.tipoRep,
+      cnpjRepresentante: this.normalizedCNPJ(seller?.cnpj),
       abreviacaoRepresentante: seller.abreviacao,
       nomeCompletoRepresentante: seller.descricao,
       emailRepresentante: seller.email,
@@ -92,6 +103,8 @@ export class SellerViewImportPortal {
             r.eGerente,
             r.eSupervisor,
             r.situacao,
+            r.cnpj, 
+            r.tipoRep,
             r.dtAlteracao
           from 01010s005.dev_representante r 
             

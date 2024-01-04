@@ -192,7 +192,8 @@ export class StockFutureCommerce {
       SUM(m.qtdAberto) as qtd
     from 01010s005.dev_metas m 
     where 
-      m.produtoCod in (${productCod})
+      m.produtoCod in (${productCod}) and
+      m.situacaoCod <> 1
     group by produtoCod, TO_CHAR(m.periodo,'MM-YYYY')
     ;
   `);
