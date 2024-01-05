@@ -243,33 +243,37 @@ export class StockFutureCommerce {
   }
 
   async execute({ search }: ExecuteServiceProps) {
-    const query = search ? `where ${search}` : ``;
+    try {
+      const query = search ? `where ${search}` : ``;
 
-    const startDate = new Date();
+      const startDate = new Date();
 
-    const totalProducts = await this.getProductsTotal({ search: query });
-    const totalPages = Math.ceil(totalProducts / this.size);
+      const totalProducts = await this.getProductsTotal({ search: query });
+      const totalPages = Math.ceil(totalProducts / this.size);
 
-    console.log("-> Produtos " + totalProducts);
-    console.log("-> Paginas " + totalPages);
+      console.log("-> Produtos " + totalProducts);
+      console.log("-> Paginas " + totalPages);
 
-    for (let index = 0; index < totalPages; index++) {
-      const page = index;
+      for (let index = 0; index < totalPages; index++) {
+        const page = index;
 
-      console.log(`${page + 1} de ${totalPages}`);
+        console.log(`${page + 1} de ${totalPages}`);
 
-      const stocks = await this.getProducts({
-        search: query,
-        page: page,
-        pagesize: this.size,
-      });
+        const stocks = await this.getProducts({
+          search: query,
+          page: page,
+          pagesize: this.size,
+        });
 
-      if (stocks.length > 0)
-        await this.sendData.post("/stock-locations/import", stocks);
+        if (stocks.length > 0)
+          await this.sendData.post("/stock-locations/import", stocks);
+      }
+
+      const endDate = new Date();
+
+      console.log("-> " + (await diffDates(startDate, endDate)));
+    } catch (error) {
+      console.log("[STOCK-FUTURE][ERRO]");
     }
-
-    const endDate = new Date();
-
-    console.log("-> " + (await diffDates(startDate, endDate)));
   }
 }

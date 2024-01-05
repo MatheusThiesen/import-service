@@ -12,24 +12,28 @@ export class LineImportCommerce {
   constructor(private sendData: SendDataRepository) {}
 
   async execute({ search }: ExecuteServiceProps) {
-    const productLines = await entities.lineProduct.findAll({
-      fields: {
-        linhaCod: true,
-        descricao: true,
-        situacao: true,
-      },
-      search,
-      pagesize: 99999,
-    });
+    try {
+      const productLines = await entities.lineProduct.findAll({
+        fields: {
+          linhaCod: true,
+          descricao: true,
+          situacao: true,
+        },
+        search,
+        pagesize: 99999,
+      });
 
-    const productLinesNormalized: ProductLinesNormalized[] = productLines.map(
-      (line) => ({
-        cod: line.linhaCod,
-        name: line.descricao,
-        status: line.situacao,
-      })
-    );
+      const productLinesNormalized: ProductLinesNormalized[] = productLines.map(
+        (line) => ({
+          cod: line.linhaCod,
+          name: line.descricao,
+          status: line.situacao,
+        })
+      );
 
-    await this.sendData.post("/lines/import", productLinesNormalized);
+      await this.sendData.post("/lines/import", productLinesNormalized);
+    } catch (error) {
+      console.log("[LINES][ERRO]");
+    }
   }
 }

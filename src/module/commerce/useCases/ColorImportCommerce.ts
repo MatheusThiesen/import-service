@@ -12,22 +12,26 @@ export class ColorImportCommerce {
   constructor(private sendData: SendDataRepository) {}
 
   async execute({ search }: ExecuteServiceProps) {
-    const colors = await entities.color.findAll({
-      fields: {
-        corCod: true,
-        descricao: true,
-        rgb: true,
-      },
-      search: search,
-      pagesize: 99999,
-    });
+    try {
+      const colors = await entities.color.findAll({
+        fields: {
+          corCod: true,
+          descricao: true,
+          rgb: true,
+        },
+        search: search,
+        pagesize: 99999,
+      });
 
-    const colorsNormalized: ColorNormalized[] = colors.map((color) => ({
-      cod: color.corCod,
-      name: color.descricao,
-      hex: color.rgb,
-    }));
+      const colorsNormalized: ColorNormalized[] = colors.map((color) => ({
+        cod: color.corCod,
+        name: color.descricao,
+        hex: color.rgb,
+      }));
 
-    await this.sendData.post("/colors/import", colorsNormalized);
+      await this.sendData.post("/colors/import", colorsNormalized);
+    } catch (error) {
+      console.log("[COLORS][ERRO]");
+    }
   }
 }

@@ -160,23 +160,27 @@ export class ProductImportCommerce {
   }
 
   async execute({ search }: ExecuteServiceProps) {
-    const query = `marcaCod IN (10,20,1,24,23,2,26,400, 27 ) ${
-      search ? `AND ${search}` : ""
-    }`;
+    try {
+      const query = `marcaCod IN (10,20,1,24,23,2,26,400, 27 ) ${
+        search ? `AND ${search}` : ""
+      }`;
 
-    const totalItems = await this.getProductsTotal({ search: query });
-    const totalPages = Math.ceil(totalItems / this.pagesize);
+      const totalItems = await this.getProductsTotal({ search: query });
+      const totalPages = Math.ceil(totalItems / this.pagesize);
 
-    for (let index = 0; index < totalPages; index++) {
-      const page = index;
+      for (let index = 0; index < totalPages; index++) {
+        const page = index;
 
-      const products = await this.getProducts({
-        search: query,
-        page: page,
-        pagesize: this.pagesize,
-      });
+        const products = await this.getProducts({
+          search: query,
+          page: page,
+          pagesize: this.pagesize,
+        });
 
-      await this.sendData.post("/products/import", products);
+        await this.sendData.post("/products/import", products);
+      }
+    } catch (error) {
+      console.log("[PRODUCTS][ERRO]");
     }
   }
 }

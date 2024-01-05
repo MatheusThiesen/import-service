@@ -14,36 +14,40 @@ export class WalletSellerClientImportCommerce {
   constructor(private sendData: SendDataRepository) {}
 
   async execute({ search }: ExecuteServiceProps) {
-    const totalClient = await entities.linkClientSeller.count({
-      search: search,
-    });
-    const totalPages = Math.ceil(totalClient / this.pagesize);
-
-    for (let index = 0; index < totalPages; index++) {
-      const page = index;
-
-      const walletsClientsSellers = await entities.linkClientSeller.findAll({
-        fields: {
-          representanteCod: true,
-          clienteCod: true,
-          tipo: true,
-        },
-        search,
-        page: page,
-        pagesize: this.pagesize,
+    try {
+      const totalClient = await entities.linkClientSeller.count({
+        search: search,
       });
+      const totalPages = Math.ceil(totalClient / this.pagesize);
 
-      const walletsClientsSellersNormalized: WalletSellerClientNormalized[] =
-        walletsClientsSellers.map((brand) => ({
-          clienteCod: brand.clienteCod,
-          sellerCod: brand.representanteCod,
-          tipo: brand.tipo,
-        }));
+      for (let index = 0; index < totalPages; index++) {
+        const page = index;
 
-      await this.sendData.post(
-        "/clients-to-sellers/import",
-        walletsClientsSellersNormalized
-      );
+        const walletsClientsSellers = await entities.linkClientSeller.findAll({
+          fields: {
+            representanteCod: true,
+            clienteCod: true,
+            tipo: true,
+          },
+          search,
+          page: page,
+          pagesize: this.pagesize,
+        });
+
+        const walletsClientsSellersNormalized: WalletSellerClientNormalized[] =
+          walletsClientsSellers.map((brand) => ({
+            clienteCod: brand.clienteCod,
+            sellerCod: brand.representanteCod,
+            tipo: brand.tipo,
+          }));
+
+        await this.sendData.post(
+          "/clients-to-sellers/import",
+          walletsClientsSellersNormalized
+        );
+      }
+    } catch (error) {
+      console.log("[WALLET-SELLER-CLIENTS][ERRO]");
     }
   }
 }

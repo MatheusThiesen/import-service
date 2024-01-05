@@ -92,21 +92,25 @@ export class StockPromptDeliveryCommerce {
   }
 
   async execute({ search }: ExecuteServiceProps) {
-    const query = search
-      ? `where ${search} AND pe.localEstoque = 20`
-      : `where pe.localEstoque = 20`;
-    const totalPages = await this.getStocksTotal({ search: query });
+    try {
+      const query = search
+        ? `where ${search} AND pe.localEstoque = 20`
+        : `where pe.localEstoque = 20`;
+      const totalPages = await this.getStocksTotal({ search: query });
 
-    for (let index = 0; index < totalPages; index++) {
-      const page = index;
+      for (let index = 0; index < totalPages; index++) {
+        const page = index;
 
-      const stocks = await this.getStocks({
-        search: query,
-        page: page,
-        pagesize: this.size,
-      });
+        const stocks = await this.getStocks({
+          search: query,
+          page: page,
+          pagesize: this.size,
+        });
 
-      await this.sendData.post("/stock-locations/import", stocks);
+        await this.sendData.post("/stock-locations/import", stocks);
+      }
+    } catch (error) {
+      console.log("[STOCK-PROMPTS][ERRO]");
     }
   }
 }

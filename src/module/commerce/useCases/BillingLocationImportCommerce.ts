@@ -8,36 +8,42 @@ export class BillingLocationImportCommerce {
   constructor(private sendData: SendDataRepository) {}
 
   async execute({ search }: ExecuteServiceProps) {
-    const query = search;
+    try {
+      const query = search;
 
-    const totalItems = await entities.billingLocation.count({ search: query });
-    const totalPages = Math.ceil(totalItems / this.pagesize);
-
-    for (let index = 0; index < totalPages; index++) {
-      const page = index;
-
-      const billingLocation = await entities.billingLocation.findAll({
-        fields: {
-          localCobrancaCod: true,
-          situacao: true,
-          descricao: true,
-        },
-
-        search,
-
-        page: page,
-        pagesize: this.pagesize,
+      const totalItems = await entities.billingLocation.count({
+        search: query,
       });
+      const totalPages = Math.ceil(totalItems / this.pagesize);
 
-      await this.sendData.post(
-        "/billing-locations/import",
+      for (let index = 0; index < totalPages; index++) {
+        const page = index;
 
-        billingLocation.map((item) => ({
-          tabelaPrecoCod: item.localCobrancaCod,
-          descricao: item.descricao,
-          ativo: item.situacao,
-        }))
-      );
+        const billingLocation = await entities.billingLocation.findAll({
+          fields: {
+            localCobrancaCod: true,
+            situacao: true,
+            descricao: true,
+          },
+
+          search,
+
+          page: page,
+          pagesize: this.pagesize,
+        });
+
+        await this.sendData.post(
+          "/billing-locations/import",
+
+          billingLocation.map((item) => ({
+            tabelaPrecoCod: item.localCobrancaCod,
+            descricao: item.descricao,
+            ativo: item.situacao,
+          }))
+        );
+      }
+    } catch (error) {
+      console.log("[BILLING-LOCATION][ERRO]");
     }
   }
 }

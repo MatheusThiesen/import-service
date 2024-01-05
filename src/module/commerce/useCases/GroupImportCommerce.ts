@@ -12,23 +12,27 @@ export class GroupImportCommerce {
   constructor(private sendData: SendDataRepository) {}
 
   async execute({ search }: ExecuteServiceProps) {
-    const productGroups = await entities.groupProduct.findAll({
-      fields: {
-        grupoCod: true,
-        descricao: true,
-        situacao: true,
-      },
-      search: search,
-      pagesize: 99999,
-    });
+    try {
+      const productGroups = await entities.groupProduct.findAll({
+        fields: {
+          grupoCod: true,
+          descricao: true,
+          situacao: true,
+        },
+        search: search,
+        pagesize: 99999,
+      });
 
-    const productGroupsNormalized: ProductGroupsNormalized[] =
-      productGroups.map((group) => ({
-        cod: group.grupoCod,
-        name: group.descricao,
-        status: group.situacao,
-      }));
+      const productGroupsNormalized: ProductGroupsNormalized[] =
+        productGroups.map((group) => ({
+          cod: group.grupoCod,
+          name: group.descricao,
+          status: group.situacao,
+        }));
 
-    await this.sendData.post("/groups/import", productGroupsNormalized);
+      await this.sendData.post("/groups/import", productGroupsNormalized);
+    } catch (error) {
+      console.log("[GROUP][ERRO]");
+    }
   }
 }

@@ -26,39 +26,43 @@ export class ProductImageImportCommerce {
   }
 
   async execute({ search }: ExecuteServiceProps) {
-    const query = search;
+    try {
+      const query = search;
 
-    const totalItems = await entities.productImage.count({ search: query });
-    const totalPages = Math.ceil(totalItems / this.pagesize);
+      const totalItems = await entities.productImage.count({ search: query });
+      const totalPages = Math.ceil(totalItems / this.pagesize);
 
-    for (let index = 0; index < totalPages; index++) {
-      const page = index;
+      for (let index = 0; index < totalPages; index++) {
+        const page = index;
 
-      const productImageResponse = await entities.productImage.findAll<
-        ProductImageFields,
-        ProductImage
-      >({
-        fields: {
-          produtoCod: true,
-          imagemNome: true,
-          sequencia: true,
-        },
+        const productImageResponse = await entities.productImage.findAll<
+          ProductImageFields,
+          ProductImage
+        >({
+          fields: {
+            produtoCod: true,
+            imagemNome: true,
+            sequencia: true,
+          },
 
-        search,
+          search,
 
-        page: page,
-        pagesize: this.pagesize,
-      });
+          page: page,
+          pagesize: this.pagesize,
+        });
 
-      await this.sendData.post(
-        "/product-imagens/import",
+        await this.sendData.post(
+          "/product-imagens/import",
 
-        productImageResponse.map((item) => ({
-          imagemNome: this.removeExtension(item.imagemNome),
-          sequencia: Number(item.sequencia),
-          produtoCodigo: Number(item.produtoCod),
-        }))
-      );
+          productImageResponse.map((item) => ({
+            imagemNome: this.removeExtension(item.imagemNome),
+            sequencia: Number(item.sequencia),
+            produtoCodigo: Number(item.produtoCod),
+          }))
+        );
+      }
+    } catch (error) {
+      console.log("[PRODUCT-IMAGE][ERRO]");
     }
   }
 }

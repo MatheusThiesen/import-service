@@ -108,47 +108,51 @@ export class ClientImportCommerce {
   }
 
   async execute({ search }: ExecuteServiceProps) {
-    const query = search ? `${search} and c.tipo = 'C'` : "c.tipo = 'C'";
+    try {
+      const query = search ? `${search} and c.tipo = 'C'` : "c.tipo = 'C'";
 
-    const totalClient = await entities.client.count({ search: query });
-    const totalPages = Math.ceil(totalClient / this.pagesize);
+      const totalClient = await entities.client.count({ search: query });
+      const totalPages = Math.ceil(totalClient / this.pagesize);
 
-    for (let index = 0; index < totalPages; index++) {
-      const page = index;
+      for (let index = 0; index < totalPages; index++) {
+        const page = index;
 
-      const clientsResponse = await entities.client.findAll({
-        fields: {
-          clienteCod: true,
-          cnpj: true,
-          credito: true,
-          razaoSocial: true,
-          nomeFantasia: true,
-          ie: true,
-          celular: true,
-          telefone: true,
-          telefone2: true,
-          ativo: true,
-          uf: true,
-          cidadeIbgeCod: true,
-          cidade: true,
-          bairro: true,
-          logradouro: true,
-          numero: true,
-          complemento: true,
-          cep: true,
-          conceitoCod: true,
-          grupoCadCod: true,
-        },
+        const clientsResponse = await entities.client.findAll({
+          fields: {
+            clienteCod: true,
+            cnpj: true,
+            credito: true,
+            razaoSocial: true,
+            nomeFantasia: true,
+            ie: true,
+            celular: true,
+            telefone: true,
+            telefone2: true,
+            ativo: true,
+            uf: true,
+            cidadeIbgeCod: true,
+            cidade: true,
+            bairro: true,
+            logradouro: true,
+            numero: true,
+            complemento: true,
+            cep: true,
+            conceitoCod: true,
+            grupoCadCod: true,
+          },
 
-        search,
+          search,
 
-        page: page,
-        pagesize: this.pagesize,
-      });
+          page: page,
+          pagesize: this.pagesize,
+        });
 
-      const clients = await this.normalizedClient(clientsResponse);
+        const clients = await this.normalizedClient(clientsResponse);
 
-      await this.sendData.post("/clients/import", clients);
+        await this.sendData.post("/clients/import", clients);
+      }
+    } catch (error) {
+      console.log("[CLIENTS][ERRO]");
     }
   }
 }

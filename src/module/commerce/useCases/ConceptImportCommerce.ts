@@ -13,24 +13,30 @@ export class ConceptImportCommerce {
   constructor(private sendData: SendDataRepository) {}
 
   async execute({ search }: ExecuteServiceProps) {
-    const concepts = await entities.concept.findAll({
-      fields: {
-        conceitoCod: true,
-        abreviacao: true,
-        descricao: true,
-        situacao: true,
-      },
-      search: search,
-      pagesize: 99999,
-    });
+    try {
+      const concepts = await entities.concept.findAll({
+        fields: {
+          conceitoCod: true,
+          abreviacao: true,
+          descricao: true,
+          situacao: true,
+        },
+        search: search,
+        pagesize: 99999,
+      });
 
-    const conceptsNormalized: ConceptNormalized[] = concepts.map((concept) => ({
-      codigo: concept.conceitoCod,
-      descricao: concept.descricao,
-      abreviacao: concept.abreviacao,
-      situacao: concept.situacao,
-    }));
+      const conceptsNormalized: ConceptNormalized[] = concepts.map(
+        (concept) => ({
+          codigo: concept.conceitoCod,
+          descricao: concept.descricao,
+          abreviacao: concept.abreviacao,
+          situacao: concept.situacao,
+        })
+      );
 
-    await this.sendData.post("/concepts/import", conceptsNormalized);
+      await this.sendData.post("/concepts/import", conceptsNormalized);
+    } catch (error) {
+      console.log("[CONCEPTS][ERRO]");
+    }
   }
 }

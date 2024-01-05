@@ -17,42 +17,46 @@ export class ListPriceImportCommerce {
   constructor(private sendData: SendDataRepository) {}
 
   async execute({ search }: ExecuteServiceProps) {
-    const query = search;
+    try {
+      const query = search;
 
-    const totalItems = await entities.priceList.count({ search: query });
-    const totalPages = Math.ceil(totalItems / this.pagesize);
+      const totalItems = await entities.priceList.count({ search: query });
+      const totalPages = Math.ceil(totalItems / this.pagesize);
 
-    for (let index = 0; index < totalPages; index++) {
-      const page = index;
+      for (let index = 0; index < totalPages; index++) {
+        const page = index;
 
-      const listsItemsResponse = await entities.priceList.findAll({
-        fields: {
-          listaId: true,
-          listaCod: true,
-          listaDescricao: true,
-          produtoCod: true,
-          precoVenda: true,
-          situacao: true,
-        },
+        const listsItemsResponse = await entities.priceList.findAll({
+          fields: {
+            listaId: true,
+            listaCod: true,
+            listaDescricao: true,
+            produtoCod: true,
+            precoVenda: true,
+            situacao: true,
+          },
 
-        search,
+          search,
 
-        page: page,
-        pagesize: this.pagesize,
-      });
+          page: page,
+          pagesize: this.pagesize,
+        });
 
-      await this.sendData.post(
-        "/price-lists/import",
+        await this.sendData.post(
+          "/price-lists/import",
 
-        listsItemsResponse.map((item) => ({
-          id: `${item.listaId}${item.listaCod}${item.produtoCod}`,
-          codigo: item.listaCod,
-          descricao: item.listaDescricao,
-          valor: item.precoVenda,
-          situation: item.situacao,
-          produtoCodigo: item.produtoCod,
-        }))
-      );
+          listsItemsResponse.map((item) => ({
+            id: `${item.listaId}${item.listaCod}${item.produtoCod}`,
+            codigo: item.listaCod,
+            descricao: item.listaDescricao,
+            valor: item.precoVenda,
+            situation: item.situacao,
+            produtoCodigo: item.produtoCod,
+          }))
+        );
+      }
+    } catch (error) {
+      console.log("[LIST-PRICES][ERRO]");
     }
   }
 }

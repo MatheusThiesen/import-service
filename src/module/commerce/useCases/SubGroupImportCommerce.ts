@@ -13,25 +13,29 @@ export class SubGroupImportCommerce {
   constructor(private sendData: SendDataRepository) {}
 
   async execute({ search }: ExecuteServiceProps) {
-    const productGroups = await entities.subgroupProduct.findAll({
-      fields: {
-        subgrupoCod: true,
-        descricao: true,
-        situacao: true,
-        grupoCod: true,
-      },
-      search: search,
-      pagesize: 99999,
-    });
+    try {
+      const productGroups = await entities.subgroupProduct.findAll({
+        fields: {
+          subgrupoCod: true,
+          descricao: true,
+          situacao: true,
+          grupoCod: true,
+        },
+        search: search,
+        pagesize: 99999,
+      });
 
-    const productSubgroupsNormalized: ProductSubGroupsNormalized[] =
-      productGroups.map((group) => ({
-        cod: group.subgrupoCod,
-        name: group.descricao,
-        status: group.situacao,
-        codGroup: group.grupoCod,
-      }));
+      const productSubgroupsNormalized: ProductSubGroupsNormalized[] =
+        productGroups.map((group) => ({
+          cod: group.subgrupoCod,
+          name: group.descricao,
+          status: group.situacao,
+          codGroup: group.grupoCod,
+        }));
 
-    await this.sendData.post("/subgroups/import", productSubgroupsNormalized);
+      await this.sendData.post("/subgroups/import", productSubgroupsNormalized);
+    } catch (error) {
+      console.log("[SUB-GROUPS][ERRO]");
+    }
   }
 }

@@ -14,36 +14,40 @@ export class TablePriceImportCommerce {
   constructor(private sendData: SendDataRepository) {}
 
   async execute({ search }: ExecuteServiceProps) {
-    const query = search;
+    try {
+      const query = search;
 
-    const totalItems = await entities.tablePrice.count({ search: query });
-    const totalPages = Math.ceil(totalItems / this.pagesize);
+      const totalItems = await entities.tablePrice.count({ search: query });
+      const totalPages = Math.ceil(totalItems / this.pagesize);
 
-    for (let index = 0; index < totalPages; index++) {
-      const page = index;
+      for (let index = 0; index < totalPages; index++) {
+        const page = index;
 
-      const tablePricesResponse = await entities.tablePrice.findAll({
-        fields: {
-          tabelaPrecoCod: true,
-          situacao: true,
-          descricao: true,
-        },
+        const tablePricesResponse = await entities.tablePrice.findAll({
+          fields: {
+            tabelaPrecoCod: true,
+            situacao: true,
+            descricao: true,
+          },
 
-        search,
+          search,
 
-        page: page,
-        pagesize: this.pagesize,
-      });
+          page: page,
+          pagesize: this.pagesize,
+        });
 
-      await this.sendData.post(
-        "/price-tables/import",
+        await this.sendData.post(
+          "/price-tables/import",
 
-        tablePricesResponse.map((item) => ({
-          tabelaPrecoCod: item.tabelaPrecoCod,
-          descricao: item.descricao,
-          ativo: item.situacao,
-        }))
-      );
+          tablePricesResponse.map((item) => ({
+            tabelaPrecoCod: item.tabelaPrecoCod,
+            descricao: item.descricao,
+            ativo: item.situacao,
+          }))
+        );
+      }
+    } catch (error) {
+      console.log("[TABLE-PRICES][ERRO]");
     }
   }
 }
