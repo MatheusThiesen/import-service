@@ -69,6 +69,21 @@ export class Portal {
         });
 
         queue.push({
+          search: `${this.queryBuilderUpdateTime("cr", 1, 10)}`,
+          entity: "walletSellerClientsViewImportPortal",
+        });
+
+        queue.push({
+          search: `${this.queryBuilderUpdateTime("d", 1, 10)}`,
+          entity: "highlighterViewImportPortal",
+        });
+
+        queue.push({
+          entity: "registerGroupViewImportPortal",
+          search: `${this.queryBuilderUpdateTime("g", 1, 10)}`,
+        });
+
+        queue.push({
           entity: "brandsToSellerViewImportPortal",
           search: `rm.dtAlteracao > '${getFormatDate({
             dateType: "date",
@@ -128,6 +143,17 @@ export class Portal {
           entity: "conceptViewImportPortal",
         });
         queue.push({
+          entity: "highlighterViewImportPortal",
+        });
+        queue.push({
+          entity: "registerGroupViewImportPortal",
+        });
+        queue.push({
+          search: `${this.queryBuilderUpdateTime("cr", 3)}`,
+          entity: "walletSellerClientsViewImportPortal",
+        });
+
+        queue.push({
           search: `${this.queryBuilderUpdateTime("e", 3)} `,
           entity: "eanViewImportPortal",
         });
@@ -145,22 +171,6 @@ export class Portal {
     try {
       // console.time()
       // console.timeEnd()
-
-      // queue.push({
-      //   entity: "highlighterViewImportPortal",
-      // });
-      // queue.push({
-      //   entity: "orderViewImportPortal",
-      //   search: `
-      //   p.codigo in (1336554,1340619,1396628,1406705,1417188,1425011,1429682,1430172,1430823,1430889,1431243,1431299,1431867,1431975,1432074,1432121,1432255,1432256,1432268,1432358,1432599,1432600,1432610,1432629,1432675,1432679,1432681,1432692,1432745,1432746,1432748)
-      //   `,
-      // });
-      queue.push({
-        entity: "orderViewImportPortal",
-        search: `
-        p.codigo in (1432268)
-        `,
-      });
 
       await Promise.all([
         serverPortal.execute(),
