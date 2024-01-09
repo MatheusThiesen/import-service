@@ -53,6 +53,7 @@ export interface ProductNormalized {
   ncm: string;
   unitMeasure: string;
   unitMeasureDesc: string;
+  imagemPreview?: string;
 }
 
 export class ProductImportCommerce {
@@ -60,34 +61,58 @@ export class ProductImportCommerce {
 
   constructor(private sendData: SendDataRepository) {}
 
-  normalizedProduct(products: ProductRecibe[]): ProductNormalized[] {
-    return products.map((product) => ({
-      cod: product.codigo,
-      status:
-        product.linhaProducao === 0 && product.bloqVenda === 2
-          ? product.situacao
-          : 0,
-      alternativeCode: product.codAlternativo,
-      reference: product.referencia,
-      description: product.descricao,
-      completeDescription: product.descricaoLonga,
-      additionalDescription: product.descricaoComplementar,
-      salePrice: product.precoPromo,
-      marcaCodigo: product.marcaCod,
-      corPrimariaCodigo: product.corUmCod,
-      corSecundariaCodigo: product.corDoisCod,
-      colecaoCodigo: product.colecaoCod,
-      linhaCodigo: product.linhaCod,
-      grupoCodigo: product.grupoCod,
-      subgrupoCodigo: product.subGrupoCod,
-      generoCodigo: product.genero,
-      precoVendaEmpresa: product.precoVenda,
-      qtdEmbalagem: product?.qtdEmbalagem ? Number(product.qtdEmbalagem) : 0,
-      obs: product.obs,
-      ncm: product.ncm,
-      unitMeasure: product.unidadeMedida,
-      unitMeasureDesc: product.unidadeMedidaDesc,
-    }));
+  async normalizedProduct(
+    products: ProductRecibe[]
+  ): Promise<ProductNormalized[]> {
+    let normalizedProducts: ProductNormalized[] = [];
+    for (const product of products) {
+      const getImagemPreview = await dbSiger.$ExecuteQuery<{
+        imagemNome: string;
+      }>(`
+      select i.imagemNome from 01010s005.DEV_PRODUTO_IMAGEM i
+      where i.produtoCod in (${product.codigo}) 
+      order by i.sequencia
+      limit 1
+    `);
+
+      const imagemPreview =
+        getImagemPreview &&
+        getImagemPreview[0] &&
+        getImagemPreview[0].imagemNome
+          ? this.removeExtension(getImagemPreview[0].imagemNome)
+          : undefined;
+
+      normalizedProducts.push({
+        cod: product.codigo,
+        status:
+          product.linhaProducao === 0 && product.bloqVenda === 2
+            ? product.situacao
+            : 0,
+        alternativeCode: product.codAlternativo,
+        reference: product.referencia,
+        description: product.descricao,
+        completeDescription: product.descricaoLonga,
+        additionalDescription: product.descricaoComplementar,
+        salePrice: product.precoPromo,
+        marcaCodigo: product.marcaCod,
+        corPrimariaCodigo: product.corUmCod,
+        corSecundariaCodigo: product.corDoisCod,
+        colecaoCodigo: product.colecaoCod,
+        linhaCodigo: product.linhaCod,
+        grupoCodigo: product.grupoCod,
+        subgrupoCodigo: product.subGrupoCod,
+        generoCodigo: product.genero,
+        precoVendaEmpresa: product.precoVenda,
+        qtdEmbalagem: product?.qtdEmbalagem ? Number(product.qtdEmbalagem) : 0,
+        obs: product.obs,
+        ncm: product.ncm,
+        unitMeasure: product.unidadeMedida,
+        unitMeasureDesc: product.unidadeMedidaDesc,
+        imagemPreview,
+      });
+    }
+
+    return normalizedProducts;
   }
 
   async getProducts({
@@ -157,6 +182,11 @@ export class ProductImportCommerce {
     );
 
     return productsTotal;
+  }
+
+  removeExtension(filename: string) {
+    const splitName = filename.split(".");
+    return splitName.filter((_, i) => i !== splitName.length - 1).join(".");
   }
 
   async execute({ search }: ExecuteServiceProps) {
