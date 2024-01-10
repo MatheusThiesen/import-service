@@ -26,112 +26,126 @@ export class App {
     }
   }
 
-  async fiveMinuteCron() {
-    cron.schedule("0 */10 * * * *", async () => {
-      try {
-        queue.push({
-          entity: "branchActivistsImportCommerce",
-          search: `${this.queryBuilderUpdateTime("g", 1, 10)}`,
-        });
-        queue.push({
-          entity: "clientImportCommerce",
-          search: `${this.queryBuilderUpdateTime("c", 1, 10)}`,
-        });
-        queue.push({
-          entity: "walletSellerClientImportCommerce",
-          search: `${this.queryBuilderUpdateTime("cr", 1, 10)}`,
-        });
-        queue.push({
-          entity: "sellerImportCommerce",
-          search: `${this.queryBuilderUpdateTime("r", 1, 10)}`,
-        });
-        queue.push({
-          entity: "conceptImportCommerce",
-          search: `${this.queryBuilderUpdateTime("c", 1, 10)}`,
-        });
-        queue.push({
-          entity: "brandImportCommerce",
-          search: `${this.queryBuilderUpdateTime("m", 1, 10)}`,
-        });
-        queue.push({
-          entity: "collectionImportCommerce",
-          search: `${this.queryBuilderUpdateTime("c", 1, 10)}`,
-        });
-        queue.push({
-          entity: "colorImportCommerce",
-          search: `${this.queryBuilderUpdateTime("c", 1, 10)}`,
-        });
-        queue.push({
-          entity: "groupImportCommerce",
-          search: `${this.queryBuilderUpdateTime("g", 1, 10)}`,
-        });
-        queue.push({
-          entity: "lineImportCommerce",
-          search: `${this.queryBuilderUpdateTime("l", 1, 10)}`,
-        });
-        queue.push({
-          entity: "subGroupImportCommerce",
-          search: `${this.queryBuilderUpdateTime("s", 1, 10)}`,
-        });
-        queue.push({
-          entity: "listPriceImportCommerce",
-          search: `${this.queryBuilderUpdateTime("l", 1, 10)}`,
-        });
-        queue.push({
-          entity: "productImageImportCommerce",
-          search: `${this.queryBuilderUpdateTime("i", 1, 10)}`,
-        });
-        queue.push({
-          entity: "productImportCommerce",
-          search: `${this.queryBuilderUpdateTime("p", 1, 10)}`,
-        });
-        queue.push({
-          entity: "stockPromptDeliveryCommerce",
-          search: `${this.queryBuilderUpdateTime("pe", 1, 10)}`,
-        });
-        queue.push({
-          entity: "stockFutureCommerce",
-          search: `
-          p.codigo in (
-            select distinct produtoCod from (
-              select i.produtoCod
-              from 01010s005.dev_pedido_item_v2 i
-              inner join 01010s005.dev_pedido_v2 p on p.codigo = pedidoCod
-              where ${this.queryBuilderUpdateTime(
-                "i",
-                1,
-                10
-              )} and i.posicaoCod in (1,3) and p.especieCod = 9
-
-              union
-
-              select m.produtoCod
-              from 01010s005.dev_metas m
-              where ${this.queryBuilderUpdateTime("m", 1, 10)}
-
-            ) as analises
-          ) `,
-        });
-        queue.push({
-          entity: "orderImportCommerce",
-          search: `${this.queryBuilderUpdateTime("p", 1, 10)}`,
-        });
-        queue.push({
-          entity: "billingLocationImportCommerce",
-          search: `${this.queryBuilderUpdateTime("l", 1, 10)}`,
-        });
-        queue.push({
-          entity: "tablePriceImportCommerce",
-          search: `${this.queryBuilderUpdateTime("p", 1, 10)}`,
-        });
-        queue.push({
-          entity: "paymentConditionImportCommerce",
-          search: `${this.queryBuilderUpdateTime("p", 1, 10)}`,
-        });
-      } catch (error) {
-        console.log(error);
+  async threeMinuteCron() {
+    cron.schedule(
+      "0 */2 * * * *",
+      async () => {
+        try {
+          queue.push({
+            entity: "stockPromptDeliveryCommerce",
+            search: `${this.queryBuilderUpdateTime("pe", 1, 5)}`,
+          });
+          queue.push({
+            entity: "stockFutureCommerce",
+            search: `${this.queryBuilderUpdateTime("c", 1, 5)}`,
+          });
+          queue.push({
+            entity: "orderImportCommerce",
+            search: `${this.queryBuilderUpdateTime("p", 1, 5)}`,
+          });
+        } catch (error) {
+          console.log(error);
+        }
+      },
+      {
+        timezone: "America/Sao_Paulo",
       }
-    });
+    );
+  }
+
+  async tenMinuteCron() {
+    cron.schedule(
+      "0 */10 * * * *",
+      async () => {
+        try {
+          queue.push({
+            entity: "branchActivistsImportCommerce",
+            search: `${this.queryBuilderUpdateTime("g", 1, 10)}`,
+          });
+          queue.push({
+            entity: "clientImportCommerce",
+            search: `${this.queryBuilderUpdateTime("c", 1, 10)}`,
+          });
+          queue.push({
+            entity: "walletSellerClientImportCommerce",
+            search: `${this.queryBuilderUpdateTime("cr", 1, 10)}`,
+          });
+          queue.push({
+            entity: "sellerImportCommerce",
+            search: `${this.queryBuilderUpdateTime("r", 1, 10)}`,
+          });
+          queue.push({
+            entity: "conceptImportCommerce",
+            search: `${this.queryBuilderUpdateTime("c", 1, 10)}`,
+          });
+          queue.push({
+            entity: "brandImportCommerce",
+            search: `${this.queryBuilderUpdateTime("m", 1, 10)}`,
+          });
+          queue.push({
+            entity: "collectionImportCommerce",
+            search: `${this.queryBuilderUpdateTime("c", 1, 10)}`,
+          });
+          queue.push({
+            entity: "colorImportCommerce",
+            search: `${this.queryBuilderUpdateTime("c", 1, 10)}`,
+          });
+          queue.push({
+            entity: "groupImportCommerce",
+            search: `${this.queryBuilderUpdateTime("g", 1, 10)}`,
+          });
+          queue.push({
+            entity: "lineImportCommerce",
+            search: `${this.queryBuilderUpdateTime("l", 1, 10)}`,
+          });
+          queue.push({
+            entity: "subGroupImportCommerce",
+            search: `${this.queryBuilderUpdateTime("s", 1, 10)}`,
+          });
+          queue.push({
+            entity: "listPriceImportCommerce",
+            search: `${this.queryBuilderUpdateTime("l", 1, 10)}`,
+          });
+          queue.push({
+            entity: "productImageImportCommerce",
+            search: `${this.queryBuilderUpdateTime("i", 1, 10)}`,
+          });
+          queue.push({
+            entity: "productImportCommerce",
+            search: `${this.queryBuilderUpdateTime("p", 1, 10)}`,
+          });
+          queue.push({
+            entity: "stockPromptDeliveryCommerce",
+            search: `${this.queryBuilderUpdateTime("pe", 1, 10)}`,
+          });
+          queue.push({
+            entity: "stockFutureCommerce",
+            search: `${this.queryBuilderUpdateTime("c", 1, 10)}`,
+          });
+          queue.push({
+            entity: "orderImportCommerce",
+            search: `${this.queryBuilderUpdateTime("p", 1, 10)}`,
+          });
+          queue.push({
+            entity: "billingLocationImportCommerce",
+            search: `${this.queryBuilderUpdateTime("l", 1, 10)}`,
+          });
+          queue.push({
+            entity: "tablePriceImportCommerce",
+            search: `${this.queryBuilderUpdateTime("p", 1, 10)}`,
+          });
+          queue.push({
+            entity: "paymentConditionImportCommerce",
+            search: `${this.queryBuilderUpdateTime("p", 1, 10)}`,
+          });
+        } catch (error) {
+          console.log(error);
+        }
+      },
+      {
+        timezone: "America/Sao_Paulo",
+      }
+    );
   }
 
   async thirtyMinuteCron() {
@@ -151,114 +165,95 @@ export class App {
   }
 
   async oneDayCron() {
-    cron.schedule("0 0 */3 * * *", async () => {
-      try {
-        queue.push({
-          entity: "sellerImportCommerce",
-        });
-        queue.push({
-          entity: "conceptImportCommerce",
-        });
-        queue.push({
-          entity: "brandImportCommerce",
-        });
-        queue.push({
-          entity: "collectionImportCommerce",
-        });
-        queue.push({
-          entity: "colorImportCommerce",
-        });
-        queue.push({
-          entity: "groupImportCommerce",
-        });
-        queue.push({
-          entity: "lineImportCommerce",
-        });
-        queue.push({
-          entity: "subGroupImportCommerce",
-        });
-        queue.push({
-          entity: "branchActivistsImportCommerce",
-        });
-        queue.push({
-          entity: "billetImportCommerce",
-        });
-        queue.push({
-          entity: "billingLocationImportCommerce",
-        });
-        queue.push({
-          entity: "tablePriceImportCommerce",
-        });
-        queue.push({
-          entity: "paymentConditionImportCommerce",
-        });
-        queue.push({
-          entity: "productImageImportCommerce",
-          search: `${this.queryBuilderUpdateTime("i", 3)}`,
-        });
-        queue.push({
-          entity: "walletSellerClientImportCommerce",
-          search: `${this.queryBuilderUpdateTime("cr", 3)}`,
-        });
-        queue.push({
-          entity: "clientImportCommerce",
-          search: `${this.queryBuilderUpdateTime("c", 3)}`,
-        });
-        queue.push({
-          entity: "listPriceImportCommerce",
-          search: `${this.queryBuilderUpdateTime("l", 3)}`,
-        });
-        queue.push({
-          entity: "productImportCommerce",
-          search: `${this.queryBuilderUpdateTime("p", 3)}`,
-        });
-        queue.push({
-          entity: "stockPromptDeliveryCommerce",
-          search: `${this.queryBuilderUpdateTime("pe", 3)}`,
-        });
-        queue.push({
-          entity: "stockFutureCommerce",
-          search: `
-          p.codigo in (
-            select distinct produtoCod from (
-              select i.produtoCod
-              from 01010s005.dev_pedido_item_v2 i
-              inner join 01010s005.dev_pedido_v2 p on p.codigo = pedidoCod
-              where ${this.queryBuilderUpdateTime(
-                "i",
-                2
-              )} and i.posicaoCod in (1,3) and p.especieCod = 9
-
-              union
-
-              select m.produtoCod
-              from 01010s005.dev_metas m
-              where ${this.queryBuilderUpdateTime("m", 2)}
-
-              union 
-
-              select r.produtoCod
-              from 01010s005.dev_item_reserva r
-              where ${this.queryBuilderUpdateTime("r", 2)}
-
-            ) as analises
-          ) `,
-        });
-        queue.push({
-          entity: "orderImportCommerce",
-          search: `${this.queryBuilderUpdateTime("p", 3)}`,
-        });
-      } catch (error) {
-        console.log(error);
+    cron.schedule(
+      "0 0 1 * * *",
+      async () => {
+        try {
+          queue.push({
+            entity: "sellerImportCommerce",
+          });
+          queue.push({
+            entity: "conceptImportCommerce",
+          });
+          queue.push({
+            entity: "brandImportCommerce",
+          });
+          queue.push({
+            entity: "collectionImportCommerce",
+          });
+          queue.push({
+            entity: "colorImportCommerce",
+          });
+          queue.push({
+            entity: "groupImportCommerce",
+          });
+          queue.push({
+            entity: "lineImportCommerce",
+          });
+          queue.push({
+            entity: "subGroupImportCommerce",
+          });
+          queue.push({
+            entity: "branchActivistsImportCommerce",
+          });
+          queue.push({
+            entity: "billetImportCommerce",
+          });
+          queue.push({
+            entity: "billingLocationImportCommerce",
+          });
+          queue.push({
+            entity: "tablePriceImportCommerce",
+          });
+          queue.push({
+            entity: "paymentConditionImportCommerce",
+          });
+          queue.push({
+            entity: "stockPromptDeliveryCommerce",
+          });
+          queue.push({
+            entity: "stockFutureCommerce",
+          });
+          queue.push({
+            entity: "productImageImportCommerce",
+            search: `${this.queryBuilderUpdateTime("i", 10)}`,
+          });
+          queue.push({
+            entity: "walletSellerClientImportCommerce",
+            search: `${this.queryBuilderUpdateTime("cr", 10)}`,
+          });
+          queue.push({
+            entity: "clientImportCommerce",
+            search: `${this.queryBuilderUpdateTime("c", 10)}`,
+          });
+          queue.push({
+            entity: "listPriceImportCommerce",
+            search: `${this.queryBuilderUpdateTime("l", 10)}`,
+          });
+          queue.push({
+            entity: "productImportCommerce",
+            search: `${this.queryBuilderUpdateTime("p", 10)}`,
+          });
+          queue.push({
+            entity: "orderImportCommerce",
+            search: `${this.queryBuilderUpdateTime("p", 10)}`,
+          });
+        } catch (error) {
+          console.log(error);
+        }
+      },
+      {
+        timezone: "America/Sao_Paulo",
       }
-    });
+    );
   }
 
   async execute() {
     try {
       await Promise.all([
         observableFolder(),
-        this.fiveMinuteCron(),
+        this.threeMinuteCron(),
+        this.tenMinuteCron(),
         this.thirtyMinuteCron(),
         this.oneDayCron(),
       ]);
@@ -279,23 +274,5 @@ app.execute();
 
 // queue.push({
 //   entity: "stockFutureCommerce",
-//   search: `
-//   p.codigo in (
-//     select distinct produtoCod from (
-//       select i.produtoCod
-//       from 01010s005.dev_pedido_item_v2 i
-//       inner join 01010s005.dev_pedido_v2 p on p.codigo = pedidoCod
-//       where ${this.queryBuilderUpdateTime(
-//         "i",
-//         2
-//       )} and i.posicaoCod in (1,3) and p.especieCod = 9
-
-//       union
-
-//       select m.produtoCod
-//       from 01010s005.dev_metas m
-//       where ${this.queryBuilderUpdateTime("m", 2)}
-
-//     ) as analises
-//   ) `,
+//   search: "c.saldo > 0",
 // });

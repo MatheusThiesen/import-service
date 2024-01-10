@@ -57,6 +57,10 @@ export const highlightersOrder = new EntityRepository({
   table: "01010s005.DEV_DESTACADOR_PEDIDO",
   initial: "dp",
 });
+export const quotas = new EntityRepository({
+  table: "01010s005.DEV_COTAS",
+  initial: "c",
+});
 
 export const entities = {
   brand,
@@ -84,4 +88,5 @@ export const entities = {
   order,
   highlighter,
   highlightersOrder,
+  quotas,
 };

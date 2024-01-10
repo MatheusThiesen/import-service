@@ -19,23 +19,6 @@ export class StockPromptDeliveryCommerce {
 
   constructor(private sendData: SendDataRepository) {}
 
-  private async getCurrentDate({
-    type,
-  }: {
-    type: "period" | "deliveryDeadlineDate";
-  }) {
-    const nowYear = new Date().toLocaleString("pt-br", { year: "numeric" });
-    const nowMonth = new Date().toLocaleString("pt-br", {
-      month: type === "period" ? "2-digit" : "numeric",
-    });
-
-    if (type === "period") {
-      return `${nowYear}${nowMonth}`;
-    } else {
-      return `01/${+nowMonth + 1}/${nowYear}`;
-    }
-  }
-
   private onNormalizedStock(accumulatedStocks: StockRecibe[]) {
     return accumulatedStocks.map((item) => ({
       period: "pronta-entrega",
