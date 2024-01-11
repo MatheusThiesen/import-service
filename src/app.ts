@@ -215,16 +215,10 @@ export class App {
             entity: "stockFutureCommerce",
           });
           queue.push({
-            entity: "productImageImportCommerce",
-            search: `${this.queryBuilderUpdateTime("i", 10)}`,
+            entity: "clientImportCommerce",
           });
           queue.push({
             entity: "walletSellerClientImportCommerce",
-            search: `${this.queryBuilderUpdateTime("cr", 10)}`,
-          });
-          queue.push({
-            entity: "clientImportCommerce",
-            search: `${this.queryBuilderUpdateTime("c", 10)}`,
           });
           queue.push({
             entity: "listPriceImportCommerce",
@@ -233,6 +227,10 @@ export class App {
           queue.push({
             entity: "productImportCommerce",
             search: `${this.queryBuilderUpdateTime("p", 10)}`,
+          });
+          queue.push({
+            entity: "productImageImportCommerce",
+            search: `${this.queryBuilderUpdateTime("i", 10)}`,
           });
           queue.push({
             entity: "orderImportCommerce",
