@@ -36,11 +36,11 @@ export class StockFutureCommerce {
   async onNormalizedStock(productsRecibe: StockRecibe[]) {
     const stockNormalized: StockLocationNormalized[] = productsRecibe.map(
       (item) => ({
+        period: dayjs(item.dtInicial).format("MM-YYYY"),
+        name: this.normalizedPeriodName(item.dtInicial),
         productCod: item.produtoCod,
         qtd: !isNaN(Number(item.saldo)) ? Number(item.saldo) : 0,
         date: item.dtInicial,
-        name: this.normalizedPeriodName(item.dtInicial),
-        period: dayjs(item.dtInicial).format("MM-YYYY"),
       })
     );
 
