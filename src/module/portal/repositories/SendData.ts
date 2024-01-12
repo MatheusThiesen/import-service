@@ -15,7 +15,7 @@ export class SendData {
         this.token = (await this.authorizationRepository.singIn()).token;
       }
 
-      const page = pathUrl === "/order/importV2" ? 500 : 20000;
+      const page = pathUrl === "/order/importV2" ? 20000 : 20000;
 
       var offset = 0;
       for (const content of splitArrObj(data, page)) {

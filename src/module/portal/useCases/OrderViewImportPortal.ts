@@ -12,6 +12,11 @@ interface GetOrderItems {
   sigemp: string;
   itemId: number;
   pedidoCod: number;
+  pedidoAtualCod: number;
+  posicaoCodPedidoAtual: number;
+  posicaoDescPedidoAtual: string;
+  posicaoDetalhadaCodPedidoAtual: number;
+  posicaoDetalhadaDescPedidoAtual: string;
   posicaoDetalhadaCod: number;
   posicaoDetalhadaDescicao: string;
   posicaoCod: number;
@@ -45,14 +50,10 @@ interface GetOrderItems {
   ncm?: number;
   origemCod?: number;
   origemDescricao: string;
-  // numeroNota: number;
-  // serieNota: string;
-  // representanteCod: number;
-  // prepostoCod: number;
   dtAlteracao: Date;
 }
 
-interface SendOrder {
+interface Order {
   initialsOrder?: string;
   orderCod: number;
   clientCod: number;
@@ -60,13 +61,9 @@ interface SendOrder {
   agentCod?: number;
   brandCod: number;
   shippingCod: number;
-  documentNumber: string;
   valueST?: number;
   noteValue: number;
   merchandiseValue: number;
-  refuseCod?: number;
-  refuse?: string;
-  highlighterTag?: string[];
   deliveryDate: Date;
   billingDate?: Date;
   paymentCondition?: string;
@@ -74,182 +71,186 @@ interface SendOrder {
   position: string;
   detailPosition: string;
   species?: number;
-  cancellationReason?: string;
-  cancellationReasonCod?: number;
   originCod: number | undefined;
   originDesc: string | undefined;
-  products: {
-    id: string;
-    cod: Number;
-    description: String;
-    position: String;
-    primaryColor?: String;
-    secondaryColor?: String;
-    primaryCodColor?: String;
-    secondaryCodColor?: String;
-    ncm?: number;
-    codGrid?: number;
-    grid?: String;
-    reference: String;
-    quantity?: Number;
-    sequence: Number;
-    value?: Number;
-    measuredUnit?: String;
-    cancellationReason?: string;
-    cancellationReasonCod?: number;
-  }[];
+  products: ProductOrder[];
+}
+
+interface ProductOrder {
+  id: string;
+  cod: number;
+
+  currentOrderCod: number;
+  currentOrderDetailPosition: string;
+
+  description: string;
+  position: string;
+  primaryColor?: string;
+  secondaryColor?: string;
+  primaryCodColor?: string;
+  secondaryCodColor?: string;
+  ncm?: number;
+  codGrid?: number;
+  grid?: string;
+  reference: string;
+  quantity?: number;
+  sequence: number;
+  value: number;
+  total: number;
+  measuredUnit?: string;
+  cancellationReason?: string;
+  cancellationReasonCod?: number;
+  refuseCod: number | undefined;
+  refuse: string | undefined;
+  documentNumber: string | undefined;
+  highlighterTag: string[];
 }
 
 export class OrderViewImportPortal {
-  readonly pageSize = 10000;
+  readonly pageSize = 1000;
   constructor(private sendData: SendData) {}
 
-  async onNormalizedOrder(itemsOrder: GetOrderItems[]): Promise<SendOrder[]> {
+  async onNormalized(itemsOrder: GetOrderItems[]): Promise<Order[]> {
     const groupOrders = groupByObject(itemsOrder, (item) => item.pedidoCod);
 
-    let normalizedOrders: SendOrder[] = [];
+    let normalizedOrders: Order[] = [];
 
     for (const orderGroup of groupOrders) {
       const order = orderGroup.data[0];
 
-      const detailPosition =
-        Number(order.posicaoDetalhadaCod) === 5
-          ? order.posicaoDescricao
-          : order.posicaoDetalhadaDescicao;
+      const productsOrder = await this.onNormalizedOrderProduct(
+        orderGroup.data
+      );
+      const orderNormalized = await this.onNormalizedOrder(
+        order,
+        productsOrder
+      );
+      normalizedOrders.push(orderNormalized);
+    }
 
-      const representanteResponse = await dbSiger.$ExecuteQuery<{
-        representanteCod: number;
-      }>(`
-        select rep.representanteCod 
-        from 01010s005.dev_pedido_rep rep 
-        where rep.pedidoCod = ${orderGroup.value} and rep.tipoRep = 1 
-        limit 1
-      `);
+    return normalizedOrders;
+  }
 
-      const prepostoResponse = await dbSiger.$ExecuteQuery<{
-        representanteCod: number;
-      }>(`
-        select rep.representanteCod 
-        from 01010s005.dev_pedido_rep rep 
-        where rep.pedidoCod = ${orderGroup.value} and rep.tipoRep = 2
-        limit 1
-      `);
+  async onNormalizedOrder(
+    order: GetOrderItems,
+    itemsOrder: ProductOrder[]
+  ): Promise<Order | null> {
+    const detailPosition = this.getDetailPositionOrder(itemsOrder);
 
-      let highlighterTag: string[] = [];
+    const representanteResponse = await dbSiger.$ExecuteQuery<{
+      representanteCod: number;
+    }>(`
+      select rep.representanteCod 
+      from 01010s005.dev_pedido_rep rep 
+      where rep.pedidoCod = ${order.pedidoCod} and rep.tipoRep = 1 
+      limit 1
+    `);
 
-      if (order?.especieCod !== 9) {
-        var regularExpressionHighlighter = /\[([^\]]+)\]/;
-        const highlighter = await entities.highlightersOrder.findAll<
-          HighlightersOrderFields,
-          HighlightersOrder
-        >({
-          fields: {
-            pedidoCod: true,
-            txtObs: true,
-          },
-          search: `dp.pedidoCod in (${orderGroup.value})`,
-        });
+    const prepostoResponse = await dbSiger.$ExecuteQuery<{
+      representanteCod: number;
+    }>(`
+      select rep.representanteCod 
+      from 01010s005.dev_pedido_rep rep 
+      where rep.pedidoCod = ${order.pedidoCod} and rep.tipoRep = 2
+      limit 1
+    `);
 
-        if (highlighter.length > 0) {
-          highlighter.forEach((item) => {
-            const highlighterNormalized = regularExpressionHighlighter?.exec(
-              item.txtObs
-            )?.[1];
+    return {
+      detailPosition,
+      sellerCod: representanteResponse?.[0]?.representanteCod ?? 0,
+      agentCod: prepostoResponse?.[0]?.representanteCod ?? 0,
+      orderCod: Number(order.pedidoCod),
+      initialsOrder: order.sigemp,
+      position: order.posicaoDescricao,
+      clientCod: order.clienteCod,
+      brandCod: order.marcaCod,
+      shippingCod: order.transportadoraCod,
+      deliveryDate: order.dtEntrada,
+      billingDate: order.dtFaturamento,
+      paymentCondition: order.formaPagamento,
+      species: order.especieCod,
+      originCod: order.origemCod,
+      originDesc: order.origemDescricao,
+      merchandiseValue: itemsOrder.reduce(
+        (previousValue, currentValue) => currentValue.total + previousValue,
+        0
+      ),
+      products: itemsOrder,
 
-            if (highlighterNormalized) {
-              highlighterTag.push(highlighterNormalized);
-            }
-          });
+      // Setar no item valores abaixo
+      // valueST: order.vlrIcmsSt ? Number(order.vlrIcmsSt) : undefined,
+      noteValue: 0,
+    };
+  }
+
+  async onNormalizedOrderProduct(
+    items: GetOrderItems[]
+  ): Promise<ProductOrder[]> {
+    return Promise.all(
+      items.map(async (itemOrder) => {
+        const currentOrderDetailPosition =
+          Number(itemOrder.posicaoDetalhadaCodPedidoAtual) === 5
+            ? itemOrder.posicaoDescPedidoAtual
+            : itemOrder.posicaoDetalhadaDescPedidoAtual;
+
+        let documentNumber = undefined;
+        if (["faturado"].includes(currentOrderDetailPosition.toLowerCase())) {
+          const getInvoice = await dbSiger.$ExecuteQuery<{
+            numeroNota: number;
+          }>(`
+              select  n.numeroNota
+              from 01010s005.dev_pedido_nota n 
+              where n.pedidoCod = ${itemOrder.pedidoAtualCod} 
+              limit 1
+            `);
+
+          documentNumber = getInvoice?.[0]?.numeroNota
+            ? String(getInvoice[0].numeroNota)
+            : undefined;
         }
-      }
 
-      let numeroNotaResponse = undefined;
-      const now = new Date();
-      now.setDate(now.getDate() - 10);
-
-      if (["faturado"].includes(detailPosition.toLowerCase())) {
-        numeroNotaResponse = await dbSiger.$ExecuteQuery<{
-          numeroNota: number;
+        const motivoCancelamentoResponse = await dbSiger.$ExecuteQuery<{
+          motivo: number;
+          descricao: string;
         }>(`
-          select  n.numeroNota
-          from 01010s005.dev_pedido_nota n 
-          where n.pedidoCod = ${orderGroup.value} 
+          select c.motivo,c.descricao
+          from 01010s005.dev_pedido_motivo_cancelamento c 
+          where c.pedidoCod = ${itemOrder.pedidoAtualCod} 
           limit 1
         `);
-      }
 
-      const motivoCancelamentoResponse = await dbSiger.$ExecuteQuery<{
-        motivo: number;
-        descricao: string;
-      }>(`
-        select c.motivo,c.descricao
-        from 01010s005.dev_pedido_motivo_cancelamento c 
-        where c.pedidoCod = ${orderGroup.value} 
-        limit 1
-      `);
+        let highlighterTag: string[] = [];
 
-      const sellerCod =
-        representanteResponse &&
-        representanteResponse[0] &&
-        representanteResponse[0].representanteCod
-          ? representanteResponse[0].representanteCod
-          : 0;
-      const agentCod =
-        prepostoResponse &&
-        prepostoResponse[0] &&
-        prepostoResponse[0].representanteCod
-          ? prepostoResponse[0].representanteCod
-          : 0;
-      const documentNumber =
-        numeroNotaResponse &&
-        numeroNotaResponse[0] &&
-        numeroNotaResponse[0].numeroNota
-          ? String(numeroNotaResponse[0].numeroNota)
-          : "";
-      const keyNfe =
-        numeroNotaResponse &&
-        numeroNotaResponse[0] &&
-        numeroNotaResponse[0]?.chaveNota
-          ? String(numeroNotaResponse[0].chaveNota)
-          : "";
+        if (itemOrder?.especieCod !== 9) {
+          var regularExpressionHighlighter = /\[([^\]]+)\]/;
+          const highlighter = await entities.highlightersOrder.findAll<
+            HighlightersOrderFields,
+            HighlightersOrder
+          >({
+            fields: {
+              pedidoCod: true,
+              txtObs: true,
+            },
+            search: `dp.pedidoCod in (${itemOrder.pedidoAtualCod})`,
+          });
 
-      const createOrder: SendOrder = {
-        orderCod: order.pedidoCod,
-        clientCod: order.clienteCod,
-        sellerCod,
-        agentCod,
-        highlighterTag,
-        brandCod: order.marcaCod,
-        shippingCod: order.transportadoraCod,
-        initialsOrder: order.sigemp,
-        valueST: order.vlrIcmsSt ? Number(order.vlrIcmsSt) : undefined,
-        noteValue: Number(order.vlrNota),
-        merchandiseValue: Number(order.vlrTotalMercadoria),
-        deliveryDate: order.dtEntrada,
-        billingDate: order.dtFaturamento,
-        paymentCondition: order.formaPagamento,
-        species: order.especieCod,
-        refuse: order.recusaDescicao,
-        refuseCod: order.recusaCod,
-        cancellationReasonCod: motivoCancelamentoResponse[0]
-          ? motivoCancelamentoResponse[0].motivo
-          : undefined,
-        cancellationReason: motivoCancelamentoResponse[0]
-          ? motivoCancelamentoResponse[0].descricao
-          : undefined,
-        documentNumber,
-        keyNfe,
-        detailPosition,
-        position: order.posicaoDescricao,
-        originCod: order.origemCod,
-        originDesc: order.origemDescricao,
-        products: [],
-      };
+          if (highlighter.length > 0) {
+            highlighter.forEach((item) => {
+              const highlighterNormalized = regularExpressionHighlighter?.exec(
+                item.txtObs
+              )?.[1];
 
-      for (const itemOrder of orderGroup.data) {
-        createOrder.products.push({
+              if (highlighterNormalized) {
+                highlighterTag.push(highlighterNormalized);
+              }
+            });
+          }
+        }
+
+        return {
           id: String(itemOrder.itemId),
           cod: itemOrder.produtoCod,
+          currentOrderCod: Number(itemOrder.pedidoAtualCod),
           sequence: itemOrder.sequencia,
           description: itemOrder.produtoDescricao,
           position: itemOrder.itemPosition,
@@ -261,18 +262,74 @@ export class OrderViewImportPortal {
           grid: itemOrder.gradeDescricao,
           measuredUnit: itemOrder.unidadeEstoque,
           value: Number(itemOrder.vlrUnitario),
+          total: Number(itemOrder.vlrLiquido),
           ncm: Number(itemOrder?.ncm),
-        });
-      }
-
-      normalizedOrders.push(createOrder);
-    }
-
-    return normalizedOrders;
+          currentOrderDetailPosition,
+          documentNumber,
+          refuse: itemOrder.recusaDescicao || undefined,
+          refuseCod: itemOrder.recusaCod || undefined,
+          cancellationReasonCod:
+            motivoCancelamentoResponse?.[0]?.motivo || undefined,
+          cancellationReason:
+            motivoCancelamentoResponse?.[0]?.descricao || undefined,
+          highlighterTag,
+        };
+      })
+    );
   }
 
-  async sendOrder(itemsOrder: GetOrderItems[]) {
-    const normalizedOrders = await this.onNormalizedOrder(itemsOrder);
+  getDetailPositionOrder(
+    itemsOrder: ProductOrder[]
+  ):
+    | "Faturado"
+    | "Parcialmente faturado"
+    | "Recusado"
+    | "Bloqueado"
+    | "Cancelado" {
+    const totalLength = itemsOrder.length;
+
+    const listFilterFaturado = itemsOrder.filter(
+      (item) => item.position.toLowerCase() === "faturado"
+    );
+    const listFilterNadaFaturado = itemsOrder.filter(
+      (item) => item.position.toLowerCase() === "nada faturado"
+    );
+    const listFilterCancelado = itemsOrder.filter(
+      (item) => item.position.toLowerCase() === "cancelado"
+    );
+    const listFilterRecusado = itemsOrder.filter(
+      (item) => item.position.toLowerCase() === "recusado"
+    );
+
+    if (totalLength === listFilterRecusado.length) {
+      return "Recusado";
+    }
+
+    if (totalLength === listFilterFaturado.length) {
+      return "Faturado";
+    }
+
+    if (totalLength === listFilterCancelado.length) {
+      return "Cancelado";
+    }
+
+    if (totalLength === listFilterNadaFaturado.length) {
+      return "Bloqueado";
+    }
+
+    if (listFilterFaturado.length > 0 && listFilterNadaFaturado.length > 0) {
+      return "Parcialmente faturado";
+    }
+
+    if (listFilterFaturado.length > 0 && listFilterNadaFaturado.length <= 0) {
+      return "Faturado";
+    }
+
+    return "Bloqueado";
+  }
+
+  async SendOrder(itemsOrder: GetOrderItems[]) {
+    const normalizedOrders = await this.onNormalized(itemsOrder);
 
     await this.sendData.post("/order/importV2", normalizedOrders);
   }
@@ -280,16 +337,16 @@ export class OrderViewImportPortal {
   async execute({ search }: { search?: string }) {
     try {
       const whereNormalized = search
-        ? `where ${search} and p.sigemp = '018'`
-        : ``;
+        ? `${search} and p.sigemp = '018'`
+        : `p.sigemp = '018'`;
 
       const totalItems = Number(
         (
           await dbSiger.$ExecuteQuery<{ total: string }>(
             `
         select count(*) as total from 01010s005.dev_pedido_v2 p
-          inner join 01010s005.dev_pedido_item i on p.codigo = i.pedidoCod 
-        ${whereNormalized};
+          inner join 01010s005.dev_pedido_item i on p.codigo = i.nossoNumeroPedido 
+          where ${whereNormalized};
         `
           )
         )[0].total
@@ -301,8 +358,8 @@ export class OrderViewImportPortal {
             `
             select count(*) as total from (
               select count(*) as total from 01010s005.dev_pedido_v2 p
-              inner join 01010s005.dev_pedido_item i on p.codigo = i.pedidoCod
-              ${whereNormalized}
+              inner join 01010s005.dev_pedido_item i on p.codigo = i.nossoNumeroPedido
+              where ${whereNormalized}
               group by p.codigo 
             ) as anality
         `
@@ -310,7 +367,7 @@ export class OrderViewImportPortal {
         )[0].total
       );
 
-      const totalPage = Math.ceil(totalItems / this.pageSize);
+      const totalPage = Math.ceil(totalPedidos / this.pageSize);
 
       const startDate = new Date();
 
@@ -319,11 +376,24 @@ export class OrderViewImportPortal {
           const limit = this.pageSize;
           const offset = this.pageSize * index;
 
+          const listOrdersCod = await dbSiger.$ExecuteQuery<{
+            codigo: number;
+          }>(`
+            select p.codigo from 01010s005.dev_pedido_v2 p
+            inner join 01010s005.dev_pedido_item i on p.codigo = i.nossoNumeroPedido
+            where ${whereNormalized}
+            group by p.codigo 
+            order by p.codigo desc
+            limit ${limit}
+            offset ${offset}
+          `);
+
           const itemsOrder = await dbSiger.$ExecuteQuery<GetOrderItems>(
             `
             select 
               p.sigemp,
-              p.codigo as pedidoCod,
+              i.nossoNumeroPedido as pedidoCod,
+	            i.pedidoCod as pedidoAtualCod, 
               p.posicaoDetalhadaCod,
               p.posicaoCod,
               p.posicaoDescricao,
@@ -344,37 +414,33 @@ export class OrderViewImportPortal {
               i.qtd as itemQtd,
               i.vlrLiquido,
               i.vlrUnitario as vlrUnitario,
+              i.corUmDescricao as "corUmDescricao",
+              i.corDoisDescricao as "corDoisDescricao",
               i.marcaCod,
-              i.recusaCod,i.recusaDescicao,
               i.ncm,
-
-              i.origemCod,
-              i.origemDescricao,
-              
               i.produtoDescricao as "produtoDescricao",
               i.produtoDescricaoComplementar as "produtoDescricaoComplementar",
               i.produtoReferencia,
-              
+              i.gradeCod as gradeCod,i.gradeDescricao as gradeDescricao,
               i.unidadeEstoque as unidadeEstoque,
-              i.gradeCod as gradeCod,
-              i.gradeDescricao as gradeDescricao,
-              
-              i.corUmDescricao as "corUmDescricao",
-              i.corDoisDescricao as "corDoisDescricao",
+
+              i.recusaCod,i.recusaDescicao,
+              i.origemCod,i.origemDescricao,
+              i.posicaoCodPedidoAtual,i.posicaoDescPedidoAtual,
+              i.posicaoDetalhadaCodPedidoAtual,i.posicaoDetalhadaDescPedidoAtual,
 
               i.dtAlteracao
                 
             from 01010s005.dev_pedido_item i
-            inner join 01010s005.dev_pedido_v2 p on p.codigo = i.pedidoCod and p.sigemp = i.sigemp
+            inner join 01010s005.dev_pedido_v2 p on p.codigo = i.nossoNumeroPedido and p.sigemp = i.sigemp
               
-            ${whereNormalized}
-            limit ${limit}
-            offset ${offset}
-          ;
-  `
+            where  p.codigo in (${listOrdersCod
+              .map((item) => item.codigo)
+              .join(",")});
+            `
           );
 
-          await this.sendOrder(itemsOrder);
+          await this.SendOrder(itemsOrder);
           console.log(`${index + 1} de ${totalPage}`);
         } catch (error) {
           console.log(error);
