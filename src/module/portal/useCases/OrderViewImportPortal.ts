@@ -253,7 +253,12 @@ export class OrderViewImportPortal {
           currentOrderCod: Number(itemOrder.pedidoAtualCod),
           sequence: itemOrder.sequencia,
           description: itemOrder.produtoDescricao,
-          position: itemOrder.itemPosition,
+          position:
+            currentOrderDetailPosition.toLocaleLowerCase() === "recusado"
+              ? "Recusado"
+              : itemOrder.itemPosition === "Nada faturado"
+              ? "Aguardando Faturamento"
+              : itemOrder.itemPosition,
           primaryColor: itemOrder.corUmDescricao ?? "-",
           secondaryColor: itemOrder.corDoisDescricao,
           reference: itemOrder.produtoReferencia,
@@ -298,7 +303,7 @@ export class OrderViewImportPortal {
       (item) => item.position.toLowerCase() === "cancelado"
     );
     const listFilterRecusado = itemsOrder.filter(
-      (item) => item.position.toLowerCase() === "recusado"
+      (item) => item.currentOrderDetailPosition.toLowerCase() === "recusado"
     );
 
     if (totalLength === listFilterRecusado.length) {
@@ -331,6 +336,8 @@ export class OrderViewImportPortal {
   async SendOrder(itemsOrder: GetOrderItems[]) {
     const normalizedOrders = await this.onNormalized(itemsOrder);
 
+    console.log(normalizedOrders);
+
     await this.sendData.post("/order/importV2", normalizedOrders);
   }
 
@@ -343,11 +350,10 @@ export class OrderViewImportPortal {
       const totalItems = Number(
         (
           await dbSiger.$ExecuteQuery<{ total: string }>(
+            `select count(*) as total  from 01010s005.dev_pedido_v2 p
+            inner join 01010s005.dev_pedido_item i on i.nossoNumeroPedido = p.codigo
+            where ${whereNormalized}
             `
-        select count(*) as total from 01010s005.dev_pedido_v2 p
-          inner join 01010s005.dev_pedido_item i on p.codigo = i.nossoNumeroPedido 
-          where ${whereNormalized};
-        `
           )
         )[0].total
       );
@@ -355,14 +361,12 @@ export class OrderViewImportPortal {
       const totalPedidos = Number(
         (
           await dbSiger.$ExecuteQuery<{ total: string }>(
-            `
-            select count(*) as total from (
+            `select count(*) as total from (
               select count(*) as total from 01010s005.dev_pedido_v2 p
               inner join 01010s005.dev_pedido_item i on p.codigo = i.nossoNumeroPedido
               where ${whereNormalized}
               group by p.codigo 
-            ) as anality
-        `
+            ) as anality`
           )
         )[0].total
       );
