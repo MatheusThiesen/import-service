@@ -297,7 +297,7 @@ export class OrderViewImportPortal {
       (item) => item.position.toLowerCase() === "faturado"
     );
     const listFilterNadaFaturado = itemsOrder.filter(
-      (item) => item.position.toLowerCase() === "nada faturado"
+      (item) => item.position.toLowerCase() === "aguardando faturamento"
     );
     const listFilterCancelado = itemsOrder.filter(
       (item) => item.position.toLowerCase() === "cancelado"
@@ -335,8 +335,6 @@ export class OrderViewImportPortal {
 
   async SendOrder(itemsOrder: GetOrderItems[]) {
     const normalizedOrders = await this.onNormalized(itemsOrder);
-
-    console.log(normalizedOrders);
 
     await this.sendData.post("/order/importV2", normalizedOrders);
   }
