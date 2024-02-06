@@ -191,9 +191,7 @@ export class ProductImportCommerce {
 
   async execute({ search }: ExecuteServiceProps) {
     try {
-      const query = `marcaCod IN (10,20,1,24,23,2,26,400, 27 ) ${
-        search ? `AND ${search}` : ""
-      }`;
+      const query = search;
 
       const totalItems = await this.getProductsTotal({ search: query });
       const totalPages = Math.ceil(totalItems / this.pagesize);
