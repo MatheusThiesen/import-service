@@ -306,7 +306,7 @@ export class OrderViewImportPortal {
       (item) => item.currentOrderDetailPosition.toLowerCase() === "recusado"
     );
 
-    if (totalLength === listFilterRecusado.length) {
+    if (listFilterRecusado.length >= 1) {
       return "Recusado";
     }
 
