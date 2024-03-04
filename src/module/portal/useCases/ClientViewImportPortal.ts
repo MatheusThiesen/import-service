@@ -25,6 +25,7 @@ interface GetCliente {
   dda: number;
   suframa: string;
   ie: string;
+  dtUltimaCompra: Date;
   dtFundacao: Date;
   dtAlteracao: Date;
 }
@@ -69,51 +70,33 @@ export class ClientViewImportPortal {
   }
 
   async onNormalizedOrder(clients: GetCliente[]): Promise<SendClient[]> {
-    return Promise.all(
-      clients.map(async (client) => {
-        const lastOrderDate = await dbSiger.$ExecuteQuery<{
-          dtEntrada?: Date;
-        }>(`
-          select p.dtEntrada  from 01010s005.dev_pedido p
-          where p.clienteCod = ${client.clienteCod}
-          order by p.dtEntrada desc
-          limit 1;
-          `);
-
-        const dataUltimaCompra: Date | undefined =
-          lastOrderDate && lastOrderDate?.[0]?.dtEntrada
-            ? new Date(lastOrderDate?.[0]?.dtEntrada)
-            : undefined;
-
-        return {
-          codCliente: client.clienteCod,
-          conceitoCod: stringToNumber(client.conceitoCod),
-          cnpjCliente: this.normalizedCNPJ(String(client.cnpj)),
-          razaoSocialCliente: client.razaoSocial,
-          nomeFantasiaCliente: client.nomeFantasia,
-          emailCliente: client.email,
-          email2Cliente: client.email2,
-          telefoneCliente: String(client.telefone),
-          telefone2Cliente: String(client.telefone2),
-          celularCliente: String(client.celular),
-          cepCliente: String(client.cep),
-          ufCliente: client.uf,
-          cidadeCliente: client.cidade,
-          bairroCliente: client.bairro,
-          logradouroCliente: client.logradouro,
-          numeroLogradouroCliente: client.numero,
-          tipoCadastroCliente: client.tipo,
-          idGrupoCadCliente: String(client.grupoCadCod),
-          dataModificacaoCliente: client.dtAlteracao,
-          dataUltimaCompra: dataUltimaCompra,
-          situacaoCliente: String(client.ativo),
-          suframa: client.suframa,
-          ie: client.ie,
-          dtFundacao: client.dtFundacao,
-          ddaCliente: client.dda === 1 ? "Sim" : "Não",
-        };
-      })
-    );
+    return clients.map((client) => ({
+      codCliente: client.clienteCod,
+      conceitoCod: stringToNumber(client.conceitoCod),
+      cnpjCliente: this.normalizedCNPJ(String(client.cnpj)),
+      razaoSocialCliente: client.razaoSocial,
+      nomeFantasiaCliente: client.nomeFantasia,
+      emailCliente: client.email,
+      email2Cliente: client.email2,
+      telefoneCliente: String(client.telefone),
+      telefone2Cliente: String(client.telefone2),
+      celularCliente: String(client.celular),
+      cepCliente: String(client.cep),
+      ufCliente: client.uf,
+      cidadeCliente: client.cidade,
+      bairroCliente: client.bairro,
+      logradouroCliente: client.logradouro,
+      numeroLogradouroCliente: client.numero,
+      tipoCadastroCliente: client.tipo,
+      idGrupoCadCliente: String(client.grupoCadCod),
+      dataModificacaoCliente: client.dtAlteracao,
+      dataUltimaCompra: client.dtUltimaCompra,
+      situacaoCliente: String(client.ativo),
+      suframa: client.suframa,
+      ie: client.ie,
+      dtFundacao: client.dtFundacao,
+      ddaCliente: client.dda === 1 ? "Sim" : "Não",
+    }));
   }
 
   async sendClient(sellers: GetCliente[]) {
@@ -172,6 +155,7 @@ export class ClientViewImportPortal {
             c.conceitoCod,
             c.suframa,
             c.ie,
+            c.dtUltimaCompra,
             c.dtFundacao,
             c.dtAlteracao    
           from 01010s005.dev_cliente c 
