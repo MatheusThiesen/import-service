@@ -7,6 +7,7 @@ interface GetCliente {
   cnpj: string;
   razaoSocial: string;
   nomeFantasia: string;
+  encarregado: string;
   email: string;
   email2: string;
   celular: number;
@@ -35,6 +36,7 @@ interface SendClient {
   cnpjCliente: string;
   razaoSocialCliente: string;
   nomeFantasiaCliente: string;
+  encarregadoCliente: string;
   emailCliente: string;
   email2Cliente: string;
   telefoneCliente: string;
@@ -75,6 +77,7 @@ export class ClientViewImportPortal {
       conceitoCod: stringToNumber(client.conceitoCod),
       cnpjCliente: this.normalizedCNPJ(String(client.cnpj)),
       razaoSocialCliente: client.razaoSocial,
+      encarregadoCliente: client.encarregado,
       nomeFantasiaCliente: client.nomeFantasia,
       emailCliente: client.email,
       email2Cliente: client.email2,
@@ -137,6 +140,7 @@ export class ClientViewImportPortal {
             c.cnpj,
             c.razaoSocial,
             c.nomeFantasia,
+            c.encarregado,
             e.email,
             e.email2,
             c.celular,
