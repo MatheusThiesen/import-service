@@ -111,7 +111,9 @@ export class ClientViewImportPortal {
   async execute({ search }: { search?: string }) {
     try {
       const query =
-        "c.tipo = 'C' and c.grupoCadCod not in (9,10,26,28,32,33,34,35,36,39,40,41,48,49,58,59,77,78,84,85,93,100,105,106,118,119,999)";
+        "c.tipo = 'C' and c.grupoCadCod not in (9,10,26,28,32,33,34,35,36,39,40,41,48,49,58,59,77,78,84,85,93,100,105,118,119,999)";
+
+      // grupos adicionando 106
 
       const whereNormalized = search
         ? `where ${query}  and ${search}`

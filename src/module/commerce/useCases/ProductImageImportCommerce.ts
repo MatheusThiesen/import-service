@@ -16,7 +16,7 @@ export interface ItemPriceNormalized {
 }
 
 export class ProductImageImportCommerce {
-  readonly pagesize = 800;
+  readonly pagesize = 2000;
 
   constructor(private sendData: SendDataRepository) {}
 
