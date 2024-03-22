@@ -28,6 +28,7 @@ interface ProductRecibe {
   ncm: string;
   unidadeMedida: string;
   unidadeMedidaDesc: string;
+  imagemNome?: string;
 }
 
 export interface ProductNormalized {
@@ -66,22 +67,6 @@ export class ProductImportCommerce {
   ): Promise<ProductNormalized[]> {
     let normalizedProducts: ProductNormalized[] = [];
     for (const product of products) {
-      const getImagemPreview = await dbSiger.$ExecuteQuery<{
-        imagemNome: string;
-      }>(`
-      select i.imagemNome from 01010s005.DEV_PRODUTO_IMAGEM i
-      where i.produtoCod in (${product.codigo}) 
-      order by i.sequencia
-      limit 1
-    `);
-
-      const imagemPreview =
-        getImagemPreview &&
-        getImagemPreview[0] &&
-        getImagemPreview[0].imagemNome
-          ? this.removeExtension(getImagemPreview[0].imagemNome)
-          : undefined;
-
       normalizedProducts.push({
         cod: product.codigo,
         status:
@@ -108,7 +93,9 @@ export class ProductImportCommerce {
         ncm: product.ncm,
         unitMeasure: product.unidadeMedida,
         unitMeasureDesc: product.unidadeMedidaDesc,
-        imagemPreview,
+        imagemPreview: product?.imagemNome
+          ? this.removeExtension(product.imagemNome)
+          : undefined,
       });
     }
 
@@ -153,8 +140,16 @@ export class ProductImportCommerce {
         p.obs,
         p.ncm,
         p.unidadeMedida,
-        p.unidadeMedidaDesc
+        p.unidadeMedidaDesc,
+        i.imagemNome
       from 01010s005.dev_produto p 
+      LEFT JOIN (
+          SELECT 
+              produtoCod, 
+              imagemNome,
+              ROW_NUMBER() OVER(PARTITION BY produtoCod ORDER BY sequencia ASC) AS rn
+          FROM 01010s005.DEV_PRODUTO_IMAGEM
+      ) i ON p.codigo = i.produtoCod AND i.rn = 1
       ${whereNormalized}
       limit ${limit}
       offset ${offset}
