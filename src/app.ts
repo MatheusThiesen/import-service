@@ -164,6 +164,24 @@ export class App {
     });
   }
 
+  async fortyMinuteCron() {
+    cron.schedule("0 */45 * * * *", async () => {
+      try {
+        queue.push({
+          entity: "stockPromptDeliveryCommerce",
+          search: "(pe.qtdFisica - pe.qtdReservada) > 0",
+        });
+
+        queue.push({
+          entity: "stockFutureCommerce",
+          search: "c.saldo > 0",
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    });
+  }
+
   async oneDayCron() {
     cron.schedule(
       "0 0 1 * * *",
