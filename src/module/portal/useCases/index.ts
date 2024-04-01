@@ -11,6 +11,7 @@ import { EanViewImportPortal } from "./EanViewImportPortal";
 import { GridViewImportPortal } from "./GridViewImportPortal";
 import { HighlighterViewImportPortal } from "./HighlighterViewImportPortal";
 import { NoteOrderViewImportPortal } from "./NoteOrderViewImportPortal";
+import { OcViewImportPortal } from "./OcViewImportPortal";
 import { OrderViewImportPortal } from "./OrderViewImportPortal";
 import { RegisterGroupViewImportPortal } from "./RegisterGroupViewImportPortal";
 import { SellerViewImportPortal } from "./SellerViewImportPortal";
@@ -26,6 +27,7 @@ export const sellerViewImportPortal = new SellerViewImportPortal(sendData);
 export const clientViewImportPortal = new ClientViewImportPortal(sendData);
 export const billetViewImportPortal = new BilletViewImportPortal(sendData);
 export const conceptViewImportPortal = new ConceptViewImportPortal(sendData);
+export const ocViewImportPortal = new OcViewImportPortal(sendData);
 export const noteOrderViewImportPortal = new NoteOrderViewImportPortal(
   sendData
 );

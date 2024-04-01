@@ -59,6 +59,11 @@ export class Portal {
         });
 
         queue.push({
+          entity: "ocViewImportPortal",
+          search: `${this.queryBuilderUpdateTime("oc", 1, 10)} `,
+        });
+
+        queue.push({
           search: `${this.queryBuilderUpdateTime("n", 1)} `,
           entity: "noteOrderViewImportPortal",
         });
@@ -161,6 +166,11 @@ export class Portal {
           search: `${this.queryBuilderUpdateTime("n", 10)} `,
           entity: "noteOrderViewImportPortal",
         });
+
+        queue.push({
+          entity: "ocViewImportPortal",
+          search: `${this.queryBuilderUpdateTime("oc", 10)} `,
+        });
       } catch (error) {
         console.log(error);
       }
@@ -171,7 +181,6 @@ export class Portal {
     try {
       // console.time()
       // console.timeEnd()
-
       await Promise.all([
         serverPortal.execute(),
         this.fiveMinuteCron(),

@@ -35,6 +35,7 @@ import {
   gridViewImportPortal,
   highlighterViewImportPortal,
   noteOrderViewImportPortal,
+  ocViewImportPortal,
   orderViewImportPortal,
   registerGroupViewImportPortal,
   sellerViewImportPortal,
@@ -45,6 +46,9 @@ import { Task } from "./";
 
 export async function worker(arg: Task, cb: done) {
   switch (arg.entity) {
+    case "ocViewImportPortal":
+      await ocViewImportPortal.execute({ search: arg.search });
+      break;
     case "walletSellerClientsViewImportPortal":
       await walletSellerClientsViewImportPortal.execute({ search: arg.search });
       break;
