@@ -36,6 +36,7 @@ import {
   highlighterViewImportPortal,
   noteOrderViewImportPortal,
   ocViewImportPortal,
+  orderNotInternalCodeViewImportPortal,
   orderViewImportPortal,
   registerGroupViewImportPortal,
   sellerViewImportPortal,
@@ -63,6 +64,11 @@ export async function worker(arg: Task, cb: done) {
       break;
     case "orderViewImportPortal":
       await orderViewImportPortal.execute({ search: arg.search });
+      break;
+    case "orderNotInternalCodeViewImportPortal":
+      await orderNotInternalCodeViewImportPortal.execute({
+        search: arg.search,
+      });
       break;
     case "billetViewImportPortal":
       await billetViewImportPortal.execute({ search: arg.search });

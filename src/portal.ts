@@ -32,6 +32,10 @@ export class Portal {
           search: `${this.queryBuilderUpdateTime("i", 1, 10)}`,
           entity: "orderViewImportPortal",
         });
+        queue.push({
+          search: `${this.queryBuilderUpdateTime("i", 1, 10)}`,
+          entity: "orderNotInternalCodeViewImportPortal",
+        });
 
         queue.push({
           search: `${this.queryBuilderUpdateTime("m", 1, 10)}`,
@@ -131,6 +135,9 @@ export class Portal {
       try {
         queue.push({
           entity: "orderViewImportPortal",
+        });
+        queue.push({
+          entity: "orderNotInternalCodeViewImportPortal",
         });
         queue.push({
           entity: "brandViewImportPortal",

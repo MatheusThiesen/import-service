@@ -12,6 +12,7 @@ import { GridViewImportPortal } from "./GridViewImportPortal";
 import { HighlighterViewImportPortal } from "./HighlighterViewImportPortal";
 import { NoteOrderViewImportPortal } from "./NoteOrderViewImportPortal";
 import { OcViewImportPortal } from "./OcViewImportPortal";
+import { OrderNotInternalCodeViewImportPortal } from "./OrderNotInternalCodeViewImportPortal";
 import { OrderViewImportPortal } from "./OrderViewImportPortal";
 import { RegisterGroupViewImportPortal } from "./RegisterGroupViewImportPortal";
 import { SellerViewImportPortal } from "./SellerViewImportPortal";
@@ -20,6 +21,8 @@ import { WalletSellerClientsViewImportPortal } from "./WalletSellerClientsViewIm
 export const authorization = new AuthorizationRepository();
 export const sendData = new SendData(authorization);
 export const orderViewImportPortal = new OrderViewImportPortal(sendData);
+export const orderNotInternalCodeViewImportPortal =
+  new OrderNotInternalCodeViewImportPortal(sendData);
 export const eanViewImportPortal = new EanViewImportPortal(sendData);
 export const gridViewImportPortal = new GridViewImportPortal(sendData);
 export const brandViewImportPortal = new BrandViewImportPortal(sendData);

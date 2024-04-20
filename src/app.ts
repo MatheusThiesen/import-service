@@ -158,6 +158,14 @@ export class App {
           entity: "billetImportCommerce",
           search: `${this.queryBuilderUpdateTime("t", 1)}`,
         });
+        queue.push({
+          entity: "stockPromptDeliveryCommerce",
+          search: "(pe.qtdFisica - pe.qtdReservada) > 0",
+        });
+        queue.push({
+          entity: "stockFutureCommerce",
+          search: "c.saldo > 0",
+        });
       } catch (error) {
         console.log(error);
       }
@@ -273,6 +281,76 @@ export class App {
         this.thirtyMinuteCron(),
         this.oneDayCron(),
       ]);
+
+      queue.push({
+        entity: "stockPromptDeliveryCommerce",
+        search: "(pe.qtdFisica - pe.qtdReservada) > 0",
+      });
+      queue.push({
+        entity: "stockFutureCommerce",
+        search: "c.saldo > 0",
+      });
+      queue.push({
+        entity: "sellerImportCommerce",
+      });
+      queue.push({
+        entity: "conceptImportCommerce",
+      });
+      queue.push({
+        entity: "brandImportCommerce",
+      });
+      queue.push({
+        entity: "collectionImportCommerce",
+      });
+      queue.push({
+        entity: "colorImportCommerce",
+      });
+      queue.push({
+        entity: "groupImportCommerce",
+      });
+      queue.push({
+        entity: "lineImportCommerce",
+      });
+      queue.push({
+        entity: "subGroupImportCommerce",
+      });
+      queue.push({
+        entity: "branchActivistsImportCommerce",
+      });
+      queue.push({
+        entity: "billetImportCommerce",
+      });
+      queue.push({
+        entity: "billingLocationImportCommerce",
+      });
+      queue.push({
+        entity: "tablePriceImportCommerce",
+      });
+      queue.push({
+        entity: "paymentConditionImportCommerce",
+      });
+      queue.push({
+        entity: "clientImportCommerce",
+      });
+      queue.push({
+        entity: "walletSellerClientImportCommerce",
+      });
+      queue.push({
+        entity: "listPriceImportCommerce",
+        search: `${this.queryBuilderUpdateTime("l", 10)}`,
+      });
+      queue.push({
+        entity: "productImportCommerce",
+        search: `${this.queryBuilderUpdateTime("p", 10)}`,
+      });
+      queue.push({
+        entity: "productImageImportCommerce",
+        search: `${this.queryBuilderUpdateTime("i", 10)}`,
+      });
+      queue.push({
+        entity: "orderImportCommerce",
+        search: `${this.queryBuilderUpdateTime("p", 10)}`,
+      });
     } catch (err) {
       console.log("error!");
       console.log(err);
