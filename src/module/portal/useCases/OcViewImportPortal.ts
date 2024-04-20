@@ -76,7 +76,7 @@ export class OcViewImportPortal {
 
   async execute({ search }: { search?: string }) {
     try {
-      const whereNormalized = search ? `where ${search}` : undefined;
+      const whereNormalized = search ? `where ${search}` : "";
 
       const totalItems = Number(
         (
