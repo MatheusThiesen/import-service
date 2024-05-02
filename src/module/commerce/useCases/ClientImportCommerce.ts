@@ -33,7 +33,7 @@ export interface IClientNormalized {
 }
 
 export class ClientImportCommerce {
-  readonly pagesize = 200;
+  readonly pagesize = 1600;
 
   constructor(private sendData: SendDataRepository) {}
 
@@ -41,10 +41,33 @@ export class ClientImportCommerce {
     const normalized: IClientNormalized[] = [];
 
     for (const client of clients) {
+      let obs;
+      let emails;
+      try {
+        emails = await entities.clientEmail.findOne({
+          fields: {
+            clienteCod: true,
+            email: true,
+            email2: true,
+          },
+          search: `e.clienteCod = ${client.clienteCod}`,
+        });
+      } catch (error) {}
+      try {
+        obs = await entities.clientObs.findOne({
+          search: `o.clienteCod = ${client.clienteCod}`,
+          fields: {
+            clienteCod: true,
+            observacoes: true,
+            observacoesRestritas: true,
+          },
+        });
+      } catch (error) {}
+
       const normalizedClient: IClientNormalized = {
         codigo: client.clienteCod,
-        obs: ``,
-        obsRestrita: ``,
+        obs: obs?.observacoes,
+        obsRestrita: obs?.observacoesRestritas,
         cnpj: ("00000000000000" + numberToString(client.cnpj)).slice(-14),
         credito: stringToNumber(client.credito),
         razaoSocial: client.razaoSocial,
@@ -53,8 +76,8 @@ export class ClientImportCommerce {
         celular: numberToString(client.celular),
         telefone: numberToString(client.telefone),
         telefone2: numberToString(client.telefone2),
-        email: null,
-        email2: null,
+        email: emails?.email,
+        email2: emails?.email2,
         eAtivo: stringToNumber(client.ativo),
         uf: client.uf,
         cidadeIbgeCod: stringToNumber(client.cidadeIbgeCod),
@@ -67,39 +90,6 @@ export class ClientImportCommerce {
         ramoAtividadeCodigo: stringToNumber(client.grupoCadCod),
         conceitoCodigo: stringToNumber(client.conceitoCod),
       };
-
-      entities.clientObs
-        .findOne({
-          search: `o.clienteCod = ${client.clienteCod}`,
-          fields: {
-            clienteCod: true,
-            observacoes: true,
-            observacoesRestritas: true,
-          },
-        })
-        .then((clientObsResponse) => {
-          if (clientObsResponse) {
-            normalizedClient.obs = clientObsResponse.observacoes;
-            normalizedClient.obsRestrita =
-              clientObsResponse.observacoesRestritas;
-          }
-        });
-
-      entities.clientEmail
-        .findOne({
-          fields: {
-            clienteCod: true,
-            email: true,
-            email2: true,
-          },
-          search: `e.clienteCod = ${client.clienteCod}`,
-        })
-        .then((clientEmailResponse) => {
-          if (clientEmailResponse) {
-            normalizedClient.email = clientEmailResponse.email;
-            normalizedClient.email2 = clientEmailResponse.email2;
-          }
-        });
 
       normalized.push(normalizedClient);
     }
