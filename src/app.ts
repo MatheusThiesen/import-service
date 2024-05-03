@@ -2,7 +2,6 @@ import "dotenv/config";
 import * as cron from "node-cron";
 
 import { getFormatDate } from "./helpers/getFormatDate";
-import { observableFolder } from "./module/observableFolder";
 import { queue } from "./queue";
 
 export class App {
@@ -269,7 +268,6 @@ export class App {
   async execute() {
     try {
       await Promise.all([
-        observableFolder(),
         this.threeMinuteCron(),
         this.tenMinuteCron(),
         this.thirtyMinuteCron(),
