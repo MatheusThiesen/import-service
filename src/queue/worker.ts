@@ -26,6 +26,7 @@ import {
   walletSellerClientImportCommerce,
 } from "../module/commerce/useCases";
 import {
+  accessSellerNextdataViewImportPortal,
   billetViewImportPortal,
   brandViewImportPortal,
   brandsToSellerViewImportPortal,
@@ -47,6 +48,11 @@ import { Task } from "./";
 
 export async function worker(arg: Task, cb: done) {
   switch (arg.entity) {
+    case "accessSellerNextdataViewImportPortal":
+      await accessSellerNextdataViewImportPortal.execute({
+        search: arg.search,
+      });
+      break;
     case "ocViewImportPortal":
       await ocViewImportPortal.execute({ search: arg.search });
       break;

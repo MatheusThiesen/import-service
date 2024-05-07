@@ -1,6 +1,7 @@
 // import { AuthorizationRepository } from "../repositories/Authorization";
 import { AuthorizationRepository } from "../repositories/Authorization";
 import { SendData } from "../repositories/SendData";
+import { AccessSellerNextdataViewImportPortal } from "./AccessSellerNextdataViewImportPortal";
 import { ServerPortal } from "./ApiPortal";
 import { BilletViewImportPortal } from "./BilletViewImportPortal";
 import { BrandViewImportPortal } from "./BrandViewImportPortal";
@@ -44,5 +45,8 @@ export const highlighterViewImportPortal = new HighlighterViewImportPortal(
 );
 export const walletSellerClientsViewImportPortal =
   new WalletSellerClientsViewImportPortal(sendData);
+
+export const accessSellerNextdataViewImportPortal: AccessSellerNextdataViewImportPortal =
+  new AccessSellerNextdataViewImportPortal(sendData);
 
 export const serverPortal = new ServerPortal();

@@ -29,6 +29,10 @@ export class Portal {
     cron.schedule("0 */10 * * * *", async () => {
       try {
         queue.push({
+          entity: "accessSellerNextdataViewImportPortal",
+        });
+
+        queue.push({
           search: `${this.queryBuilderUpdateTime("i", 1, 10)}`,
           entity: "orderViewImportPortal",
         });
