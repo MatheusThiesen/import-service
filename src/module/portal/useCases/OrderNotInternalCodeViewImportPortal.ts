@@ -341,7 +341,11 @@ export class OrderNotInternalCodeViewImportPortal {
 
   async execute({ search }: { search?: string }) {
     try {
-      const query = `p.sigemp = '018' and p.codigo not in (
+      const query = `p.codigo not in (
+        select c.pedidoCod
+        from 01010s005.dev_pedido_motivo_cancelamento c
+        where  c.motivo = 107
+      ) and p.codigo not in (
         select distinct p.codigo from 01010s005.dev_pedido_v2 p
         inner join 01010s005.dev_pedido_item i on i.nossoNumeroPedido = p.codigo
       ) 

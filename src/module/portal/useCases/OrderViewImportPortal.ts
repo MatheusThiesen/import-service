@@ -342,8 +342,16 @@ export class OrderViewImportPortal {
   async execute({ search }: { search?: string }) {
     try {
       const whereNormalized = search
-        ? `${search} and p.sigemp = '018'`
-        : `p.sigemp = '018'`;
+        ? `${search} and p.codigo not in (
+          select c.pedidoCod
+          from 01010s005.dev_pedido_motivo_cancelamento c
+          where  c.motivo = 107
+        )`
+        : `p.codigo not in (
+          select c.pedidoCod
+          from 01010s005.dev_pedido_motivo_cancelamento c
+          where  c.motivo = 107
+        )`;
 
       const totalItems = Number(
         (
