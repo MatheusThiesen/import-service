@@ -345,12 +345,12 @@ export class OrderViewImportPortal {
         ? `${search} and p.codigo not in (
           select c.pedidoCod
           from 01010s005.dev_pedido_motivo_cancelamento c
-          where  c.motivo = 107
+          where  c.motivo <> 107
         )`
         : `p.codigo not in (
           select c.pedidoCod
           from 01010s005.dev_pedido_motivo_cancelamento c
-          where  c.motivo = 107
+          where  c.motivo <> 107
         )`;
 
       const totalItems = Number(
