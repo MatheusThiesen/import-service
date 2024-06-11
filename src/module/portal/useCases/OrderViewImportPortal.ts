@@ -341,14 +341,14 @@ export class OrderViewImportPortal {
 
   async execute({ search }: { search?: string }) {
     try {
-      const whereNormalized = search ? `${search}` : ``;
+      const whereNormalized = search ? `where ${search}` : ``;
 
       const totalItems = Number(
         (
           await dbSiger.$ExecuteQuery<{ total: string }>(
             `select count(*) as total  from 01010s005.dev_pedido_v2 p
             inner join 01010s005.dev_pedido_item i on i.nossoNumeroPedido = p.codigo
-            where ${whereNormalized}
+            ${whereNormalized}
             `
           )
         )[0].total
@@ -360,7 +360,7 @@ export class OrderViewImportPortal {
             `select count(*) as total from (
               select count(*) as total from 01010s005.dev_pedido_v2 p
               inner join 01010s005.dev_pedido_item i on p.codigo = i.nossoNumeroPedido
-              where ${whereNormalized}
+             ${whereNormalized}
               group by p.codigo 
             ) as anality`
           )
@@ -381,7 +381,7 @@ export class OrderViewImportPortal {
           }>(`
             select p.codigo from 01010s005.dev_pedido_v2 p
             inner join 01010s005.dev_pedido_item i on p.codigo = i.nossoNumeroPedido
-            where ${whereNormalized}
+            ${whereNormalized}
             group by p.codigo 
             order by p.codigo desc
             limit ${limit}
