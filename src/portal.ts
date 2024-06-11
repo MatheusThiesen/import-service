@@ -144,6 +144,12 @@ export class Portal {
           entity: "orderNotInternalCodeViewImportPortal",
         });
         queue.push({
+          entity: "orderViewImportPortalOnly018",
+        });
+        queue.push({
+          entity: "orderNotInternalCodeViewImportPortalOnly018",
+        });
+        queue.push({
           entity: "brandViewImportPortal",
         });
         queue.push({
@@ -190,8 +196,6 @@ export class Portal {
 
   async execute() {
     try {
-      // console.time()
-      // console.timeEnd()
       await Promise.all([
         serverPortal.execute(),
         this.fiveMinuteCron(),

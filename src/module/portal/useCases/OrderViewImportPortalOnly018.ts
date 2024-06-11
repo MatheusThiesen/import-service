@@ -1,11 +1,11 @@
 import { diffDates } from "../../../helpers/diffDates";
 import { groupByObject } from "../../../helpers/groupByObject";
+import { dbSiger } from "../../../service/dbSiger";
 import {
   HighlightersOrder,
   HighlightersOrderFields,
-} from "../../../module/entities/model/HighlightersOrder";
-import { entities } from "../../../module/entities/useCases";
-import { dbSiger } from "../../../service/dbSiger";
+} from "../../entities/model/HighlightersOrder";
+import { entities } from "../../entities/useCases";
 import { SendData } from "../repositories/SendData";
 
 interface GetOrderItems {
@@ -106,7 +106,7 @@ interface ProductOrder {
   highlighterTag: string[];
 }
 
-export class OrderViewImportPortal {
+export class OrderViewImportPortalOnly018 {
   readonly pageSize = 1000;
   constructor(private sendData: SendData) {}
 
@@ -214,7 +214,7 @@ export class OrderViewImportPortal {
           descricao: string;
         }>(`
           select c.motivo,c.descricao
-          from 01010s005.dev_pedido_motivo_cancelamento c 
+          from 01010s005.dev_pedido_motivo_cancelamento_018 c 
           where c.pedidoCod = ${itemOrder.pedidoAtualCod} 
           limit 1
         `);
@@ -341,13 +341,23 @@ export class OrderViewImportPortal {
 
   async execute({ search }: { search?: string }) {
     try {
-      const whereNormalized = search ? `${search}` : ``;
+      const whereNormalized = search
+        ? `${search} and p.codigo not in (
+          select c.pedidoCod
+          from 01010s005.dev_pedido_motivo_cancelamento_018 c
+          where  c.motivo <> 107
+        )`
+        : `p.codigo not in (
+          select c.pedidoCod
+          from 01010s005.dev_pedido_motivo_cancelamento_018 c
+          where  c.motivo <> 107
+        )`;
 
       const totalItems = Number(
         (
           await dbSiger.$ExecuteQuery<{ total: string }>(
-            `select count(*) as total  from 01010s005.dev_pedido_v2 p
-            inner join 01010s005.dev_pedido_item i on i.nossoNumeroPedido = p.codigo
+            `select count(*) as total  from 01010s005.dev_pedido_018 p
+            inner join 01010s005.dev_pedido_item_018 i on i.nossoNumeroPedido = p.codigo
             where ${whereNormalized}
             `
           )
@@ -358,8 +368,8 @@ export class OrderViewImportPortal {
         (
           await dbSiger.$ExecuteQuery<{ total: string }>(
             `select count(*) as total from (
-              select count(*) as total from 01010s005.dev_pedido_v2 p
-              inner join 01010s005.dev_pedido_item i on p.codigo = i.nossoNumeroPedido
+              select count(*) as total from 01010s005.dev_pedido_018 p
+              inner join 01010s005.dev_pedido_item_018 i on p.codigo = i.nossoNumeroPedido
               where ${whereNormalized}
               group by p.codigo 
             ) as anality`
@@ -379,8 +389,8 @@ export class OrderViewImportPortal {
           const listOrdersCod = await dbSiger.$ExecuteQuery<{
             codigo: number;
           }>(`
-            select p.codigo from 01010s005.dev_pedido_v2 p
-            inner join 01010s005.dev_pedido_item i on p.codigo = i.nossoNumeroPedido
+            select p.codigo from 01010s005.dev_pedido_018 p
+            inner join 01010s005.dev_pedido_item_018 i on p.codigo = i.nossoNumeroPedido
             where ${whereNormalized}
             group by p.codigo 
             order by p.codigo desc
@@ -431,8 +441,8 @@ export class OrderViewImportPortal {
 
               i.dtAlteracao
                 
-            from 01010s005.dev_pedido_item i
-            inner join 01010s005.dev_pedido_v2 p on p.codigo = i.nossoNumeroPedido and p.sigemp = i.sigemp
+            from 01010s005.dev_pedido_item_018 i
+            inner join 01010s005.dev_pedido_018 p on p.codigo = i.nossoNumeroPedido and p.sigemp = i.sigemp
               
             where  p.codigo in (${listOrdersCod
               .map((item) => item.codigo)

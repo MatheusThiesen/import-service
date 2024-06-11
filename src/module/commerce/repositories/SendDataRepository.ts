@@ -14,8 +14,6 @@ export class SendDataRepository {
   constructor(private authorizationRepository: AuthorizationRepository) {}
 
   generateRandomString(num: number) {
-    const characters =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     let result1 = Math.random().toString(36).substring(0, num);
 
     return result1;
@@ -36,7 +34,10 @@ export class SendDataRepository {
           this.token = getToken.token;
         }
 
-        for (const content of splitArrObj(data, 800)) {
+        for (const content of splitArrObj(
+          data,
+          pathUrl.startsWith("/clients-to-sellers/import/") ? 99999 : 800
+        )) {
           offset += content.length;
 
           const filename = path.resolve(

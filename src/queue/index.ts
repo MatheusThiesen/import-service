@@ -9,6 +9,9 @@ export type Task = {
   entity:
     | "accessSellerNextdataViewImportPortal"
     | "orderNotInternalCodeViewImportPortal"
+    | "orderViewImportPortal"
+    | "orderNotInternalCodeViewImportPortalOnly018"
+    | "orderViewImportPortalOnly018"
     | "ocViewImportPortal"
     | "walletSellerClientsViewImportPortal"
     | "highlighterViewImportPortal"
@@ -17,7 +20,6 @@ export type Task = {
     | "billetViewImportPortal"
     | "brandViewImportPortal"
     | "clientViewImportPortal"
-    | "orderViewImportPortal"
     | "brandsToSellerViewImportPortal"
     | "eanViewImportPortal"
     | "gridViewImportPortal"

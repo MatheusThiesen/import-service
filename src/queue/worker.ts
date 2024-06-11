@@ -38,7 +38,9 @@ import {
   noteOrderViewImportPortal,
   ocViewImportPortal,
   orderNotInternalCodeViewImportPortal,
+  orderNotInternalCodeViewImportPortalOnly018,
   orderViewImportPortal,
+  orderViewImportPortalOnly018,
   registerGroupViewImportPortal,
   sellerViewImportPortal,
   walletSellerClientsViewImportPortal,
@@ -73,6 +75,14 @@ export async function worker(arg: Task, cb: done) {
       break;
     case "orderNotInternalCodeViewImportPortal":
       await orderNotInternalCodeViewImportPortal.execute({
+        search: arg.search,
+      });
+      break;
+    case "orderViewImportPortalOnly018":
+      await orderViewImportPortalOnly018.execute({ search: arg.search });
+      break;
+    case "orderNotInternalCodeViewImportPortalOnly018":
+      await orderNotInternalCodeViewImportPortalOnly018.execute({
         search: arg.search,
       });
       break;
