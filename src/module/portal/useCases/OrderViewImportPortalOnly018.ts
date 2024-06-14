@@ -141,7 +141,7 @@ export class OrderViewImportPortalOnly018 {
       representanteCod: number;
     }>(`
       select rep.representanteCod 
-      from 01010s005.dev_pedido_rep rep 
+      from 01010s005.dev_pedido_rep_018 rep 
       where rep.pedidoCod = ${order.pedidoCod} and rep.tipoRep = 1 
       limit 1
     `);
@@ -150,7 +150,7 @@ export class OrderViewImportPortalOnly018 {
       representanteCod: number;
     }>(`
       select rep.representanteCod 
-      from 01010s005.dev_pedido_rep rep 
+      from 01010s005.dev_pedido_rep_018 rep 
       where rep.pedidoCod = ${order.pedidoCod} and rep.tipoRep = 2
       limit 1
     `);
