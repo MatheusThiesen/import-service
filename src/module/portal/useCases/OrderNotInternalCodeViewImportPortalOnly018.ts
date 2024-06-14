@@ -344,7 +344,7 @@ export class OrderNotInternalCodeViewImportPortalOnly018 {
       const query = `p.codigo not in (
         select c.pedidoCod
         from 01010s005.dev_pedido_motivo_cancelamento_018 c
-        where  c.motivo <> 107
+        where  c.motivo = 107
       ) and p.codigo not in (
         select distinct p.codigo from 01010s005.dev_pedido_018 p
         inner join 01010s005.dev_pedido_item_018 i on i.nossoNumeroPedido = p.codigo
