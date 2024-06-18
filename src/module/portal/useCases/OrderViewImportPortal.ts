@@ -43,6 +43,7 @@ interface GetOrderItems {
   produtoDescricaoComplementar: string;
   produtoReferencia: string;
   unidadeEstoque: string;
+  dtFaturamentoPedidoAtual: Date;
   gradeCod: number;
   gradeDescricao: string;
   corUmDescricao: string;
@@ -82,6 +83,7 @@ interface ProductOrder {
 
   currentOrderCod: number;
   currentOrderDetailPosition: string;
+  currentInvoiceDate: Date;
 
   description: string;
   position: string;
@@ -179,7 +181,10 @@ export class OrderViewImportPortal {
 
       // Setar no item valores abaixo
       // valueST: order.vlrIcmsSt ? Number(order.vlrIcmsSt) : undefined,
-      noteValue: 0,
+      noteValue: itemsOrder.reduce(
+        (previousValue, currentValue) => currentValue.total + previousValue,
+        0
+      ),
     };
   }
 
@@ -278,6 +283,7 @@ export class OrderViewImportPortal {
           cancellationReason:
             motivoCancelamentoResponse?.[0]?.descricao || undefined,
           highlighterTag,
+          currentInvoiceDate: new Date(itemOrder.dtFaturamentoPedidoAtual),
         };
       })
     );
@@ -428,6 +434,7 @@ export class OrderViewImportPortal {
               i.origemCod,i.origemDescricao,
               i.posicaoCodPedidoAtual,i.posicaoDescPedidoAtual,
               i.posicaoDetalhadaCodPedidoAtual,i.posicaoDetalhadaDescPedidoAtual,
+              i.dtFaturamento as "dtFaturamentoPedidoAtual",
 
               i.dtAlteracao
                 
