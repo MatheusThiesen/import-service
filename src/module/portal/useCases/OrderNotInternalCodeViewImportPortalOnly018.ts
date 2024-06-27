@@ -199,7 +199,7 @@ export class OrderNotInternalCodeViewImportPortalOnly018 {
             numeroNota: number;
           }>(`
               select  n.numeroNota
-              from 01010s005.dev_pedido_nota n 
+              from 01010s005.dev_pedido_nota_018 n 
               where n.pedidoCod = ${itemOrder.pedidoAtualCod} 
               limit 1
             `);

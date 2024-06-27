@@ -68,7 +68,11 @@ export class Portal {
 
         queue.push({
           entity: "ocViewImportPortal",
-          search: `${this.queryBuilderUpdateTime("oc", 1, 10)} `,
+          search: `oc.produtoCod in (select distinct p.codigo  from 01010s005.dev_produto p where ${this.queryBuilderUpdateTime(
+            "p",
+            1,
+            10
+          )} ) OR ${this.queryBuilderUpdateTime("oc", 1, 10)}`,
         });
 
         queue.push({
@@ -171,10 +175,12 @@ export class Portal {
           entity: "registerGroupViewImportPortal",
         });
         queue.push({
+          entity: "ocViewImportPortal",
+        });
+        queue.push({
           search: `${this.queryBuilderUpdateTime("cr", 3)}`,
           entity: "walletSellerClientsViewImportPortal",
         });
-
         queue.push({
           search: `${this.queryBuilderUpdateTime("e", 3)} `,
           entity: "eanViewImportPortal",
@@ -182,11 +188,6 @@ export class Portal {
         queue.push({
           search: `${this.queryBuilderUpdateTime("n", 10)} `,
           entity: "noteOrderViewImportPortal",
-        });
-
-        queue.push({
-          entity: "ocViewImportPortal",
-          search: `${this.queryBuilderUpdateTime("oc", 10)} `,
         });
       } catch (error) {
         console.log(error);
