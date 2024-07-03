@@ -2,6 +2,7 @@ import { dbSiger } from "../../../service/dbSiger";
 import { SendData } from "../repositories/SendData";
 
 interface GetBillet {
+  sigemp: string;
   clienteCod: number;
   representanteCod: number;
   numero: number;
@@ -49,6 +50,7 @@ export class BilletViewImportPortal {
 
   async onNormalized(billets: GetBillet[]): Promise<SendBillet[]> {
     return billets.map((billet) => ({
+      organization: billet.sigemp,
       codClienteBoleto: billet.clienteCod,
       codRepresentanteBoleto: billet.representanteCod,
       numeroDocumentoBoleto: billet.numero.toString(),
@@ -102,6 +104,7 @@ export class BilletViewImportPortal {
         const billets = await dbSiger.$ExecuteQuery<GetBillet>(
           `
           select  
+            t.sigemp,
             t.clienteCod,
             t.representanteCod,
             t.numero,
