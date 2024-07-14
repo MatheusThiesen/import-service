@@ -4,47 +4,45 @@ import { ExecuteServiceProps } from "../types/ExecuteService";
 
 interface WalletSellerClientNormalized {
   clienteCod: number;
-  sellerCod: number;
-  tipo: number;
 }
 
 export class WalletSellerClientImportCommerce {
-  readonly pagesize = 1600;
-
   constructor(private sendData: SendDataRepository) {}
 
   async execute({ search }: ExecuteServiceProps) {
     try {
-      const totalClient = await entities.linkClientSeller.count({
-        search: search,
+      const sellers = await entities.seller.findAll({
+        fields: {
+          representanteCod: true,
+        },
+        search,
+        pagesize: 99999,
       });
-      const totalPages = Math.ceil(totalClient / this.pagesize);
 
-      for (let index = 0; index < totalPages; index++) {
-        const page = index;
+      console.log(search);
 
-        const walletsClientsSellers = await entities.linkClientSeller.findAll({
-          fields: {
-            representanteCod: true,
-            clienteCod: true,
-            tipo: true,
-          },
-          search,
-          page: page,
-          pagesize: this.pagesize,
-        });
+      for (const seller of sellers) {
+        try {
+          const walletsClientsSellers = await entities.linkClientSeller.findAll(
+            {
+              fields: {
+                clienteCod: true,
+              },
+              search: `representanteCod in (${seller.representanteCod})`,
+              pagesize: 99999,
+            }
+          );
 
-        const walletsClientsSellersNormalized: WalletSellerClientNormalized[] =
-          walletsClientsSellers.map((brand) => ({
-            clienteCod: brand.clienteCod,
-            sellerCod: brand.representanteCod,
-            tipo: brand.tipo,
-          }));
+          const walletsClientsSellersNormalized: WalletSellerClientNormalized[] =
+            walletsClientsSellers.map((brand) => ({
+              clienteCod: brand.clienteCod,
+            }));
 
-        await this.sendData.post(
-          "/clients-to-sellers/import",
-          walletsClientsSellersNormalized
-        );
+          await this.sendData.post(
+            `/clients-to-sellers/import/${seller.representanteCod}`,
+            walletsClientsSellersNormalized
+          );
+        } catch (error) {}
       }
     } catch (error) {
       console.log("[WALLET-SELLER-CLIENTS][ERRO]");
