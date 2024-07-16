@@ -24,6 +24,44 @@ export class SendDataRepository {
     this.token = responseAuthorization.token;
   }
 
+  async sendData(pathUrl, data: any[]) {
+    const filename = path.resolve(
+      __filename,
+      "..",
+      "..",
+      "..",
+      "..",
+      "..",
+      "temp",
+      this.generateRandomString(18) + ".csv"
+    );
+    await csv.createFile(filename, data);
+
+    const file = new FormData();
+    file.append("file", serviceFile.readStream(filename) as any);
+
+    apiCommerce({
+      method: "get",
+      url: "/auth/me",
+      headers: {
+        ["Authorization"]: `Bearer ${this.token}`,
+      },
+    })
+      .then(() => null)
+      .catch(async () => await this.refreshToken());
+
+    await apiCommerce({
+      method: "post",
+      url: pathUrl,
+      headers: {
+        ["Authorization"]: `Bearer ${this.token}`,
+      },
+      data: file,
+    });
+
+    await serviceFile.delete(filename);
+  }
+
   async post(pathUrl: string, data: any[]) {
     try {
       if (data.length > 0) {
@@ -40,54 +78,12 @@ export class SendDataRepository {
         )) {
           offset += content.length;
 
-          const filename = path.resolve(
-            __filename,
-            "..",
-            "..",
-            "..",
-            "..",
-            "..",
-            "temp",
-            this.generateRandomString(18) + ".csv"
-          );
-          await csv.createFile(filename, content);
-
-          const file = new FormData();
-          file.append("file", serviceFile.readStream(filename) as any);
-
-          apiCommerce({
-            method: "get",
-            url: "/auth/me",
-            headers: {
-              ["Authorization"]: `Bearer ${this.token}`,
-            },
-          })
-            .then(() => null)
-            .catch(async () => await this.refreshToken());
-
-          await apiCommerce({
-            method: "post",
-            url: pathUrl,
-            headers: {
-              ["Authorization"]: `Bearer ${this.token}`,
-            },
-            data: file,
-          });
-
-          await serviceFile.delete(filename);
-
-          console.log(
-            `IMPORTADOS ${offset} DE ${
-              data.length
-            } para "${pathUrl}" - ${new Date().toLocaleString("pt-br", {
-              hour: "2-digit",
-              minute: "2-digit",
-              second: "2-digit",
-              day: "2-digit",
-              month: "2-digit",
-              year: "numeric",
-            })}`
-          );
+          try {
+            await this.sendData(pathUrl, data);
+          } catch (error) {
+            await this.refreshToken();
+            await this.sendData(pathUrl, data);
+          }
         }
 
         console.log(
@@ -106,12 +102,6 @@ export class SendDataRepository {
     } catch (error) {
       const err: AxiosError = error;
       console.log(error);
-
-      if (err?.response?.status > 401) {
-        console.log(error);
-
-        throw Error(error);
-      }
 
       if (this.isRefreshing) {
         this.isRefreshing = false;
