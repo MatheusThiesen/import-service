@@ -21,17 +21,21 @@ export class AuthorizationRepository {
   }
 
   async singIn() {
-    const response = await apiCommerce.post<IResponseSingIn>(`/auth/signin`, {
-      email: this.email,
-      senha: this.password,
-    });
+    try {
+      const response = await apiCommerce.post<IResponseSingIn>(`/auth/signin`, {
+        email: this.email,
+        senha: this.password,
+      });
 
-    const { access_token } = response.data;
+      const { access_token } = response.data;
 
-    this.token = access_token;
+      this.token = access_token;
 
-    return {
-      token: access_token,
-    };
+      return {
+        token: access_token,
+      };
+    } catch (error) {
+      return null;
+    }
   }
 }

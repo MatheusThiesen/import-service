@@ -81,7 +81,8 @@ export class SendDataRepository {
           try {
             await this.sendData(pathUrl, data);
           } catch (error) {
-            await this.refreshToken();
+            this.token = (await this.authorizationRepository.singIn()).token;
+
             await this.sendData(pathUrl, data);
           }
         }
@@ -101,13 +102,14 @@ export class SendDataRepository {
       }
     } catch (error) {
       const err: AxiosError = error;
-      console.log(error);
+      console.log("Error aqui: ", error);
 
       if (this.isRefreshing) {
         this.isRefreshing = false;
 
         if (err?.response?.status === 401) {
-          await this.post(pathUrl, data);
+          this.token = (await this.authorizationRepository.singIn()).token;
+          this.post(pathUrl, data);
         }
       }
     }
