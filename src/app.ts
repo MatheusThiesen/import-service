@@ -42,6 +42,15 @@ export class App {
             entity: "orderImportCommerce",
             search: `${this.queryBuilderUpdateTime("p", 1, 5)}`,
           });
+          queue.push({
+            entity: "walletSellerClientImportCommerce",
+            search: `
+              r.representanteCod in (
+                select cr.representanteCod from 01010s005.dev_cliente_representante cr
+                where ${this.queryBuilderUpdateTime("cr", 1, 5)}
+              ) and r.representanteCod != 1
+            `,
+          });
         } catch (error) {
           console.log(error);
         }
@@ -64,10 +73,6 @@ export class App {
           queue.push({
             entity: "clientImportCommerce",
             search: `${this.queryBuilderUpdateTime("c", 1, 10)}`,
-          });
-          queue.push({
-            entity: "walletSellerClientImportCommerce",
-            search: `${this.queryBuilderUpdateTime("cr", 1, 10)}`,
           });
           queue.push({
             entity: "sellerImportCommerce",

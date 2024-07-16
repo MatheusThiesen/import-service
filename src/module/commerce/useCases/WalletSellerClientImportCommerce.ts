@@ -19,8 +19,6 @@ export class WalletSellerClientImportCommerce {
         pagesize: 99999,
       });
 
-      console.log(search);
-
       for (const seller of sellers) {
         try {
           const walletsClientsSellers = await entities.linkClientSeller.findAll(
