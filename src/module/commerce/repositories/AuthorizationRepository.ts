@@ -35,7 +35,9 @@ export class AuthorizationRepository {
         token: access_token,
       };
     } catch (error) {
-      return null;
+      return {
+        token: null,
+      };
     }
   }
 }

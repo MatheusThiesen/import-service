@@ -74,17 +74,15 @@ export class SendDataRepository {
 
         for (const content of splitArrObj(
           data,
-          pathUrl.startsWith("/clients-to-sellers/import/") ? 99999 : 800
+          pathUrl.startsWith("/clients-to-sellers/import/") ? 99999 : 2000
         )) {
           offset += content.length;
 
           try {
             await this.sendData(pathUrl, data);
           } catch (error) {
-            setTimeout(async () => {
-              this.token = (await this.authorizationRepository.singIn())?.token;
-              await this.sendData(pathUrl, data);
-            }, 2000);
+            this.token = (await this.authorizationRepository.singIn())?.token;
+            await this.sendData(pathUrl, data);
           }
         }
 
@@ -109,7 +107,7 @@ export class SendDataRepository {
         this.isRefreshing = false;
 
         if (err?.response?.status === 401) {
-          this.token = (await this.authorizationRepository.singIn()).token;
+          this.token = (await this.authorizationRepository.singIn())?.token;
           this.post(pathUrl, data);
         }
       }
