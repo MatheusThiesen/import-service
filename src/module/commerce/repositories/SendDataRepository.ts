@@ -81,9 +81,10 @@ export class SendDataRepository {
           try {
             await this.sendData(pathUrl, data);
           } catch (error) {
-            this.token = (await this.authorizationRepository.singIn()).token;
-
-            await this.sendData(pathUrl, data);
+            setTimeout(async () => {
+              this.token = (await this.authorizationRepository.singIn())?.token;
+              await this.sendData(pathUrl, data);
+            }, 2000);
           }
         }
 
