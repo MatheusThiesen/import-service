@@ -14,6 +14,14 @@ interface GetSeller {
   gerenteCod: number;
   eGerente: number;
   eSupervisor: number;
+
+  cep: number;
+  uf: string;
+  cidade: string;
+  bairro: string;
+  logradouro: string;
+  numero: number;
+
   situacao: number;
   dtAlteracao: Date;
 }
@@ -31,6 +39,13 @@ interface SendSeller {
   isSupRepresentante?: string;
   codGerenteRepresentante: number;
   codSupervisorRepresentante: number;
+
+  cepRepresentante?: number;
+  ufRepresentante?: string;
+  cidadeRepresentante?: string;
+  bairroRepresentante?: string;
+  logradouroRepresentante?: string;
+  numeroRepresentante?: number;
 }
 
 export class SellerViewImportPortal {
@@ -59,6 +74,13 @@ export class SellerViewImportPortal {
       isSupRepresentante: seller.eSupervisor === 1 ? "Sim" : "Nao",
       codGerenteRepresentante: seller.gerenteCod,
       codSupervisorRepresentante: seller.supervisorCod,
+
+      cepRepresentante: seller.cep,
+      ufRepresentante: seller.uf,
+      cidadeRepresentante: seller.cidade,
+      bairroRepresentante: seller.bairro,
+      logradouroRepresentante: seller.logradouro,
+      numeroRepresentante: seller.numero,
     }));
   }
 
@@ -105,6 +127,12 @@ export class SellerViewImportPortal {
             r.situacao,
             r.cnpj,
             r.tipoRep,
+            r.cep,
+            r.uf,
+            r.cidade,
+            r.bairro,
+            r.logradouro,
+            r.numero,
             r.dtAlteracao
           from 01010s005.dev_representante r 
             

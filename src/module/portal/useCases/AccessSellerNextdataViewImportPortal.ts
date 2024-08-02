@@ -5,12 +5,14 @@ interface GetSeller {
   codigo: number;
   email: string;
   senha: string;
+  ativo: number;
 }
 
 interface SendSeller {
   representanteCod: number;
   nextdataLogin: string;
   nextdataPassword: string;
+  nextdataAtivo: boolean;
 }
 
 export class AccessSellerNextdataViewImportPortal {
@@ -23,6 +25,7 @@ export class AccessSellerNextdataViewImportPortal {
       representanteCod: seller.codigo,
       nextdataLogin: seller.email,
       nextdataPassword: seller.senha,
+      nextdataAtivo: seller.ativo > 0,
     }));
   }
 
@@ -57,7 +60,7 @@ export class AccessSellerNextdataViewImportPortal {
 
         const sellers = await dbNextdata.$ExecuteQuery<GetSeller>(
           `
-          select c.CONTATO_ID as "codigo", c.EMAIL as "email",u.SENHA as "senha"  from CRM_CONTATO c
+          select distinct  c.CONTATO_ID as "codigo", c.EMAIL as "email",u.SENHA as "senha",u.ATIVO as "ativo" from CRM_CONTATO c
           inner join SIS_USUARIO u on u.ID_CONTATO = c.CONTATO_ID
           ${whereNormalized}
           order by c.CONTATO_ID
