@@ -33,6 +33,15 @@ export class Portal {
         });
 
         queue.push({
+          search: `${this.queryBuilderUpdateTime("g", 1, 10)}`,
+          entity: "groupProductViewImportPortal",
+        });
+        queue.push({
+          search: `${this.queryBuilderUpdateTime("rg", 1, 10)}`,
+          entity: "groupsProductToSellerViewImportPortal",
+        });
+
+        queue.push({
           search: `${this.queryBuilderUpdateTime("i", 1, 10)}`,
           entity: "orderViewImportPortal",
         });
@@ -141,6 +150,12 @@ export class Portal {
   async oneDayCron() {
     cron.schedule("0 30 */22 * * *", async () => {
       try {
+        queue.push({
+          entity: "groupProductViewImportPortal",
+        });
+        queue.push({
+          entity: "groupsProductToSellerViewImportPortal",
+        });
         queue.push({
           entity: "orderViewImportPortal",
         });

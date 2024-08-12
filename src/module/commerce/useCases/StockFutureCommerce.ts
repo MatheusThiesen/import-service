@@ -1,5 +1,4 @@
 import * as dayjs from "dayjs";
-import { Quotas, QuotasFields } from "src/module/entities/model/Quotas";
 import { entities } from "../../../module/entities/useCases";
 import { SendDataRepository } from "../repositories/SendDataRepository";
 import { ExecuteServiceProps } from "../types/ExecuteService";
@@ -59,7 +58,7 @@ export class StockFutureCommerce {
       for (let index = 0; index < totalPages; index++) {
         const page = index;
 
-        const quotas = await entities.quotas.findAll<QuotasFields, Quotas>({
+        const quotas = await entities.quotas.findAll({
           fields: {
             dtInicial: true,
             produtoCod: true,

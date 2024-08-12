@@ -10,6 +10,8 @@ import { ClientViewImportPortal } from "./ClientViewImportPortal";
 import { ConceptViewImportPortal } from "./ConceptViewImportPortal";
 import { EanViewImportPortal } from "./EanViewImportPortal";
 import { GridViewImportPortal } from "./GridViewImportPortal";
+import { GroupProductViewImportPortal } from "./GroupProductViewImportPortal";
+import { GroupsProductToSellerViewImportPortal } from "./GroupsProductToSellerViewImportPortal";
 import { HighlighterViewImportPortal } from "./HighlighterViewImportPortal";
 import { NoteOrderViewImportPortal } from "./NoteOrderViewImportPortal";
 import { OcViewImportPortal } from "./OcViewImportPortal";
@@ -39,6 +41,11 @@ export const clientViewImportPortal = new ClientViewImportPortal(sendData);
 export const billetViewImportPortal = new BilletViewImportPortal(sendData);
 export const conceptViewImportPortal = new ConceptViewImportPortal(sendData);
 export const ocViewImportPortal = new OcViewImportPortal(sendData);
+export const groupProductViewImportPortal = new GroupProductViewImportPortal(
+  sendData
+);
+export const groupsProductToSellerViewImportPortal =
+  new GroupsProductToSellerViewImportPortal(sendData);
 export const noteOrderViewImportPortal = new NoteOrderViewImportPortal(
   sendData
 );

@@ -1,7 +1,3 @@
-import {
-  ProductImage,
-  ProductImageFields,
-} from "src/module/entities/model/ProductImage";
 import { entities } from "../../entities/useCases";
 import { SendDataRepository } from "../repositories/SendDataRepository";
 import { ExecuteServiceProps } from "../types/ExecuteService";
@@ -35,10 +31,7 @@ export class ProductImageImportCommerce {
       for (let index = 0; index < totalPages; index++) {
         const page = index;
 
-        const productImageResponse = await entities.productImage.findAll<
-          ProductImageFields,
-          ProductImage
-        >({
+        const productImageResponse = await entities.productImage.findAll({
           fields: {
             produtoCod: true,
             imagemNome: true,

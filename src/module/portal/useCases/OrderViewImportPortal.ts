@@ -1,9 +1,5 @@
 import { diffDates } from "../../../helpers/diffDates";
 import { groupByObject } from "../../../helpers/groupByObject";
-import {
-  HighlightersOrder,
-  HighlightersOrderFields,
-} from "../../../module/entities/model/HighlightersOrder";
 import { entities } from "../../../module/entities/useCases";
 import { dbSiger } from "../../../service/dbSiger";
 import { SendData } from "../repositories/SendData";
@@ -228,10 +224,7 @@ export class OrderViewImportPortal {
 
         if (itemOrder?.especieCod !== 9) {
           var regularExpressionHighlighter = /\[([^\]]+)\]/;
-          const highlighter = await entities.highlightersOrder.findAll<
-            HighlightersOrderFields,
-            HighlightersOrder
-          >({
+          const highlighter = await entities.highlightersOrder.findAll({
             fields: {
               pedidoCod: true,
               txtObs: true,

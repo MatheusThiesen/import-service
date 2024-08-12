@@ -1,10 +1,6 @@
 import { diffDates } from "../../../helpers/diffDates";
 import { groupByObject } from "../../../helpers/groupByObject";
 import { dbSiger } from "../../../service/dbSiger";
-import {
-  HighlightersOrder,
-  HighlightersOrderFields,
-} from "../../entities/model/HighlightersOrder";
 import { entities } from "../../entities/useCases";
 import { SendData } from "../repositories/SendData";
 
@@ -223,10 +219,7 @@ export class OrderNotInternalCodeViewImportPortalOnly018 {
 
         if (itemOrder?.especieCod !== 9) {
           var regularExpressionHighlighter = /\[([^\]]+)\]/;
-          const highlighter = await entities.highlightersOrder.findAll<
-            HighlightersOrderFields,
-            HighlightersOrder
-          >({
+          const highlighter = await entities.highlightersOrder.findAll({
             fields: {
               pedidoCod: true,
               txtObs: true,

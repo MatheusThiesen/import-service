@@ -34,6 +34,8 @@ import {
   conceptViewImportPortal,
   eanViewImportPortal,
   gridViewImportPortal,
+  groupProductViewImportPortal,
+  groupsProductToSellerViewImportPortal,
   highlighterViewImportPortal,
   noteOrderViewImportPortal,
   ocViewImportPortal,
@@ -50,6 +52,16 @@ import { Task } from "./";
 
 export async function worker(arg: Task, cb: done) {
   switch (arg.entity) {
+    case "groupsProductToSellerViewImportPortal":
+      await groupsProductToSellerViewImportPortal.execute({
+        search: arg.search,
+      });
+      break;
+    case "groupProductViewImportPortal":
+      await groupProductViewImportPortal.execute({
+        search: arg.search,
+      });
+      break;
     case "accessSellerNextdataViewImportPortal":
       await accessSellerNextdataViewImportPortal.execute({
         search: arg.search,

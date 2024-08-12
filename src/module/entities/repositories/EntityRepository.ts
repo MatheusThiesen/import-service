@@ -7,7 +7,7 @@ import { filterFieldsNormalized } from "../../../helpers/filterFieldsNormalized"
 import { dbSiger } from "../../../service/dbSiger";
 import { ITypeRepository } from "./types/ITypeRepository";
 
-export class EntityRepository implements ITypeRepository {
+export class EntityRepository<T, D> implements ITypeRepository<T, D> {
   private table: string;
   private initial: string;
 
@@ -21,7 +21,7 @@ export class EntityRepository implements ITypeRepository {
     return whereNormalized;
   }
 
-  async findAll<T, D>({
+  async findAll({
     fields,
     search,
     page = 0,
@@ -62,7 +62,7 @@ export class EntityRepository implements ITypeRepository {
     return totalItems;
   }
 
-  async findFirst<T, D>(query: QueryFindFirstEntitySiger<T>): Promise<D> {
+  async findFirst(query: QueryFindFirstEntitySiger<T>): Promise<D> {
     const limit = 1;
 
     const datas = await dbSiger.$ExecuteQuery<D>(

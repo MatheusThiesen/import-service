@@ -1,7 +1,3 @@
-import {
-  Highlighter,
-  HighlighterFields,
-} from "../../../module/entities/model/Highlighter";
 import { entities } from "../../entities/useCases/index";
 import { SendData } from "../repositories/SendData";
 
@@ -12,10 +8,7 @@ export class HighlighterViewImportPortal {
 
   async execute({ search }: { search?: string }) {
     try {
-      const data = await entities.highlighter.findAll<
-        HighlighterFields,
-        Highlighter
-      >({
+      const data = await entities.highlighter.findAll({
         fields: {
           tag: true,
           descricao: true,

@@ -4,8 +4,8 @@ import {
   QueryFindFirstEntitySiger,
 } from "../../../../service/siger";
 
-export interface ITypeRepository {
-  findAll<T, D>(query: QueryFindAllEntitySiger<T>): Promise<D[]>;
+export interface ITypeRepository<T, D> {
+  findAll(query: QueryFindAllEntitySiger<T>): Promise<D[]>;
   count(query: QueryCountEntitySiger): Promise<number>;
-  findFirst<T, D>(query: QueryFindFirstEntitySiger<T>): Promise<D>;
+  findFirst(query: QueryFindFirstEntitySiger<T>): Promise<D>;
 }

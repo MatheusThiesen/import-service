@@ -1,3 +1,11 @@
+import { GroupsToSeller, GroupsToSellerFields } from "../model/GroupsToSeller";
+import { Highlighter, HighlighterFields } from "../model/Highlighter";
+import {
+  HighlightersOrder,
+  HighlightersOrderFields,
+} from "../model/HighlightersOrder";
+import { ProductImage, ProductImageFields } from "../model/ProductImage";
+import { Quotas, QuotasFields } from "../model/Quotas";
 import { BilletRepository } from "../repositories/BilletRepository";
 import { BillingLocationRepository } from "../repositories/BillingLocationRepository";
 import { BrandRepository } from "../repositories/BrandRepository";
@@ -45,21 +53,37 @@ export const billingLocation = new BillingLocationRepository();
 export const billet = new BilletRepository();
 export const order = new OrderRepository();
 
-export const productImage = new EntityRepository({
+export const productImage = new EntityRepository<
+  ProductImageFields,
+  ProductImage
+>({
   table: "01010s005.DEV_PRODUTO_IMAGEM",
   initial: "i",
 });
-export const highlighter = new EntityRepository({
-  table: "01010s005.DEV_DESTACADOR",
-  initial: "d",
-});
-export const highlightersOrder = new EntityRepository({
+export const highlighter = new EntityRepository<HighlighterFields, Highlighter>(
+  {
+    table: "01010s005.DEV_DESTACADOR",
+    initial: "d",
+  }
+);
+export const highlightersOrder = new EntityRepository<
+  HighlightersOrderFields,
+  HighlightersOrder
+>({
   table: "01010s005.DEV_DESTACADOR_PEDIDO",
   initial: "dp",
 });
-export const quotas = new EntityRepository({
+export const quotas = new EntityRepository<QuotasFields, Quotas>({
   table: "01010s005.DEV_COTAS",
   initial: "c",
+});
+
+export const groupsToSeller = new EntityRepository<
+  GroupsToSellerFields,
+  GroupsToSeller
+>({
+  table: "01010s005.DEV_REPRESENTATE_GRUPO",
+  initial: "rg",
 });
 
 export const entities = {
@@ -89,4 +113,5 @@ export const entities = {
   highlighter,
   highlightersOrder,
   quotas,
+  groupsToSeller,
 };
