@@ -8,14 +8,12 @@ interface IResponseSingIn {
 export class AuthorizationRepository {
   private email: string;
   private password: string;
-  private baseUrl: string;
 
   token: string;
 
   constructor() {
     this.email = process.env.COMMERCE_USER;
     this.password = process.env.COMMERCE_PASS;
-    this.baseUrl = process.env.COMMERCE_URL;
 
     this.singIn();
   }

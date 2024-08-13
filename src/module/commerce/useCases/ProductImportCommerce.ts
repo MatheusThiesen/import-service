@@ -135,7 +135,7 @@ export class ProductImportCommerce {
         p.grupoCod,
         p.subGrupoCod,
         p.genero,
-        p.precoVenda,
+        p.precoCusto as precoVenda,
         p.qtdEmbalagem,
         p.obs,
         p.ncm,
