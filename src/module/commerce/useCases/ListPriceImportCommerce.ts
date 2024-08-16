@@ -18,7 +18,8 @@ export class ListPriceImportCommerce {
 
   async execute({ search }: ExecuteServiceProps) {
     try {
-      const query = search;
+      const defaultWhere = `l.listaCod in (28,42,56,300)`;
+      const query = search ? `${defaultWhere} and ${search}` : defaultWhere;
 
       const totalItems = await entities.priceList.count({ search: query });
       const totalPages = Math.ceil(totalItems / this.pagesize);
