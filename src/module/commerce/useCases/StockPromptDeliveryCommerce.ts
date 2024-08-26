@@ -1,6 +1,7 @@
 import { dbSiger } from "../../../service/dbSiger";
 import { SendDataRepository } from "../repositories/SendDataRepository";
 import { ExecuteServiceProps } from "../types/ExecuteService";
+import { entities } from "./../../entities/useCases/index";
 
 export interface StockLocationNormalized {
   period: string;
@@ -19,13 +20,27 @@ export class StockPromptDeliveryCommerce {
 
   constructor(private sendData: SendDataRepository) {}
 
-  private onNormalizedStock(accumulatedStocks: StockRecibe[]) {
-    return accumulatedStocks.map((item) => ({
-      period: "pronta-entrega",
-      name: "Pronta Entrega",
-      productCod: item.produtoCod,
-      qtd: Math.trunc(item.qtdLivre),
-    }));
+  private async onNormalizedStock(accumulatedStocks: StockRecibe[]) {
+    const normalized = accumulatedStocks.map(async (item) => {
+      const product = await entities.product.findFirst({
+        fields: {
+          qtdEmbalagem: true,
+        },
+        search: `p.codigo = ${item.produtoCod}`,
+      });
+
+      return {
+        period: "pronta-entrega",
+        name: "Pronta Entrega",
+        productCod: item.produtoCod,
+        qtd:
+          Math.trunc(item.qtdLivre) < product.qtdEmbalagem
+            ? 0
+            : Math.trunc(item.qtdLivre),
+      };
+    });
+
+    return await Promise.all(normalized);
   }
 
   async getStocks({
@@ -52,7 +67,7 @@ export class StockPromptDeliveryCommerce {
       ;
     `);
 
-    return this.onNormalizedStock(productsResponse);
+    return await this.onNormalizedStock(productsResponse);
   }
 
   async getStocksTotal({ search }: { search: string }) {

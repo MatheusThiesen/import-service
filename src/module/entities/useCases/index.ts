@@ -4,6 +4,7 @@ import {
   HighlightersOrder,
   HighlightersOrderFields,
 } from "../model/HighlightersOrder";
+import { Product, ProductFields } from "../model/Product";
 import { ProductImage, ProductImageFields } from "../model/ProductImage";
 import { Quotas, QuotasFields } from "../model/Quotas";
 import { BilletRepository } from "../repositories/BilletRepository";
@@ -86,6 +87,11 @@ export const groupsToSeller = new EntityRepository<
   initial: "rg",
 });
 
+export const product = new EntityRepository<ProductFields, Product>({
+  table: "01010s005.PRODUTOS",
+  initial: "p",
+});
+
 export const entities = {
   brand,
   collectionProduct,
@@ -105,6 +111,7 @@ export const entities = {
   clientObs,
   clientEmail,
   productImage,
+  product,
   paymentCondition,
   tablePrice,
   billingLocation,

@@ -32,6 +32,7 @@ interface GetOrderItems {
   vlrLiquido: string;
   vlrUnitario: string;
   marcaCod: number;
+  origemMercadoriaCod: number;
   recusaCod: number;
   recusaDescicao: string;
   sequencia: number;
@@ -102,6 +103,7 @@ interface ProductOrder {
   refuse: string | undefined;
   documentNumber: string | undefined;
   highlighterTag: string[];
+  origin: string;
 }
 
 export class OrderViewImportPortalOnly018 {
@@ -277,6 +279,9 @@ export class OrderViewImportPortalOnly018 {
             motivoCancelamentoResponse?.[0]?.descricao || undefined,
           highlighterTag,
           currentInvoiceDate: new Date(itemOrder.dtFaturamentoPedidoAtual),
+          origin: [1, 2].includes(itemOrder.origemMercadoriaCod)
+            ? "Importado"
+            : "Nacional",
         };
       })
     );

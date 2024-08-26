@@ -32,6 +32,7 @@ interface GetOrderItems {
   vlrLiquido: string;
   vlrUnitario: string;
   marcaCod: number;
+  origemMercadoriaCod: number;
   recusaCod: number;
   recusaDescicao: string;
   sequencia: number;
@@ -100,6 +101,7 @@ interface ProductOrder {
   refuse: string | undefined;
   documentNumber: string | undefined;
   highlighterTag: string[];
+  origin: string;
 }
 
 export class OrderNotInternalCodeViewImportPortalOnly018 {
@@ -271,6 +273,9 @@ export class OrderNotInternalCodeViewImportPortalOnly018 {
           cancellationReason:
             motivoCancelamentoResponse?.[0]?.descricao || undefined,
           highlighterTag,
+          origin: [1, 2].includes(itemOrder.origemMercadoriaCod)
+            ? "Importado"
+            : "Nacional",
         };
       })
     );
