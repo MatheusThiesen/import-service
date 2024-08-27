@@ -88,7 +88,7 @@ export const groupsToSeller = new EntityRepository<
 });
 
 export const product = new EntityRepository<ProductFields, Product>({
-  table: "01010s005.PRODUTOS",
+  table: "01010s005.DEV_PRODUTO",
   initial: "p",
 });
 
