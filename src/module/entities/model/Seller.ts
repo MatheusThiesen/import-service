@@ -12,6 +12,8 @@ export class Seller {
   cidade: string;
   uf: string;
   cep: number;
+  tipoRep: number;
+  tipoRepDescricao: string;
   supervisorCod: number;
   supervisorAbreviacao: number;
   gerenteCod: number;
@@ -38,6 +40,8 @@ export class SellerFields {
   cidade?: boolean;
   uf?: boolean;
   cep?: boolean;
+  tipoRep?: boolean;
+  tipoRepDescricao?: boolean;
   supervisorCod?: boolean;
   supervisorAbreviacao?: boolean;
   gerenteCod?: boolean;

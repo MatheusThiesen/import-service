@@ -19,6 +19,8 @@ export class SellerImportCommerce {
           eSupervisor: true,
           gerenteCod: true,
           supervisorCod: true,
+          tipoRepDescricao: true,
+          cnpj: true,
         },
         search,
         pagesize: 99999,
@@ -35,6 +37,8 @@ export class SellerImportCommerce {
         situation: seller.situacao ?? "",
         eGerente: seller.eGerente === 1 ? `s` : `n`,
         eSupervisor: seller.eSupervisor === 1 ? `s` : `n`,
+        tipoRepresentante: seller.tipoRepDescricao,
+        cnpj: seller.cnpj ? Number(seller.cnpj) : undefined,
       }));
 
       await this.sendData.post("/sellers/import", sellersNormalized);
