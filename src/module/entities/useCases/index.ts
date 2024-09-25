@@ -1,3 +1,11 @@
+import {
+  CommissionInvestigation,
+  CommissionInvestigationFields,
+} from "../model/CommissionInvestigation";
+import {
+  FinancialDocument,
+  FinancialDocumentFields,
+} from "../model/FinancialDocument";
 import { GroupsToSeller, GroupsToSellerFields } from "../model/GroupsToSeller";
 import { Highlighter, HighlighterFields } from "../model/Highlighter";
 import {
@@ -92,6 +100,22 @@ export const product = new EntityRepository<ProductFields, Product>({
   initial: "p",
 });
 
+export const commissionInvestigation = new EntityRepository<
+  CommissionInvestigationFields,
+  CommissionInvestigation
+>({
+  table: "01010s005.DEV_APURACAO_COMISSAO",
+  initial: "a",
+});
+
+export const financialDocument = new EntityRepository<
+  FinancialDocumentFields,
+  FinancialDocument
+>({
+  table: "01010s005.DEV_DOCUMENTO_FINANCEIRO",
+  initial: "f",
+});
+
 export const entities = {
   brand,
   collectionProduct,
@@ -121,4 +145,6 @@ export const entities = {
   highlightersOrder,
   quotas,
   groupsToSeller,
+  commissionInvestigation,
+  financialDocument,
 };

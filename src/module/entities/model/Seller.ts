@@ -23,6 +23,8 @@ export class Seller {
   dtInativacao: Date;
   eGerente: number;
   eSupervisor: number;
+  percentualIRRF: number;
+  percentualComissao: number;
   dtAlteracao: Date;
   hrAlteracao: number;
 }
@@ -51,6 +53,8 @@ export class SellerFields {
   dtInativacao?: boolean;
   eGerente?: boolean;
   eSupervisor?: boolean;
+  percentualIRRF?: boolean;
+  percentualComissao?: boolean;
   dtAlteracao?: boolean;
   hrAlteracao?: boolean;
 }

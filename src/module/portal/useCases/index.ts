@@ -21,6 +21,7 @@ import { OrderViewImportPortal } from "./OrderViewImportPortal";
 import { OrderViewImportPortalOnly018 } from "./OrderViewImportPortalOnly018";
 import { RegisterGroupViewImportPortal } from "./RegisterGroupViewImportPortal";
 import { SellerViewImportPortal } from "./SellerViewImportPortal";
+import { ServiceInvoiceViewImportPortal } from "./ServiceInvoiceViewImportPortal";
 import { WalletSellerClientsViewImportPortal } from "./WalletSellerClientsViewImportPortal";
 
 export const authorization = new AuthorizationRepository();
@@ -40,6 +41,8 @@ export const sellerViewImportPortal = new SellerViewImportPortal(sendData);
 export const clientViewImportPortal = new ClientViewImportPortal(sendData);
 export const billetViewImportPortal = new BilletViewImportPortal(sendData);
 export const conceptViewImportPortal = new ConceptViewImportPortal(sendData);
+export const serviceInvoiceViewImportPortal =
+  new ServiceInvoiceViewImportPortal(sendData, authorization);
 export const ocViewImportPortal = new OcViewImportPortal(sendData);
 export const groupProductViewImportPortal = new GroupProductViewImportPortal(
   sendData
