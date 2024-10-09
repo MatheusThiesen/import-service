@@ -1,7 +1,6 @@
 import "dotenv/config";
 import * as cron from "node-cron";
 import { getFormatDate } from "./helpers/getFormatDate";
-import { serverPortal } from "./module/portal/useCases";
 import { queue } from "./queue";
 
 export class Portal {
@@ -212,13 +211,11 @@ export class Portal {
 
   async execute() {
     try {
-      await Promise.all([
-        serverPortal.execute(),
-        this.fiveMinuteCron(),
-        this.oneDayCron(),
-        this.sixtyMinuteCron(),
-        this.thereHoursCron(),
-      ]);
+      queue.push({
+        // search: `representanteCod in (2316,2295,2306,2082,2895,1438,1493,1925,1704,2292)`,
+        search: `representanteCod in (2895)`,
+        entity: "serviceInvoiceViewImportPortal",
+      });
     } catch (err) {
       console.log("error!");
       console.log(err);

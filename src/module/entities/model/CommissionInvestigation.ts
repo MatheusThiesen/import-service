@@ -25,6 +25,7 @@ export type CommissionInvestigation = {
   valorEstDoctosNaoPagosVenc: number;
   baseIRF: number;
   baseDevolucao: number;
+  baseIncobraveis: number;
   baseComissao: number;
   dtAlteracao: Date;
   hrAlteracao: number;
@@ -56,6 +57,7 @@ export type CommissionInvestigationFields = {
   valorEstDoctosNaoPagosVenc?: boolean;
   baseIRF?: boolean;
   baseDevolucao?: boolean;
+  baseIncobraveis?: boolean;
   baseComissao?: boolean;
   dtAlteracao?: boolean;
   hrAlteracao?: boolean;

@@ -1,7 +1,15 @@
 import {
+  CommissionDocument,
+  CommissionDocumentFields,
+} from "../model/CommissionDocument";
+import {
   CommissionInvestigation,
   CommissionInvestigationFields,
 } from "../model/CommissionInvestigation";
+import {
+  CommissionsLaunches,
+  CommissionsLaunchesFields,
+} from "../model/CommissionsLaunches";
 import {
   FinancialDocument,
   FinancialDocumentFields,
@@ -116,6 +124,21 @@ export const financialDocument = new EntityRepository<
   initial: "f",
 });
 
+export const commissionDocuments = new EntityRepository<
+  CommissionDocumentFields,
+  CommissionDocument
+>({
+  table: "01010s005.DEV_DOCUMENTOS_COMISSAO",
+  initial: "d",
+});
+export const commissionsLaunches = new EntityRepository<
+  CommissionsLaunchesFields,
+  CommissionsLaunches
+>({
+  table: "01010s005.DEV_COMISSOES_LANCAMENTOS",
+  initial: "l",
+});
+
 export const entities = {
   brand,
   collectionProduct,
@@ -147,4 +170,6 @@ export const entities = {
   groupsToSeller,
   commissionInvestigation,
   financialDocument,
+  commissionDocuments,
+  commissionsLaunches,
 };

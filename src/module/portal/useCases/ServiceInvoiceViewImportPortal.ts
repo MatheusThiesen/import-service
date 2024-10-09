@@ -1,7 +1,9 @@
 import * as dayjs from "dayjs";
+import { CommissionDocument } from "../../../module/entities/model/CommissionDocument";
 import { Seller } from "../../../module/entities/model/Seller";
 import { entities } from "../../../module/entities/useCases";
 import { apiPortal } from "../../../service/apiPortal";
+import { dbSiger } from "../../../service/dbSiger";
 import { AuthorizationRepository } from "../repositories/Authorization";
 import { SendData } from "../repositories/SendData";
 
@@ -23,20 +25,28 @@ interface Normalized {
   commissionPercetage: number;
   IrfPercetage: number;
 
-  invoices: {
+  invoices: Invoice[];
+  releases?: {
     sigla: string;
-    clientCod: number;
-    documentNumber: string;
-    sequence: number;
-    commissionPercetage: number;
-    priceValue: number;
-    commissionValue: number;
-    dueDate: Date;
-    emissionDate: Date;
-    dtPagamento: Date;
-    type: string;
+    description: string;
+    value: number;
+    type: "credito" | "debito";
   }[];
 }
+
+type Invoice = {
+  sigla: string;
+  clientCod: number;
+  documentNumber: string;
+  sequence: number;
+  commissionPercetage: number;
+  priceValue: number;
+  commissionValue: number;
+  dueDate: Date;
+  emissionDate: Date;
+  dtPagamento: Date;
+  type: "duplicata" | "incobraveis" | "devolucao";
+};
 
 export class ServiceInvoiceViewImportPortal {
   readonly pageSize = 50000;
@@ -45,6 +55,32 @@ export class ServiceInvoiceViewImportPortal {
     private sendData: SendData,
     private authorizationRepository: AuthorizationRepository
   ) {}
+
+  onNormalizedInvoice(
+    data: CommissionDocument[],
+    sellerPercentualComissao: number,
+    type: "duplicata" | "incobraveis" | "devolucao" | "renegociacaoDividas"
+  ): Invoice[] {
+    return data.map((item) => ({
+      sigla: item.sigemp,
+      clientCod: Number(item.clienteCod),
+      invoiceNumber: String(item.documentoNumero),
+      documentNumber: String(item.documentoNumero),
+      sequence: !isNaN(Number(item.documentoDesdobro))
+        ? Number(item.documentoDesdobro)
+        : undefined,
+      commissionPercetage: sellerPercentualComissao,
+      priceValue:
+        type === "renegociacaoDividas"
+          ? Number(item.duplicataValor)
+          : Number(item.baseComissaoValor),
+      commissionValue: Number(item.comissaoValor),
+      dueDate: item.dataVencimento,
+      emissionDate: item.dataEmissao,
+      dtPagamento: item.dataPagamento,
+      type: type === "renegociacaoDividas" ? "duplicata" : type,
+    }));
+  }
 
   async onNormalize(seller: Seller): Promise<Normalized> {
     const data = await entities.commissionInvestigation.findFirst({
@@ -55,79 +91,196 @@ export class ServiceInvoiceViewImportPortal {
         baseComissao: true, //salePrice - Valor venda
         valorComissaoPrazo: true, //commissionValue - Valor comissao
         baseDevolucao: true, //returnValue - Valor Dev/Incob
-        valorDevolucao: true, //commissionRefunded - Comissao estornada
+        baseIncobraveis: true, //commissionRefunded - Comissao estornada
+        comissaoEstornada: true, //commissionRefunded - Comissao estornada
         // saleBalance - Saldo de venda
         baseIRF: true, //IRRFBase - Base IRRF
         saldoComissao: true, //comissionBalance - Saldo Comissao
         valorIRFComissao: true, //IRFValue - IRF venda
         valorLiquido: true, //liquidComission - Liquido
         debitoLancados: true, //releasesBalance - Saldo lancamentos
+        creditoLancado: true,
       },
-      search: `a.representanteCod in (${seller.representanteCod}) and a.dataInicialApuracao = '2024-08-01'`,
+      search: `a.representanteCod in (${seller.representanteCod}) and a.dataInicialApuracao = '2024-09-01'`,
     });
 
-    const documents = await entities.financialDocument.findAll({
+    const startDate = dayjs(data.dataInicialApuracao).format("YYYY-MM-DD");
+    const endDate = dayjs(data.dataFinalApuracao).format("YYYY-MM-DD");
+
+    const commissionsLaunches = await entities.commissionsLaunches.findAll({
+      fields: {
+        valor: true,
+        tipo: true,
+        descricao: true,
+      },
+      search: `l.representanteCod = ${seller.representanteCod} and 
+              l.dataLancamento >= '${startDate}' and l.dataLancamento <= '${endDate}'
+      `,
+      pagesize: 99999,
+    });
+
+    const duplicatas = await entities.commissionDocuments.findAll({
       fields: {
         sigemp: true, //sigla
         representanteCod: true,
         clienteCod: true,
-        numero: true, //documentNumber
-        dtMovimento: true, //emissionDate
-        dtVencimento: true, //dueDate
-        valor: true,
-        ordem: true, // sequence
-        tipo: true,
+        documentoNumero: true, //documentNumber
+        notaNumero: true, //invoiceNumber
+        dataEmissao: true, //emissionDate
+        dataPagamento: true, //dueDate
+        dataVencimento: true,
+        comissaoValor: true,
+        baseComissaoValor: true,
+        documentoDesdobro: true, // sequence
+        comissaoPercentual: true,
+        sinal: true,
       },
-      search: `f.tipo in ('O', 'D') AND f.representanteCod in (${
-        seller.representanteCod
-      }) 
-                AND f.dtMovimento >= '${dayjs(data.dataInicialApuracao).format(
-                  "YYYY-MM-DD"
-                )}' 
-                AND f.dtMovimento <= '${dayjs(data.dataFinalApuracao).format(
-                  "YYYY-MM-DD"
-                )}'`,
-      pagesize: 10000,
+      search: `
+        d.representanteCod = ${seller.representanteCod} and 
+        d.dataEmissao >= '${startDate}' and d.dataEmissao <= '${endDate}' and 
+        d.sinal > 0`,
+      pagesize: 99999,
+    });
+    const protestos = await entities.commissionDocuments.findAll({
+      fields: {
+        sigemp: true, //sigla
+        representanteCod: true,
+        clienteCod: true,
+        documentoNumero: true, //documentNumber
+        notaNumero: true, //invoiceNumber
+        dataEmissao: true, //emissionDate
+        dataPagamento: true, //dueDate
+        dataVencimento: true,
+        comissaoValor: true,
+        baseComissaoValor: true,
+        documentoDesdobro: true, // sequence
+        comissaoPercentual: true,
+        sinal: true,
+      },
+      search: `
+        d.representanteCod = ${seller.representanteCod} and 
+        d.dataProtesto is not null and  
+        d.dataPagamento >= '${startDate}' and d.dataPagamento<= '${endDate}' `,
+      pagesize: 99999,
+    });
+    const renegociacaoDividas = await dbSiger.$ExecuteQuery<CommissionDocument>(
+      `
+      select 
+        d.sigemp,d.representanteCod,d.clienteCod,d.documentoNumero,d.notaNumero,d.dataEmissao,d.dataPagamento,d.dataVencimento,d.documentoDesdobro,d.comissaoValor,d.baseComissaoValor,d.comissaoPercentual,d.duplicataValor
+      from 01010s005.DEV_DUPLICATAS_INCONAVEIS d
+      where d.representanteCod = ${seller.representanteCod} and d.dataPagamento >= '${startDate}' and d.dataPagamento<= '${endDate}'
+      ;
+      `
+    );
+
+    const incobraveis = await entities.commissionDocuments.findAll({
+      fields: {
+        sigemp: true, //sigla
+        representanteCod: true,
+        clienteCod: true,
+        documentoNumero: true, //documentNumber
+        notaNumero: true, //invoiceNumber
+        dataEmissao: true, //emissionDate
+        dataPagamento: true, //dueDate
+        dataVencimento: true,
+        comissaoValor: true,
+        baseComissaoValor: true,
+        documentoDesdobro: true, // sequence
+        comissaoPercentual: true,
+        sinal: true,
+      },
+      search: `
+        d.representanteCod = ${seller.representanteCod} and 
+        d.dataProtesto >= '${startDate}' and d.dataProtesto <= '${endDate}' `,
+      pagesize: 99999,
+    });
+    const devolucoes = await entities.commissionDocuments.findAll({
+      fields: {
+        sigemp: true, //sigla
+        representanteCod: true,
+        clienteCod: true,
+        documentoNumero: true, //documentNumber
+        notaNumero: true, //invoiceNumber
+        dataEmissao: true, //emissionDate
+        dataPagamento: true, //dueDate
+        dataVencimento: true,
+        comissaoValor: true,
+        baseComissaoValor: true,
+        documentoDesdobro: true, // sequence
+        comissaoPercentual: true,
+        sinal: true,
+      },
+      search: `
+        d.representanteCod = ${seller.representanteCod} and 
+        d.dataPagamento >= '${startDate}' and d.dataPagamento <= '${endDate}' and 
+        d.sinal < 0`,
+      pagesize: 99999,
     });
 
-    const invoices = documents.map((item) => ({
-      sigla: item.sigemp,
-      clientCod: item.clienteCod,
-      documentNumber: String(item.numero),
-      sequence: isNaN(Number(item.ordem)) ? Number(item.ordem) : undefined,
-      commissionPercetage: Number(seller.percentualComissao),
-      priceValue: Number(item.valor),
-      commissionValue:
-        Number(item.valor) * (Number(seller.percentualComissao) / 100),
-      dueDate: item.dtVencimento,
-      emissionDate: item.dtMovimento,
-      dtPagamento: item.dtPagamento,
-      type: item.tipo === "D" ? "devolucao" : "duplicata",
-      // receiptDate
-    }));
+    const invoices: Invoice[] = [
+      ...this.onNormalizedInvoice(
+        duplicatas,
+        Number(seller.percentualComissao),
+        "duplicata"
+      ),
+      ...this.onNormalizedInvoice(
+        protestos,
+        Number(seller.percentualComissao),
+        "duplicata"
+      ),
+      ...this.onNormalizedInvoice(
+        renegociacaoDividas,
+        Number(seller.percentualComissao),
+        "renegociacaoDividas"
+      ),
+      ...this.onNormalizedInvoice(
+        incobraveis,
+        Number(seller.percentualComissao),
+        "incobraveis"
+      ),
+      ...this.onNormalizedInvoice(
+        devolucoes,
+        Number(seller.percentualComissao),
+        "devolucao"
+      ),
+    ];
 
-    console.log(invoices.length);
+    const totalDuplicata = invoices
+      .filter((f) => f.type === "duplicata")
+      .reduce((previousValue, currentValue) => {
+        return previousValue + currentValue.priceValue;
+      }, 0);
+
+    const returnValue =
+      Number(data.baseDevolucao) + Number(data.baseIncobraveis);
 
     return {
       sellerCod: data.representanteCod,
       type: "comissao",
       period_start: data.dataInicialApuracao,
       period_end: data.dataFinalApuracao,
-      salePrice: Number(data.baseComissao),
-      commissionValue: Number(data.valorComissaoPrazo),
-      returnValue: Number(data.baseDevolucao),
-      commissionRefunded: Number(data.valorDevolucao),
-      saleBalance: +Number(
-        Number(data.baseComissao) - Number(data.baseDevolucao)
+      salePrice: Number(totalDuplicata),
+      commissionValue: +Number(
+        Number(data.saldoComissao) + Number(data.comissaoEstornada)
       ).toFixed(2),
+      returnValue: returnValue,
+      commissionRefunded: Number(data.comissaoEstornada),
+      saleBalance: +Number(totalDuplicata - returnValue).toFixed(2),
       IRRFBase: Number(data.baseIRF),
       comissionBalance: Number(data.saldoComissao),
       IRFValue: Number(data.valorIRFComissao),
       liquidComission: Number(data.valorLiquido),
-      releasesBalance: Number(data.debitoLancados),
+      releasesBalance:
+        Number(data.creditoLancado) - Number(data.debitoLancados),
       commissionPercetage: Number(seller.percentualComissao),
       IrfPercetage: Number(seller.percentualIRRF),
       invoices: invoices,
+      releases: commissionsLaunches.map((item) => ({
+        sigla: "009",
+        description: item.descricao,
+        value: Number(item.valor),
+        type: item.tipo === "D" ? "debito" : "credito",
+      })),
     };
   }
 
