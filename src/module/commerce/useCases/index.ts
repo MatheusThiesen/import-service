@@ -3,6 +3,7 @@ import { SendDataRepository } from "../repositories/SendDataRepository";
 
 import { BilletImportCommerce } from "./BilletImportCommerce";
 import { BillingLocationImportCommerce } from "./BillingLocationImportCommerce";
+import { BlockGroupProductToSellerImportCommerce } from "./BlockGroupProductToSellerImportCommerce";
 import { BranchActivistsImportCommerce } from "./BranchActivistsImportCommerce";
 import { BrandImportCommerce } from "./BrandImportCommerce";
 import { BrandsToSellerImportCommerce } from "./BrandsToSellerImportCommerce";
@@ -61,3 +62,5 @@ export const billingLocationImportCommerce = new BillingLocationImportCommerce(
 );
 export const billetImportCommerce = new BilletImportCommerce(sendData);
 export const orderImportCommerce = new OrderImportCommerce(sendData);
+export const blockGroupProductToSellerImportCommerce =
+  new BlockGroupProductToSellerImportCommerce(sendData);

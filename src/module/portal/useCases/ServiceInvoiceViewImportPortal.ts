@@ -259,7 +259,7 @@ export class ServiceInvoiceViewImportPortal {
       type: "comissao",
       period_start: data.dataInicialApuracao,
       period_end: data.dataFinalApuracao,
-      salePrice: Number(totalDuplicata),
+      salePrice: +Number(totalDuplicata).toFixed(2),
       commissionValue: +Number(
         Number(data.saldoComissao) + Number(data.comissaoEstornada)
       ).toFixed(2),

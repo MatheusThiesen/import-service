@@ -49,6 +49,7 @@ export type Task = {
     | "billingLocationImportCommerce"
     | "billetImportCommerce"
     | "orderImportCommerce"
+    | "blockGroupProductToSellerImportCommerce"
     | "tablePriceImportCommerce";
 };
 

@@ -464,6 +464,7 @@ export class OrderViewImportPortalOnly018 {
 
       const endDate = new Date();
 
+      console.log(`Pedido 018`);
       console.log(`-> Total pedidos: ${totalPedidos}`);
       console.log(`-> Total itens: ${totalItems}`);
       console.log("-> " + (await diffDates(startDate, endDate)));
