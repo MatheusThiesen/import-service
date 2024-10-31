@@ -83,6 +83,7 @@ export class ServiceInvoiceViewImportPortal {
   }
 
   async onNormalize(seller: Seller): Promise<Normalized> {
+    // Apuração de comissão
     const data = await entities.commissionInvestigation.findFirst({
       fields: {
         representanteCod: true,
@@ -107,6 +108,7 @@ export class ServiceInvoiceViewImportPortal {
     const startDate = dayjs(data.dataInicialApuracao).format("YYYY-MM-DD");
     const endDate = dayjs(data.dataFinalApuracao).format("YYYY-MM-DD");
 
+    // Lançamentos
     const commissionsLaunches = await entities.commissionsLaunches.findAll({
       fields: {
         valor: true,
@@ -119,6 +121,7 @@ export class ServiceInvoiceViewImportPortal {
       pagesize: 99999,
     });
 
+    // Duplicatas - Data de emissão mes correste e sinal positivo
     const duplicatas = await entities.commissionDocuments.findAll({
       fields: {
         sigemp: true, //sigla
@@ -141,6 +144,7 @@ export class ServiceInvoiceViewImportPortal {
         d.sinal > 0`,
       pagesize: 99999,
     });
+    // Protesto - pagamento no mes corrente e possui data de protesto
     const protestos = await entities.commissionDocuments.findAll({
       fields: {
         sigemp: true, //sigla
@@ -163,6 +167,7 @@ export class ServiceInvoiceViewImportPortal {
         d.dataPagamento >= '${startDate}' and d.dataPagamento<= '${endDate}' `,
       pagesize: 99999,
     });
+    // Renegociação de dividas
     const renegociacaoDividas = await dbSiger.$ExecuteQuery<CommissionDocument>(
       `
       select 
@@ -173,6 +178,7 @@ export class ServiceInvoiceViewImportPortal {
       `
     );
 
+    // Incobráveis - protestado no mes corrente
     const incobraveis = await entities.commissionDocuments.findAll({
       fields: {
         sigemp: true, //sigla
@@ -194,6 +200,7 @@ export class ServiceInvoiceViewImportPortal {
         d.dataProtesto >= '${startDate}' and d.dataProtesto <= '${endDate}' `,
       pagesize: 99999,
     });
+    // Devolução - data de pagamento mes corrente & sinal negativo
     const devolucoes = await entities.commissionDocuments.findAll({
       fields: {
         sigemp: true, //sigla
@@ -245,14 +252,24 @@ export class ServiceInvoiceViewImportPortal {
       ),
     ];
 
+    //Valor venda = Somar valor das duplicatas
     const totalDuplicata = invoices
       .filter((f) => f.type === "duplicata")
       .reduce((previousValue, currentValue) => {
         return previousValue + currentValue.priceValue;
       }, 0);
-
+    //Valor Dev/Incob =  Somar valor Devolução & Incobráveis
     const returnValue =
       Number(data.baseDevolucao) + Number(data.baseIncobraveis);
+    //Saldo lançamentos = Consolidando créditos e débitos dos lançamentos
+    const releasesBalance =
+      Number(data.creditoLancado) - Number(data.debitoLancados);
+    //Saldo Venda = Valor da venda subtraído por valor de Valor Dev/Incob
+    const saleBalance = +Number(totalDuplicata - returnValue).toFixed(2);
+    //Valor comissão = Sando comissão subtraído por valor estornado da comissão
+    const commissionValue = +Number(
+      Number(data.saldoComissao) + Number(data.comissaoEstornada)
+    ).toFixed(2);
 
     return {
       sellerCod: data.representanteCod,
@@ -260,18 +277,15 @@ export class ServiceInvoiceViewImportPortal {
       period_start: data.dataInicialApuracao,
       period_end: data.dataFinalApuracao,
       salePrice: Number(totalDuplicata),
-      commissionValue: +Number(
-        Number(data.saldoComissao) + Number(data.comissaoEstornada)
-      ).toFixed(2),
+      commissionValue: commissionValue,
       returnValue: returnValue,
       commissionRefunded: Number(data.comissaoEstornada),
-      saleBalance: +Number(totalDuplicata - returnValue).toFixed(2),
+      saleBalance: saleBalance,
       IRRFBase: Number(data.baseIRF),
       comissionBalance: Number(data.saldoComissao),
       IRFValue: Number(data.valorIRFComissao),
       liquidComission: Number(data.valorLiquido),
-      releasesBalance:
-        Number(data.creditoLancado) - Number(data.debitoLancados),
+      releasesBalance: releasesBalance,
       commissionPercetage: Number(seller.percentualComissao),
       IrfPercetage: Number(seller.percentualIRRF),
       invoices: invoices,
