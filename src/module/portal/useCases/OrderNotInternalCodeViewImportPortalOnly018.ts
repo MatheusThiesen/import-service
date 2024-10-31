@@ -459,6 +459,7 @@ export class OrderNotInternalCodeViewImportPortalOnly018 {
 
       const endDate = new Date();
 
+      console.log(`Pedido 018 sem codigo interno`);
       console.log(`-> Total pedidos: ${totalPedidos}`);
       console.log(`-> Total itens: ${totalItems}`);
       console.log("-> " + (await diffDates(startDate, endDate)));

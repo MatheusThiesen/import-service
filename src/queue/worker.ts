@@ -4,6 +4,7 @@ import { done } from "fastq";
 import {
   billetImportCommerce,
   billingLocationImportCommerce,
+  blockGroupProductToSellerImportCommerce,
   branchActivistsImportCommerce,
   brandImportCommerce,
   brandsToSellerImportCommerce,
@@ -193,6 +194,11 @@ export async function worker(arg: Task, cb: done) {
       break;
     case "orderImportCommerce":
       await orderImportCommerce.execute({ search: arg.search });
+      break;
+    case "blockGroupProductToSellerImportCommerce":
+      await blockGroupProductToSellerImportCommerce.execute({
+        search: arg.search,
+      });
       break;
   }
 

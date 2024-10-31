@@ -142,6 +142,14 @@ export class App {
             entity: "paymentConditionImportCommerce",
             search: `${this.queryBuilderUpdateTime("p", 1, 10)}`,
           });
+          queue.push({
+            entity: "blockGroupProductToSellerImportCommerce",
+            search: `r.representanteCod in (
+                select distinct rg.representanteCod 
+                from 01010s005.DEV_REPRESENTATE_GRUPO rg
+                where ${this.queryBuilderUpdateTime("rg", 1)}
+              )`,
+          });
         } catch (error) {
           console.log(error);
         }
@@ -260,6 +268,9 @@ export class App {
             entity: "orderImportCommerce",
             search: `${this.queryBuilderUpdateTime("p", 10)}`,
           });
+          queue.push({
+            entity: "blockGroupProductToSellerImportCommerce",
+          });
         } catch (error) {
           console.log(error);
         }
@@ -331,6 +342,9 @@ export class App {
       });
       queue.push({
         entity: "walletSellerClientImportCommerce",
+      });
+      queue.push({
+        entity: "blockGroupProductToSellerImportCommerce",
       });
       queue.push({
         entity: "orderImportCommerce",

@@ -113,4 +113,57 @@ export class SendDataRepository {
       }
     }
   }
+
+  async POST(pathUrl: string, body: any) {
+    try {
+      if (!this.token) {
+        const getToken = await this.authorizationRepository.singIn();
+        this.token = getToken.token;
+      }
+
+      try {
+        await apiCommerce({
+          method: "post",
+          url: pathUrl,
+          headers: {
+            ["Authorization"]: `Bearer ${this.token}`,
+          },
+          data: body,
+        });
+      } catch (error) {
+        this.token = (await this.authorizationRepository.singIn())?.token;
+        await apiCommerce({
+          method: "post",
+          url: pathUrl,
+          headers: {
+            ["Authorization"]: `Bearer ${this.token}`,
+          },
+          data: body,
+        });
+      }
+
+      console.log(
+        `[ENVIADO] "${pathUrl}" - ${new Date().toLocaleString("pt-br", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        })}`
+      );
+    } catch (error) {
+      const err: AxiosError = error;
+      console.log("Error aqui: ", error);
+
+      if (this.isRefreshing) {
+        this.isRefreshing = false;
+
+        if (err?.response?.status === 401) {
+          this.token = (await this.authorizationRepository.singIn())?.token;
+          this.POST(pathUrl, body);
+        }
+      }
+    }
+  }
 }

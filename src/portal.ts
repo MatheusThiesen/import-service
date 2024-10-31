@@ -1,6 +1,7 @@
 import "dotenv/config";
 import * as cron from "node-cron";
 import { getFormatDate } from "./helpers/getFormatDate";
+import { serverPortal } from "./module/portal/useCases";
 import { queue } from "./queue";
 
 export class Portal {
@@ -61,6 +62,15 @@ export class Portal {
 
         queue.push({
           search: `${this.queryBuilderUpdateTime("c", 1, 10)} `,
+          entity: "clientViewImportPortal",
+        });
+
+        queue.push({
+          search: `c.clienteCod in (
+                      select distinct e.clienteCod 
+                      from 01010s005.dev_cliente_email e
+	                    where ${this.queryBuilderUpdateTime("e", 1, 10)}
+                    )`,
           entity: "clientViewImportPortal",
         });
 
@@ -212,10 +222,101 @@ export class Portal {
   async execute() {
     try {
       queue.push({
-        // search: `representanteCod in (2316,2295,2306,2082,2895,1438,1493,1925,1704,2292)`,
-        search: `representanteCod in (2895)`,
-        entity: "serviceInvoiceViewImportPortal",
+        search: `${this.queryBuilderUpdateTime("g", 3)}`,
+        entity: "groupProductViewImportPortal",
       });
+      queue.push({
+        search: `${this.queryBuilderUpdateTime("rg", 3)}`,
+        entity: "groupsProductToSellerViewImportPortal",
+      });
+
+      queue.push({
+        search: `${this.queryBuilderUpdateTime("i", 3)}`,
+        entity: "orderViewImportPortal",
+      });
+      queue.push({
+        search: `${this.queryBuilderUpdateTime("i", 3)}`,
+        entity: "orderNotInternalCodeViewImportPortal",
+      });
+
+      queue.push({
+        search: `${this.queryBuilderUpdateTime("m", 3)}`,
+        entity: "brandViewImportPortal",
+      });
+
+      queue.push({
+        search: `${this.queryBuilderUpdateTime("r", 3)} `,
+        entity: "sellerViewImportPortal",
+      });
+
+      queue.push({
+        search: `${this.queryBuilderUpdateTime("c", 3)} `,
+        entity: "clientViewImportPortal",
+      });
+
+      queue.push({
+        search: `c.clienteCod in (
+                    select distinct e.clienteCod 
+                    from 01010s005.dev_cliente_email e
+                    where ${this.queryBuilderUpdateTime("e", 3)}
+                  )`,
+        entity: "clientViewImportPortal",
+      });
+
+      queue.push({
+        search: `${this.queryBuilderUpdateTime("g", 3)} `,
+        entity: "gridViewImportPortal",
+      });
+
+      queue.push({
+        search: `${this.queryBuilderUpdateTime("e", 3)} `,
+        entity: "eanViewImportPortal",
+      });
+
+      queue.push({
+        entity: "ocViewImportPortal",
+        search: `oc.produtoCod in (select distinct p.codigo  from 01010s005.dev_produto p where ${this.queryBuilderUpdateTime(
+          "p",
+          3
+        )} ) OR ${this.queryBuilderUpdateTime("oc", 3)}`,
+      });
+
+      queue.push({
+        search: `${this.queryBuilderUpdateTime("n", 1)} `,
+        entity: "noteOrderViewImportPortal",
+      });
+
+      queue.push({
+        entity: "conceptViewImportPortal",
+        search: `${this.queryBuilderUpdateTime("c", 3)}`,
+      });
+
+      queue.push({
+        search: `${this.queryBuilderUpdateTime("cr", 3)}`,
+        entity: "walletSellerClientsViewImportPortal",
+      });
+
+      queue.push({
+        search: `${this.queryBuilderUpdateTime("d", 3)}`,
+        entity: "highlighterViewImportPortal",
+      });
+
+      queue.push({
+        entity: "registerGroupViewImportPortal",
+        search: `${this.queryBuilderUpdateTime("g", 3)}`,
+      });
+
+      queue.push({
+        entity: "accessSellerNextdataViewImportPortal",
+      });
+
+      await Promise.all([
+        serverPortal.execute(),
+        this.fiveMinuteCron(),
+        this.oneDayCron(),
+        this.sixtyMinuteCron(),
+        this.thereHoursCron(),
+      ]);
     } catch (err) {
       console.log("error!");
       console.log(err);
