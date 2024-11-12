@@ -83,6 +83,8 @@ export class ServiceInvoiceViewImportPortal {
   }
 
   async onNormalize(seller: Seller): Promise<Normalized> {
+    const currentDate = new Date();
+
     // Apuração de comissão
     const data = await entities.commissionInvestigation.findFirst({
       fields: {
@@ -102,7 +104,12 @@ export class ServiceInvoiceViewImportPortal {
         debitoLancados: true, //releasesBalance - Saldo lancamentos
         creditoLancado: true,
       },
-      search: `a.representanteCod in (${seller.representanteCod}) and a.dataInicialApuracao = '2024-09-01'`,
+      search: `a.representanteCod in (${
+        seller.representanteCod
+      }) and a.dataInicialApuracao = '2024-${currentDate
+        .getMonth()
+        .toString()
+        .padStart(2, "0")}-01'`,
     });
 
     const startDate = dayjs(data.dataInicialApuracao).format("YYYY-MM-DD");
@@ -277,9 +284,7 @@ export class ServiceInvoiceViewImportPortal {
       period_start: data.dataInicialApuracao,
       period_end: data.dataFinalApuracao,
       salePrice: Number(totalDuplicata),
-      commissionValue: +Number(
-        Number(data.saldoComissao) + Number(data.comissaoEstornada)
-      ).toFixed(2),
+      commissionValue: commissionValue,
       returnValue: returnValue,
       commissionRefunded: Number(data.comissaoEstornada),
       saleBalance: saleBalance,
