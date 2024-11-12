@@ -300,7 +300,7 @@ export class ServiceInvoiceViewImportPortal {
     };
   }
 
-  async sendSeller(normalized: Normalized) {
+  async send(normalized: Normalized) {
     const token = (await this.authorizationRepository.singIn()).token;
     apiPortal.defaults.headers["x-access-token"] = `Bearer ${token}`;
 
@@ -334,7 +334,8 @@ export class ServiceInvoiceViewImportPortal {
 
         for (const seller of sellers) {
           const normalized = await this.onNormalize(seller);
-          await this.sendSeller(normalized);
+
+          if (normalized.returnValue <= 0) await this.send(normalized);
         }
       }
     } catch (error) {

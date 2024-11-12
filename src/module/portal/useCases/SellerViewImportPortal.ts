@@ -119,7 +119,7 @@ export class SellerViewImportPortal {
             r.abreviacao,
             r.descricao,
             r.email,
-            r.fone,
+            r.celular as fone,
             r.supervisorCod,
             r.gerenteCod,
             r.eGerente,

@@ -27,7 +27,6 @@ export type Task = {
     | "eanViewImportPortal"
     | "gridViewImportPortal"
     | "sellerViewImportPortal"
-    | "noteOrderViewImportPortal"
     | "productImportCommerce"
     | "brandImportCommerce"
     | "collectionImportCommerce"

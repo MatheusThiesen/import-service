@@ -7,6 +7,9 @@ interface GetOc {
   oc: number;
   item: number;
   referencia: string;
+  produtoDescricao: string;
+  produtoGrupo: string;
+  produtoColecao: string;
   situacao: number;
   qtd: number;
   qtdEntregue: number;
@@ -16,6 +19,7 @@ interface GetOc {
   origem: string;
   ncm: string;
   dtEmissao: Date;
+  dtPrazoEnrega: Date;
   motivoCancelamentoDesc: string;
 }
 
@@ -25,6 +29,9 @@ interface SendOc {
   oc: number;
   item: number;
   referencia: string;
+  produtoDescricao: string;
+  produtoGrupo: string;
+  produtoColecao: string;
   situacao: number;
   qtd: number;
   qtdEntregue: number;
@@ -49,6 +56,9 @@ export class OcViewImportPortal {
       oc: oc.oc,
       item: oc.item,
       referencia: oc.referencia,
+      produtoDescricao: oc.produtoDescricao,
+      produtoGrupo: oc.produtoGrupo,
+      produtoColecao: oc.produtoColecao,
       situacao: oc.situacao,
       qtd: Number(oc.qtd),
       qtdEntregue: Number(oc.qtdEntregue),
@@ -58,6 +68,7 @@ export class OcViewImportPortal {
       origem: String(oc.origem),
       ncm: String(oc.ncm),
       dtEmissao: oc.dtEmissao,
+      dtPrazoEnrega: oc.dtPrazoEnrega,
       motivoCancelamento: oc.motivoCancelamentoDesc
         ? String(oc.motivoCancelamentoDesc)
         : undefined,
@@ -110,10 +121,14 @@ export class OcViewImportPortal {
             oc.qtdCancelada,
             oc.valorTotalLiquido,
             oc.dtEmissao,
+            oc.dtPrazoEnrega,
             oc.origem,
             oc.origemDesc,
             oc.ncm,
-            oc.motivoCancelamentoDesc 
+            oc.motivoCancelamentoDesc,
+            oc.produtoDescricao,
+            oc.produtoGrupo,
+            oc.produtoColecao
           from 01010s005.dev_oc oc
           ${whereNormalized}
           limit ${limit}

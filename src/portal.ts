@@ -94,11 +94,6 @@ export class Portal {
         });
 
         queue.push({
-          search: `${this.queryBuilderUpdateTime("n", 1)} `,
-          entity: "noteOrderViewImportPortal",
-        });
-
-        queue.push({
           entity: "conceptViewImportPortal",
           search: `${this.queryBuilderUpdateTime("c", 1, 10)}`,
         });
@@ -209,10 +204,6 @@ export class Portal {
           search: `${this.queryBuilderUpdateTime("e", 3)} `,
           entity: "eanViewImportPortal",
         });
-        queue.push({
-          search: `${this.queryBuilderUpdateTime("n", 10)} `,
-          entity: "noteOrderViewImportPortal",
-        });
       } catch (error) {
         console.log(error);
       }
@@ -279,11 +270,6 @@ export class Portal {
           "p",
           3
         )} ) OR ${this.queryBuilderUpdateTime("oc", 3)}`,
-      });
-
-      queue.push({
-        search: `${this.queryBuilderUpdateTime("n", 1)} `,
-        entity: "noteOrderViewImportPortal",
       });
 
       queue.push({
