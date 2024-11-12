@@ -340,7 +340,7 @@ export class ServiceInvoiceViewImportPortal {
         for (const seller of sellers) {
           const normalized = await this.onNormalize(seller);
 
-          if (normalized.returnValue <= 0) await this.send(normalized);
+          if (normalized.returnValue > 0) await this.send(normalized);
         }
       }
     } catch (error) {
