@@ -137,7 +137,7 @@ export class Portal {
         queue.push({
           entity: "serviceInvoiceViewImportPortal",
           search:
-            "r.representanteCod in (2316,2295,2306,2082,2895,1438,1493,1925,1704,2292)",
+            "r.representanteCod in (2295,2306,2082,2895,1438,1493,1925,1704,2292)",
         });
       } catch (error) {
         console.log(error);
