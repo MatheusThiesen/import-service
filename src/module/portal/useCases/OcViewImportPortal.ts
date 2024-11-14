@@ -6,6 +6,7 @@ interface GetOc {
   produtoCod: number;
   oc: number;
   item: number;
+  diasVencimento: number;
   referencia: string;
   produtoDescricao: string;
   produtoGrupo: string;
@@ -27,6 +28,7 @@ interface SendOc {
   id: string;
   produtoCod: number;
   oc: number;
+  diasVencimento: number;
   item: number;
   referencia: string;
   produtoDescricao: string;
@@ -72,6 +74,7 @@ export class OcViewImportPortal {
       motivoCancelamento: oc.motivoCancelamentoDesc
         ? String(oc.motivoCancelamentoDesc)
         : undefined,
+      diasVencimento: Number(oc.diasVencimento),
     }));
   }
 
@@ -128,8 +131,10 @@ export class OcViewImportPortal {
             oc.motivoCancelamentoDesc,
             oc.produtoDescricao,
             oc.produtoGrupo,
-            oc.produtoColecao
+            oc.produtoColecao,
+            v.diasVencimento
           from 01010s005.dev_oc oc
+          inner join 01010s005.dev_oc_vencimentos v on v.oc = oc.oc
           ${whereNormalized}
           limit ${limit}
           offset ${offset}

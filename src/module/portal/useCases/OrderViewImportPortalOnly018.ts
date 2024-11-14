@@ -48,6 +48,7 @@ interface GetOrderItems {
   ncm?: number;
   origemCod?: number;
   origemDescricao: string;
+  valorDesconto: number;
   dtAlteracao: Date;
 }
 
@@ -282,6 +283,9 @@ export class OrderViewImportPortalOnly018 {
           origin: [1, 2].includes(itemOrder.origemMercadoriaCod)
             ? "Importado"
             : "Nacional",
+          discount: itemOrder.valorDesconto
+            ? Number(itemOrder.valorDesconto)
+            : undefined,
         };
       })
     );
@@ -437,6 +441,8 @@ export class OrderViewImportPortalOnly018 {
               i.produtoReferencia,
               i.gradeCod as gradeCod,i.gradeDescricao as gradeDescricao,
               i.unidadeEstoque as unidadeEstoque,
+              i.origemMercadoriaCod,
+              i.valorDesconto,
 
               i.recusaCod,i.recusaDescicao,
               i.origemCod,i.origemDescricao,
