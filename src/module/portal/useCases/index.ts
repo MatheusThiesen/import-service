@@ -21,6 +21,7 @@ import { OrderViewImportPortalOnly018 } from "./OrderViewImportPortalOnly018";
 import { RegisterGroupViewImportPortal } from "./RegisterGroupViewImportPortal";
 import { SellerViewImportPortal } from "./SellerViewImportPortal";
 import { ServiceInvoiceViewImportPortal } from "./ServiceInvoiceViewImportPortal";
+import { SuspendedInvoiceViewImportPortal } from "./SuspendedInvoiceViewImportPortal";
 import { WalletSellerClientsViewImportPortal } from "./WalletSellerClientsViewImportPortal";
 
 export const authorization = new AuthorizationRepository();
@@ -58,6 +59,8 @@ export const highlighterViewImportPortal = new HighlighterViewImportPortal(
 );
 export const walletSellerClientsViewImportPortal =
   new WalletSellerClientsViewImportPortal(sendData);
+export const suspendedInvoiceViewImportPortal =
+  new SuspendedInvoiceViewImportPortal(sendData);
 
 export const accessSellerNextdataViewImportPortal: AccessSellerNextdataViewImportPortal =
   new AccessSellerNextdataViewImportPortal(sendData);

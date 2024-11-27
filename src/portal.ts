@@ -139,6 +139,10 @@ export class Portal {
           search:
             "r.representanteCod in (2295,2306,2082,2895,1438,1493,1925,1704,2292)",
         });
+
+        queue.push({
+          entity: "suspendedInvoiceViewImportPortal",
+        });
       } catch (error) {
         console.log(error);
       }
@@ -235,6 +239,14 @@ export class Portal {
         search: `${this.queryBuilderUpdateTime("i", 3)}`,
         entity: "orderNotInternalCodeViewImportPortal",
       });
+      queue.push({
+        search: `${this.queryBuilderUpdateTime("i", 3)}`,
+        entity: "orderViewImportPortalOnly018",
+      });
+      queue.push({
+        search: `${this.queryBuilderUpdateTime("i", 3)}`,
+        entity: "orderNotInternalCodeViewImportPortalOnly018",
+      });
 
       queue.push({
         search: `${this.queryBuilderUpdateTime("m", 3)}`,
@@ -300,6 +312,9 @@ export class Portal {
 
       queue.push({
         entity: "accessSellerNextdataViewImportPortal",
+      });
+      queue.push({
+        entity: "suspendedInvoiceViewImportPortal",
       });
 
       await Promise.all([

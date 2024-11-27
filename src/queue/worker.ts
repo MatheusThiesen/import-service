@@ -46,6 +46,7 @@ import {
   registerGroupViewImportPortal,
   sellerViewImportPortal,
   serviceInvoiceViewImportPortal,
+  suspendedInvoiceViewImportPortal,
   walletSellerClientsViewImportPortal,
 } from "../module/portal/useCases";
 
@@ -53,6 +54,11 @@ import { Task } from "./";
 
 export async function worker(arg: Task, cb: done) {
   switch (arg.entity) {
+    case "suspendedInvoiceViewImportPortal":
+      await suspendedInvoiceViewImportPortal.execute({
+        search: arg.search,
+      });
+      break;
     case "serviceInvoiceViewImportPortal":
       await serviceInvoiceViewImportPortal.execute({
         search: arg.search,
