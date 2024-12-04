@@ -22,6 +22,8 @@ interface GetOc {
   dtEmissao: Date;
   dtPrazoEnrega: Date;
   motivoCancelamentoDesc: string;
+  precoReposicao: number;
+  precoPromocional: number;
 }
 
 interface SendOc {
@@ -44,6 +46,8 @@ interface SendOc {
   ncm: string;
   dtEmissao: Date;
   motivoCancelamento: string;
+  precoReposicao: number;
+  precoPromocional: number;
 }
 
 export class OcViewImportPortal {
@@ -75,6 +79,8 @@ export class OcViewImportPortal {
         ? String(oc.motivoCancelamentoDesc)
         : undefined,
       diasVencimento: Number(oc.diasVencimento),
+      precoReposicao: Number(oc.precoReposicao),
+      precoPromocional: Number(oc.precoPromocional),
     }));
   }
 
@@ -132,7 +138,9 @@ export class OcViewImportPortal {
             oc.produtoDescricao,
             oc.produtoGrupo,
             oc.produtoColecao,
-            v.diasVencimento
+            v.diasVencimento,
+            oc.precoReposicao, 
+            oc.precoPromocional
           from 01010s005.dev_oc oc
           inner join 01010s005.dev_oc_vencimentos v on v.oc = oc.oc
           ${whereNormalized}
