@@ -34,7 +34,9 @@ export class SuspendedInvoiceViewImportPortal {
           return {
             devolution: devolution.id,
             invoice: devolution.numberInvoice,
-            suspended: billets.filter((f) => f.locCob === 49).length > 0,
+            suspended:
+              billets.filter((f) => f.locCob === 49 || f.locCob === 63).length >
+              0,
           };
         }
       });
