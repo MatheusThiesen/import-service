@@ -198,6 +198,7 @@ export class OrderViewImportPortal {
             : itemOrder.posicaoDetalhadaDescPedidoAtual;
 
         let documentNumber = undefined;
+        let suspended = undefined;
         if (["faturado"].includes(currentOrderDetailPosition.toLowerCase())) {
           const getInvoice = await dbSiger.$ExecuteQuery<{
             numeroNota: number;
@@ -211,6 +212,17 @@ export class OrderViewImportPortal {
           documentNumber = getInvoice?.[0]?.numeroNota
             ? String(getInvoice[0].numeroNota)
             : undefined;
+
+          if (documentNumber) {
+            const verifySuspended = await dbSiger.$ExecuteQuery<{
+              total: number;
+            }>(`
+              select count(*) as total
+              from 01010s005.dev_titulo t
+              where t.numero = ${documentNumber} and t.sigemp = '${itemOrder.sigemp}' and t.locCob in (49, 63)
+            `);
+            suspended = Number(verifySuspended[0].total) > 0;
+          }
         }
 
         const motivoCancelamentoResponse = await dbSiger.$ExecuteQuery<{
@@ -286,6 +298,7 @@ export class OrderViewImportPortal {
           discount: itemOrder.valorDesconto
             ? Number(itemOrder.valorDesconto)
             : undefined,
+          suspended,
         };
       })
     );
