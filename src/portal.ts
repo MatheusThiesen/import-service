@@ -36,8 +36,8 @@ export class Portal {
   }
 
   fiveMinuteCron() {
-    cron.schedule("0 */10 * * *", () => {
-      console.log("[0 */10 * * *]:", getDateNow());
+    cron.schedule("*/10 * * * *", () => {
+      console.log("[*/10 * * * *]:", getDateNow());
 
       queue.push({
         entity: "accessSellerNextdataViewImportPortal",
