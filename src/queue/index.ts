@@ -2,7 +2,7 @@ import type { queue as queueFastq } from "fastq";
 import * as fastq from "fastq";
 import { worker } from "./worker";
 
-const CONCURRENCY = 4;
+const CONCURRENCY = 6;
 
 export type Task = {
   search?: string;

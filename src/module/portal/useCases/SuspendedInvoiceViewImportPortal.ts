@@ -44,7 +44,8 @@ export class SuspendedInvoiceViewImportPortal {
     return await Promise.all(normalized);
   }
   async send(data: SendBillet[]) {
-    await this.sendData.post("/devolution/suspended-invoice-import", data);
+    if (data.length > 0)
+      await this.sendData.post("/devolution/suspended-invoice-import", data);
   }
 
   getPageData(data: GetDevolution[], page: number, pageSize: number) {
