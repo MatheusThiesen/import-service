@@ -13,6 +13,7 @@ import { GridViewImportPortal } from "./GridViewImportPortal";
 import { GroupProductViewImportPortal } from "./GroupProductViewImportPortal";
 import { GroupsProductToSellerViewImportPortal } from "./GroupsProductToSellerViewImportPortal";
 import { HighlighterViewImportPortal } from "./HighlighterViewImportPortal";
+import { MicroregionsViewImportPortal } from "./MicroregionsViewImportPortal";
 import { OcViewImportPortal } from "./OcViewImportPortal";
 import { OrderNotInternalCodeViewImportPortal } from "./OrderNotInternalCodeViewImportPortal";
 import { OrderNotInternalCodeViewImportPortalOnly018 } from "./OrderNotInternalCodeViewImportPortalOnly018";
@@ -61,6 +62,9 @@ export const walletSellerClientsViewImportPortal =
   new WalletSellerClientsViewImportPortal(sendData);
 export const suspendedInvoiceViewImportPortal =
   new SuspendedInvoiceViewImportPortal(sendData);
+export const microregionsViewImportPortal = new MicroregionsViewImportPortal(
+  sendData
+);
 
 export const accessSellerNextdataViewImportPortal: AccessSellerNextdataViewImportPortal =
   new AccessSellerNextdataViewImportPortal(sendData);

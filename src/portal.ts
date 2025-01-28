@@ -13,6 +13,7 @@ import {
   groupProductViewImportPortal,
   groupsProductToSellerViewImportPortal,
   highlighterViewImportPortal,
+  microregionsViewImportPortal,
   ocViewImportPortal,
   orderNotInternalCodeViewImportPortal,
   orderNotInternalCodeViewImportPortalOnly018,
@@ -146,6 +147,7 @@ export class Portal {
 
       try {
         await billetViewImportPortal.execute({});
+        await microregionsViewImportPortal.execute({});
         await brandsToSellerViewImportPortal.execute({});
         await serviceInvoiceViewImportPortal.execute({
           search:
@@ -163,6 +165,7 @@ export class Portal {
       console.log("[0 30 22 * * *]:", getDateNow());
 
       try {
+        await microregionsViewImportPortal.execute({});
         await groupProductViewImportPortal.execute({});
         await groupsProductToSellerViewImportPortal.execute({});
         await orderViewImportPortal.execute({});
@@ -191,6 +194,8 @@ export class Portal {
 
   async runStarted() {
     try {
+      await microregionsViewImportPortal.execute({});
+
       await billetViewImportPortal.execute({});
 
       await groupProductViewImportPortal.execute({
