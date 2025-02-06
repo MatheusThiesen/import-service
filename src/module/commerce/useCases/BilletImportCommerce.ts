@@ -36,7 +36,7 @@ export class BilletImportCommerce {
             ordem: true,
           },
 
-          search,
+          search: query,
 
           page: page,
           pagesize: this.pagesize,
