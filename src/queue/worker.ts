@@ -12,6 +12,8 @@ import {
   collectionImportCommerce,
   colorImportCommerce,
   conceptImportCommerce,
+  conceptToClientImportCommerce,
+  conceptToProductImportCommerce,
   groupImportCommerce,
   lineImportCommerce,
   listPriceImportCommerce,
@@ -202,6 +204,16 @@ export async function worker(arg: Task, cb: done) {
         break;
       case "blockGroupProductToSellerImportCommerce":
         await blockGroupProductToSellerImportCommerce.execute({
+          search: arg.search,
+        });
+        break;
+      case "conceptToProductImportCommerce":
+        await conceptToProductImportCommerce.execute({
+          search: arg.search,
+        });
+        break;
+      case "conceptToClientImportCommerce":
+        await conceptToClientImportCommerce.execute({
           search: arg.search,
         });
         break;

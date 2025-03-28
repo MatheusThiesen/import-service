@@ -11,6 +11,10 @@ import {
   CommissionsLaunchesFields,
 } from "../model/CommissionsLaunches";
 import {
+  ConceptToProduct,
+  ConceptToProductFields,
+} from "../model/ConceptsToProduct";
+import {
   FinancialDocument,
   FinancialDocumentFields,
 } from "../model/FinancialDocument";
@@ -23,6 +27,10 @@ import {
 import { Product, ProductFields } from "../model/Product";
 import { ProductImage, ProductImageFields } from "../model/ProductImage";
 import { Quotas, QuotasFields } from "../model/Quotas";
+import {
+  ConceptToClient,
+  ConceptToClientFields,
+} from "../model/conceptsToClient";
 import { BilletRepository } from "../repositories/BilletRepository";
 import { BillingLocationRepository } from "../repositories/BillingLocationRepository";
 import { BrandRepository } from "../repositories/BrandRepository";
@@ -139,6 +147,21 @@ export const commissionsLaunches = new EntityRepository<
   initial: "l",
 });
 
+export const conceptsToProduct = new EntityRepository<
+  ConceptToProductFields,
+  ConceptToProduct
+>({
+  table: "01010s005.DEV_PRODUTO_CONCEITO",
+  initial: "p",
+});
+export const conceptsToClient = new EntityRepository<
+  ConceptToClientFields,
+  ConceptToClient
+>({
+  table: "01010s005.DEV_CLIENTE_CONCEITO",
+  initial: "c",
+});
+
 export const entities = {
   brand,
   collectionProduct,
@@ -172,4 +195,6 @@ export const entities = {
   financialDocument,
   commissionDocuments,
   commissionsLaunches,
+  conceptsToProduct,
+  conceptsToClient,
 };

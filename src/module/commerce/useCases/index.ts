@@ -11,6 +11,8 @@ import { ClientImportCommerce } from "./ClientImportCommerce";
 import { CollectionImportCommerce } from "./CollectionImportCommerce";
 import { ColorImportCommerce } from "./ColorImportCommerce";
 import { ConceptImportCommerce } from "./ConceptImportCommerce";
+import { ConceptToClientImportCommerce } from "./ConceptToClientImportCommerce";
+import { ConceptToProductImportCommerce } from "./ConceptToProductImportCommerce";
 import { GroupImportCommerce } from "./GroupImportCommerce";
 import { LineImportCommerce } from "./LineImportCommerce";
 import { ListPriceImportCommerce } from "./ListPriceImportCommerce";
@@ -64,3 +66,8 @@ export const billetImportCommerce = new BilletImportCommerce(sendData);
 export const orderImportCommerce = new OrderImportCommerce(sendData);
 export const blockGroupProductToSellerImportCommerce =
   new BlockGroupProductToSellerImportCommerce(sendData);
+export const conceptToProductImportCommerce =
+  new ConceptToProductImportCommerce(sendData);
+export const conceptToClientImportCommerce = new ConceptToClientImportCommerce(
+  sendData
+);

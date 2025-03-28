@@ -50,7 +50,9 @@ export type Task = {
     | "billetImportCommerce"
     | "orderImportCommerce"
     | "blockGroupProductToSellerImportCommerce"
-    | "tablePriceImportCommerce";
+    | "tablePriceImportCommerce"
+    | "conceptToProductImportCommerce"
+    | "conceptToClientImportCommerce";
 };
 
 export const queue: queueFastq<Task> = fastq(worker, CONCURRENCY);

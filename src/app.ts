@@ -150,6 +150,14 @@ export class App {
                 where ${this.queryBuilderUpdateTime("rg", 1)}
               )`,
           });
+          queue.push({
+            entity: "conceptToProductImportCommerce",
+            search: `${this.queryBuilderUpdateTime("p", 1, 10)}`,
+          });
+          queue.push({
+            entity: "conceptToClientImportCommerce",
+            search: `${this.queryBuilderUpdateTime("c", 1, 10)}`,
+          });
         } catch (error) {
           console.log(error);
         }
@@ -271,6 +279,14 @@ export class App {
           queue.push({
             entity: "blockGroupProductToSellerImportCommerce",
           });
+          queue.push({
+            entity: "conceptToProductImportCommerce",
+            search: `${this.queryBuilderUpdateTime("p", 10)}`,
+          });
+          queue.push({
+            entity: "conceptToClientImportCommerce",
+            search: `${this.queryBuilderUpdateTime("c", 10)}`,
+          });
         } catch (error) {
           console.log(error);
         }
@@ -361,6 +377,14 @@ export class App {
       queue.push({
         entity: "productImageImportCommerce",
         search: `${this.queryBuilderUpdateTime("i", 10)}`,
+      });
+      queue.push({
+        entity: "conceptToProductImportCommerce",
+        search: `${this.queryBuilderUpdateTime("p", 10)}`,
+      });
+      queue.push({
+        entity: "conceptToClientImportCommerce",
+        search: `${this.queryBuilderUpdateTime("c", 10)}`,
       });
     } catch (err) {
       console.log("error!");
